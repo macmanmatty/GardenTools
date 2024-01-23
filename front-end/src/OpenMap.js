@@ -1,19 +1,43 @@
-
-const OpenStreetMap = () => {
+import React,  { useState} from 'react';
+import { MapContainer, TileLayer, Marker, Popup, useMapEvents, CircleMarker} from 'react-leaflet';
+import 'leaflet/dist/leaflet.css';
+const OpenMap = () => {
+  const [markers, setMarkers] = useState([]);
+ const MapClickHandler = () => {
+     const map = useMapEvents({
+       click: (e) => {
+         console.log('Clicked at:', e.latlng); // Access latitude and longitude from the event
+ const newMarker = {
+      id: new Date().getTime(),
+      position: [e.latlng.lat, e.latlng.lng],
+    };
+    setMarkers((prevMarkers) => [...prevMarkers, newMarker]);       },
+     });
+     return null;
+   };
   return (
-    <div>
-      <h2>My OpenStreetMap</h2>
-      <iframe
-        width="100%"
-        height="500"
-        frameBorder="0"
-        scrolling="no"
-        marginHeight="0"
-        marginWidth="0"
-        src="https://www.openstreetmap.org/export/embed.html?bbox=-74.0586%2C40.4774%2C-73.8262%2C40.9176&layer=mapnik"
-      ></iframe>
-    </div>
-  );
-};
-
-export default OpenStreetMap;
+  <div
+  >
+    <MapContainer
+         center={[51.505, -0.09]}
+         zoom={13}
+         style={{ width: '100%', height: '500px' }}
+        doubleClickZoom= {false}
+       >
+       <MapClickHandler/>
+         <TileLayer
+           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+         />
+         {markers.map((marker) => (
+           <CircleMarker key={marker.id} center={marker.position}>
+             <Popup>
+               Latitude: {marker.position[0]}, Longitude: {marker.position[1]}
+             </Popup>
+           </CircleMarker>
+         ))}
+   </MapContainer>
+   </div>
+     );
+   };
+export default OpenMap;
