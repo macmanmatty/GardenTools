@@ -1,7 +1,6 @@
 package com.example.FruitTrees.OpenMeteo;
 
-import com.example.FruitTrees.ChillingHours.CalculationMode;
-import com.example.FruitTrees.ChillingHours.ChillingHoursCalculator;
+import com.example.FruitTrees.ChillingHours.WeatherDataProcessor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
@@ -21,18 +20,18 @@ public class OpenMeteoService {
 
    private  RestTemplate restTemplate = new RestTemplate();
 
-   private ChillingHoursCalculator chillingHoursCalculator;
+   private WeatherDataProcessor weatherDataProcessor;
 
     public OpenMeteoService() {
-        chillingHoursCalculator=new ChillingHoursCalculator();
+        weatherDataProcessor =new WeatherDataProcessor();
 
     }
 
     public WeatherResponse getData(WeatherRequest weatherRequest ) throws IOException {
-        WeatherResponse chillingHoursResponse= new WeatherResponse();
+        WeatherResponse response= new WeatherResponse();
         OpenMeteoResponse openMeteoResponse=makeRequest(weatherRequest);
-        chillingHoursResponse= chillingHoursCalculator.calculateYearlyWeather(chillingHoursResponse, weatherRequest, openMeteoResponse);
-        return  chillingHoursResponse;
+        response= weatherDataProcessor.processData(response, weatherRequest, openMeteoResponse);
+        return  response;
     }
 
     private OpenMeteoResponse makeRequest(WeatherRequest chillingHoursRequest) throws IOException {

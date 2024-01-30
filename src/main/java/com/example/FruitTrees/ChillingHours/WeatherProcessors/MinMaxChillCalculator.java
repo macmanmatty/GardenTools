@@ -1,59 +1,53 @@
 package com.example.FruitTrees.ChillingHours.WeatherProcessors;
 
-public class MinMaxChillCalculator  implements WeatherProcessor {
-    private double value;
-    private double maxTemp;
-    private double minTemp;
-    private int startDay;
-    private int  endDay;
-    private int startMonth;
-    private int  endMonth;
+import java.text.spi.DateFormatProvider;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
-    @Override
-    public double getValue() {
-        return value;
+public class MinMaxChillCalculator  extends WeatherProcessor {
+    private double chillHours;
+
+    private boolean counting;
+    private double minTemp;
+    private double maxTemp;
+
+    public MinMaxChillCalculator() {
+        super("Chill Hours");
     }
 
     @Override
-    public void processWeather(double value, String date) {
-        if(value<=maxTemp && value>=minTemp){
-            this.value++;
+    public void before() {
+        if(inputValues.size()<2){
+            throw new IllegalArgumentException("Missing min and max parameters");
+        }
+    Double minTemp=inputValues.get(0);
+    if(minTemp!=null){
+        this.minTemp=minTemp;
+    }
+    Double maxTemp=inputValues.get(1);
+        if(minTemp!=null){
+            this.maxTemp=maxTemp;
+        }
+
+    }
+
+    @Override
+    public void processWeather(Number number, String date) {
+        double value=number.doubleValue();
+        boolean inDate=dateInRange(date);
+        if(inDate){
+            counting=true;
+            if( value>=minTemp && value<=maxTemp) {
+                chillHours++;
+            }
+        }
+        if( counting && isEndDate(date)){
+            LocalDateTime localDateTime=LocalDateTime.parse(date);
+            addValue(chillHours, localDateTime.getYear() );
+            chillHours =0;
         }
     }
 
-    public int getStartDay() {
-        return startDay;
-    }
-
-    @Override
-    public void setStartDay(int startDay) {
-        this.startDay = startDay;
-    }
-
-    public int getEndDay() {
-        return endDay;
-    }
-
-    @Override
-    public void setEndDay(int endDay) {
-        this.endDay = endDay;
-    }
-
-    public int getStartMonth() {
-        return startMonth;
-    }
-
-    @Override
-    public void setStartMonth(int startMonth) {
-        this.startMonth = startMonth;
-    }
-
-    public int getEndMonth() {
-        return endMonth;
-    }
-
-    @Override
-    public void setEndMonth(int endMonth) {
-        this.endMonth = endMonth;
-    }
 }

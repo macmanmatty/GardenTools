@@ -1,58 +1,30 @@
 package com.example.FruitTrees.ChillingHours.WeatherProcessors;
 
-public class TotalCalculator implements WeatherProcessor {
-    private double value;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+
+public class TotalCalculator extends WeatherProcessor {
+    private double total;
     private double maxTemp;
     private double minTemp;
-    private int startDay;
-    private int  endDay;
-    private int startMonth;
-    private int  endMonth;
+    private boolean inDate;
+
+    private boolean counting;
 
     @Override
-    public double getValue() {
-        return value;
+    public void processWeather(Number  number, String date) {
+        double value=number.doubleValue();
+        if (inDate) {
+            this.total = this.total + value;
+            counting=true;
+        }
+            if( counting && isEndDate(date)){
+                LocalDateTime localDateTime=LocalDateTime.parse(date);
+                addValue(total, localDateTime.getYear() );
+                total =0;
+
+        }
     }
 
-    @Override
-    public void processWeather(double value, String date) {
-            this.value=this.value+value;
-
-    }
-
-    public int getStartDay() {
-        return startDay;
-    }
-
-    @Override
-    public void setStartDay(int startDay) {
-        this.startDay = startDay;
-    }
-
-    public int getEndDay() {
-        return endDay;
-    }
-
-    @Override
-    public void setEndDay(int endDay) {
-        this.endDay = endDay;
-    }
-
-    public int getStartMonth() {
-        return startMonth;
-    }
-
-    @Override
-    public void setStartMonth(int startMonth) {
-        this.startMonth = startMonth;
-    }
-
-    public int getEndMonth() {
-        return endMonth;
-    }
-
-    @Override
-    public void setEndMonth(int endMonth) {
-        this.endMonth = endMonth;
-    }
 }
