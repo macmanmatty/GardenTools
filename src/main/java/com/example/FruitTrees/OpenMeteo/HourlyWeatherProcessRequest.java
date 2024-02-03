@@ -1,6 +1,9 @@
 package com.example.FruitTrees.OpenMeteo;
 
-public class WeatherProcessRequest {
+import java.util.ArrayList;
+import java.util.List;
+
+public class HourlyWeatherProcessRequest {
 
     /**
      * the hourly open meteo  data  set process
@@ -35,9 +38,9 @@ public class WeatherProcessRequest {
      */
     private int endProcessMonth;
 
-    private double minValue;
+    private List<Double> inputParameters= new ArrayList<>();
 
-    private double maxValue;
+
 
     public String getHourlyDataType() {
         return hourlyDataType;
@@ -87,19 +90,11 @@ public class WeatherProcessRequest {
         this.processorName = processorName;
     }
 
-    public double getMinValue() {
-        return minValue;
+    public List<Double> getInputParameters() {
+        return inputParameters;
     }
 
-    public void setMinValue(double minValue) {
-        this.minValue = minValue;
-    }
-
-    public double getMaxValue() {
-        return maxValue;
-    }
-
-    public void setMaxValue(double maxValue) {
-        this.maxValue = maxValue;
+    public void setInputParameters(List<Double> inputParameters) {
+        this.inputParameters = inputParameters;
     }
 }

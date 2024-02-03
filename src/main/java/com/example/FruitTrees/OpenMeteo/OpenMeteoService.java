@@ -1,6 +1,7 @@
 package com.example.FruitTrees.OpenMeteo;
 
 import com.example.FruitTrees.ChillingHours.WeatherDataProcessor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
@@ -22,15 +23,15 @@ public class OpenMeteoService {
 
    private WeatherDataProcessor weatherDataProcessor;
 
-    public OpenMeteoService() {
-        weatherDataProcessor =new WeatherDataProcessor();
 
+    public OpenMeteoService( @Autowired  WeatherDataProcessor weatherDataProcessor) {
+        this.weatherDataProcessor = weatherDataProcessor;
     }
 
     public WeatherResponse getData(WeatherRequest weatherRequest ) throws IOException {
         WeatherResponse response= new WeatherResponse();
         OpenMeteoResponse openMeteoResponse=makeRequest(weatherRequest);
-        response= weatherDataProcessor.processData(response, weatherRequest, openMeteoResponse);
+        response= weatherDataProcessor.processHourlyData(response, weatherRequest, openMeteoResponse);
         return  response;
     }
 

@@ -1,5 +1,5 @@
 import React, {useState} from "react";
-import Dates from "../Dates";
+import Dates from "../CommonUI/Dates";
 import OptionDropDown from "../CommonUI/OptionDropdown";
 import * as WeatherOptions from "./WeatherOptions";
 import './Weather.css';
@@ -34,23 +34,15 @@ const LocationWeather = ({mapLatitude, mapLongitude}) => {
             timezone: timeZone,
             startDate: startDate,
             endDate: endDate,
-            startChillMonthAndDay: '',
-            endChillMonthAndDay: '',
-             startPrecipitationMonth: '',
-             endPrecipitationMonth: '',
-              endPrecipitationDay: '',
-              startPrecipitationDay: '',
-             calculateYearlyChill: '',
-             calculateYearlyRainFall: '',
-             calculateYearlySnowFall: '',
-
+            hourlyDataTypes: new Set(),
+            dailyDataTypes : new Set(),
+            hourlyWeatherProcessRequests: []
         }
     };
     return (
         <div>
             <div  class='inlineDropdowns'>
             <OptionDropDown
-                setSelectedValue={setWeatherData}
                 optionsArray={WeatherOptions.weatherOptions}
                 displayParameter='name'
                 id={'dataType'}

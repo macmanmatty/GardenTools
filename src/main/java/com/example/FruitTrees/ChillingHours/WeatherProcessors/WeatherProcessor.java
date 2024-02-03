@@ -1,7 +1,6 @@
 package com.example.FruitTrees.ChillingHours.WeatherProcessors;
 
 import java.time.LocalDate;
-import java.time.Month;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,7 +15,7 @@ public abstract class WeatherProcessor {
     /**
      * the lis of input values used to process the weather
      */
-    List<Double> inputValues= new ArrayList<>();
+    List<Double> inputParameters = new ArrayList<>();
 
    private String dataName;
 
@@ -56,7 +55,7 @@ public abstract class WeatherProcessor {
     }
 
     /**
-     * checks to see if given dates equals the end date
+     * checks to see if  a given date equals the end date
      * @param date
      * @return
      */
@@ -71,8 +70,6 @@ public abstract class WeatherProcessor {
         return false;
     }
     public void addValue(double value, int year){
-
-
         values.add(name+" for "+year+" from: "+ startMonth +"/"+startDay+" to "+endMonth+"/" +endDay+ ": "+ value);
     }
 
@@ -139,11 +136,11 @@ public abstract class WeatherProcessor {
         this.dataName = dataName;
     }
 
-    public List<Double> getInputValues() {
-        return inputValues;
+    public List<Double> getInputParameters() {
+        return inputParameters;
     }
 
-    public void setInputValues(List<Double> inputValues) {
-        this.inputValues = inputValues;
+    public void setInputParameters(List<Double> inputParameters) {
+        this.inputParameters = inputParameters;
     }
 }

@@ -57,3 +57,11 @@ export const windSpeedUnits= [{key: "kmh", value:" KM/H"},{key: "MP/H",  value:"
 export const precipitationUnits=[{key:"Inch",  value:"inch"},
     {key:"Millimeter", value:''}]
 
+export const simpleCalculations= [
+    {key: "Max Value", value:"max"},
+    {key: "Min Value",  value:"min"},
+    {key:"Average Mean", value:  "mean"},
+    {key: "Average Median", value: "median"},
+    {key: "Total", value: "total"},
+]
+

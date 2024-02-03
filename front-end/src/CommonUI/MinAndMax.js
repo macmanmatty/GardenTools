@@ -9,13 +9,13 @@ const MinAndMax = ({ setMin, setMax}) => {
   let  setMinTextValue= (value)=> {
     if (/^-?\d*\.?\d*$/.test(value)) {
       setMin(parseFloat(value));
-      setMinText(value)
+      setMinText(value);
     }
   };
   let  setMaxTextValue= (value)=> {
     if (/^-?\d*\.?\d*$/.test(value)) {
       setMax(parseFloat(value));
-      setMaxText(value)
+      setMaxText(value);
     }
 
   };

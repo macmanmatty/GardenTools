@@ -1,8 +1,5 @@
-import logo from './logo.svg';
 import './App.css';
 import OpenMap from './OpenMap/OpenMap.js';
-import Dates from './Dates.js';
-import WeatherOptions from "./CommonUI/OptionDropdown";
 import LocationWeather from "./Weather/LocationWeather";
 import WeatherSettings from "./Weather/WeatherSettings";
 

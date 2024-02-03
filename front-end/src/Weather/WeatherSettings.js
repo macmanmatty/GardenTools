@@ -1,5 +1,5 @@
 import React, {useState} from "react";
-import Dates from "../Dates";
+import Dates from "../CommonUI/Dates";
 import OptionDropDown from "../CommonUI/OptionDropdown";
 import * as WeatherOptions from "./WeatherOptions";
 import './Weather.css';
@@ -24,15 +24,7 @@ const LocationWeather = ({mapLatitude, mapLongitude}) => {
             timezone: timeZone,
             startDate: startDate,
             endDate: endDate,
-            startChillMonthAndDay: '',
-            endChillMonthAndDay: '',
-             startPrecipitationMonth: '',
-             endPrecipitationMonth: '',
-              endPrecipitationDay: '',
-              startPrecipitationDay: '',
-             calculateYearlyChill: '',
-             calculateYearlyRainFall: '',
-             calculateYearlySnowFall: '',
+            hourlyWeatherProcessRequests: []
 
         }
     };
@@ -40,7 +32,6 @@ const LocationWeather = ({mapLatitude, mapLongitude}) => {
         <div>
             <div  class='inlineDropdowns'>
             <OptionDropDown
-                setSelectedValue={setTempUnits}
                 optionsArray={WeatherOptions.temperatureUnits}
                 displayParameter='key'
                 onSelected={setTempUnits}
@@ -49,7 +40,6 @@ const LocationWeather = ({mapLatitude, mapLongitude}) => {
             ></OptionDropDown>
 
                     <OptionDropDown
-                setSelectedValue={setPrecipitationUnits}
                 optionsArray={WeatherOptions.precipitationUnits}
                 displayParameter='key'
                 onSelected={setPrecipitationUnits}
@@ -57,11 +47,10 @@ const LocationWeather = ({mapLatitude, mapLongitude}) => {
                 labelText={'Select A Precipitation Measurement  Unit:'}
             ></OptionDropDown>
                 <OptionDropDown
-                    setSelectedValue={setWindSpeedUnits}
                     optionsArray={WeatherOptions.windSpeedUnits}
                     displayParameter='key'
                     onSelected={setPrecipitationUnits}
-                    id={'precipitationUnits'}
+                    id={'windSpeedUnits'}
                     labelText={'Select A Precipitation Measurement  Unit:'}
                 ></OptionDropDown>
 
@@ -69,6 +58,7 @@ const LocationWeather = ({mapLatitude, mapLongitude}) => {
             <Dates
                 setStartDate={setStartDate}
                 setEndDate={setEndDate}
+                dateFormat={"mm-dd-yyyy"}
             />
         </div>
 

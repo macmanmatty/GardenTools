@@ -1,10 +1,9 @@
 package com.example.FruitTrees.ChillingHours.WeatherProcessors;
 
-import java.text.spi.DateFormatProvider;
-import java.time.LocalDate;
+import org.springframework.stereotype.Component;
+
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
+@Component("MinMaxChill")
 
 public class MinMaxChillCalculator  extends WeatherProcessor {
     private double chillHours;
@@ -19,14 +18,14 @@ public class MinMaxChillCalculator  extends WeatherProcessor {
 
     @Override
     public void before() {
-        if(inputValues.size()<2){
+        if(inputParameters.size()<2){
             throw new IllegalArgumentException("Missing min and max parameters");
         }
-    Double minTemp=inputValues.get(0);
+    Double minTemp= inputParameters.get(0);
     if(minTemp!=null){
         this.minTemp=minTemp;
     }
-    Double maxTemp=inputValues.get(1);
+    Double maxTemp= inputParameters.get(1);
         if(minTemp!=null){
             this.maxTemp=maxTemp;
         }

@@ -2,17 +2,10 @@ import React, { useState } from 'react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 
-const StartAndEndDates = ({monthOnly, yearOnly,  setStartDate, setEndDate}) => {
-  let dateFormat;
+const StartAndEndDates = ({dateFormat,  setStartDate, setEndDate}) => {
   const [endDateText, setEndDateText]= useState('');
   const [startDateText, setStartDateText]= useState('');
 
-  if(monthOnly) {
-      dateFormat ="mm-yyyy"
-  }
-  else{
-      dateFormat="mm-dd-yyyy"
-  }
   let  setPickerStartDate= (date)=> {
   const start=new Date(date);
   const end=new Date(endDateText);

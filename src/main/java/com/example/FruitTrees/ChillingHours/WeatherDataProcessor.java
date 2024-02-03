@@ -1,26 +1,24 @@
 package com.example.FruitTrees.ChillingHours;
 
-import com.example.FruitTrees.ChillingHours.WeatherProcessors.MaxCalculator;
 import com.example.FruitTrees.ChillingHours.WeatherProcessors.WeatherProcessor;
 import com.example.FruitTrees.OpenMeteo.OpenMeteoResponse;
-import com.example.FruitTrees.OpenMeteo.WeatherProcessRequest;
+import com.example.FruitTrees.OpenMeteo.HourlyWeatherProcessRequest;
 import com.example.FruitTrees.OpenMeteo.WeatherRequest;
 import com.example.FruitTrees.OpenMeteo.WeatherResponse;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
+@Component
 public class WeatherDataProcessor {
 
-    Map<String, WeatherProcessor> weatherProcessorMap=new HashMap<>();
-    Map<String, List<? extends Number>> dataSetsMap=new HashMap<>();
+    Map<String, WeatherProcessor> weatherProcessorMap;
 
-    public WeatherDataProcessor() {
-        weatherProcessorMap.put("max", new MaxCalculator());
-        weatherProcessorMap.put()
+    public WeatherDataProcessor( @Autowired  Map<String, WeatherProcessor> weatherProcessorMap) {
+        this.weatherProcessorMap = weatherProcessorMap;
     }
 
     public void calculateChillingHours(WeatherResponse chillingHoursResponse , WeatherRequest chillingHoursRequest, OpenMeteoResponse openMeteoResponse){
@@ -40,17 +38,18 @@ public class WeatherDataProcessor {
         }
 
     }
-    public WeatherResponse processData(WeatherResponse chillingHoursResponse , WeatherRequest weatherRequest, OpenMeteoResponse openMeteoResponse){
+    public WeatherResponse processHourlyData(WeatherResponse chillingHoursResponse , WeatherRequest weatherRequest, OpenMeteoResponse openMeteoResponse){
         WeatherResponse weatherResponse= new WeatherResponse();
         List<String> time=openMeteoResponse.getHourly().getTime();
-        List<WeatherProcessRequest> weatherProcessRequests=weatherRequest.getWeatherProcessRequests();
-
-        for(WeatherProcessRequest weatherProcessRequest: weatherProcessRequests){
-            WeatherProcessor weatherProcessor=weatherProcessorMap.get(weatherProcessRequest.getProcessorName());
-            weatherProcessor.setStartMonthDay(weatherProcessRequest.getStartProcessMonth(), weatherProcessRequest.getStartProcessDay());
+        List<HourlyWeatherProcessRequest> hourlyWeatherProcessRequests =weatherRequest.getHourlyWeatherProcessRequests();
+        for(HourlyWeatherProcessRequest hourlyWeatherProcessRequest : hourlyWeatherProcessRequests){
+            WeatherProcessor weatherProcessor=weatherProcessorMap.get(hourlyWeatherProcessRequest.getProcessorName());
+            weatherProcessor.setStartMonthDay(hourlyWeatherProcessRequest.getStartProcessMonth(), hourlyWeatherProcessRequest.getStartProcessDay());
             weatherProcessor.setEndMonthDay(weatherProcessor.getEndMonth(), weatherProcessor.getEndDay());
-            List<? extends Number> data=DataUtilities.getHourlyData(openMeteoResponse, weatherProcessRequest.getHourlyDataType());
+            weatherProcessor.setInputParameters(hourlyWeatherProcessRequest.getInputParameters());
+            List<? extends Number> data=DataUtilities.getHourlyData(openMeteoResponse, hourlyWeatherProcessRequest.getHourlyDataType());
             int size=data.size();
+            weatherProcessor.before();
             for(int count=0; count<size; count++){
                 weatherProcessor.processWeather(data.get(count), time.get(count));
             }
@@ -58,11 +57,6 @@ public class WeatherDataProcessor {
            weatherResponse.getResponses().addAll(values);
         }
 
-        int size=time.size();
-        for(int count=0; count<size ; count++) {
-
-
-        }
         return chillingHoursResponse;
 
     }

@@ -1,7 +1,5 @@
 package com.example.FruitTrees.OpenMeteo;
 
-import com.example.FruitTrees.ChillingHours.ChillingCalculationMethod;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,7 +8,10 @@ public class WeatherRequest {
     private List<String> hourlyDataTypes = new ArrayList<>();
     private List<String> dailyDataTypes = new ArrayList<>();
 
-    private List<WeatherProcessRequest> weatherProcessRequests = new ArrayList<>();
+    /**
+     * the list of requests for processing  various open meteo datasets
+     */
+    private List<HourlyWeatherProcessRequest> hourlyWeatherProcessRequests = new ArrayList<>();
 
     /**
      * the unit of measurement for temperature
@@ -123,12 +124,12 @@ public class WeatherRequest {
         this.timezone = timezone;
     }
 
-    public List<WeatherProcessRequest> getWeatherProcessRequests() {
-        return weatherProcessRequests;
+    public List<HourlyWeatherProcessRequest> getHourlyWeatherProcessRequests() {
+        return hourlyWeatherProcessRequests;
     }
 
-    public void setWeatherProcessRequests(List<WeatherProcessRequest> weatherProcessRequests) {
-        this.weatherProcessRequests = weatherProcessRequests;
+    public void setHourlyWeatherProcessRequests(List<HourlyWeatherProcessRequest> hourlyWeatherProcessRequests) {
+        this.hourlyWeatherProcessRequests = hourlyWeatherProcessRequests;
     }
 }
 

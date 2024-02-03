@@ -1,6 +1,10 @@
 package com.example.FruitTrees.ChillingHours.WeatherProcessors;
 
+import org.springframework.stereotype.Component;
+
 import java.time.LocalDateTime;
+
+@Component("Min")
 
 public class MinCalculator extends WeatherProcessor {
     private double finalValue =Double.MAX_VALUE;
@@ -8,6 +12,11 @@ public class MinCalculator extends WeatherProcessor {
 
     public MinCalculator() {
         super("Min");
+    }
+
+    @Override
+    public void before() {
+
     }
 
     @Override
