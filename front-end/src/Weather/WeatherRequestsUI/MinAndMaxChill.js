@@ -6,7 +6,10 @@ import MinAndMax from "../../CommonUI/MinAndMax";
 const MinAndMaxChill = ({weatherRequest}) => {
   const [maxTemp, setMaxTemp]=useState("45");
   const [minTemp, setMinTemp]=useState("32");
-  const hourlyWeatherProcessRequests=weatherRequest.hourlyWeatherProcessRequests;
+  const  [startDate, setStartDate]=useState(new Date());
+    const  [endDate, setEndDate]=useState(new Date());
+
+    const hourlyWeatherProcessRequests=weatherRequest.hourlyWeatherProcessRequests;
   const hourlyWeatherProcessRequest={
       values:[],
       startProcessDay: 1,
@@ -18,17 +21,17 @@ const MinAndMaxChill = ({weatherRequest}) => {
   }
 
 
-  const setStartDate=(startDate)=>{
-    weatherRequest.startDate=startDate;
-  }
-  const setEndDate=(endDate)=> {
-      weatherRequest.endDate = endDate;
 
-  }
- const addHourlyWeatherProcessRequest= ()=>{
-      hourlyWeatherProcessRequests.push(hourlyWeatherProcessRequest);
+    const addHourlyWeatherProcessRequest= ()=>{
+        hourlyWeatherProcessRequest.values[0]=minTemp;
+    hourlyWeatherProcessRequest.values[1]=maxTemp;
+    hourlyWeatherProcessRequest.startProcessDay= startDate.getDay();
+    hourlyWeatherProcessRequest.startProcessMoth=startDate.getMonth();
+    hourlyWeatherProcessRequest.endProcessDay=endDate.getDay();
+    hourlyWeatherProcessRequest.endProcessMonth=endDate.getMonth();
+    hourlyWeatherProcessRequests.push(hourlyWeatherProcessRequest);
 
- };
+};
   return (
     <div>
         <h1> Calculate Yearly Chill</h1>
@@ -41,8 +44,12 @@ const MinAndMaxChill = ({weatherRequest}) => {
         setMin={setMinTemp}
         setMax={setMaxTemp}
       </MinAndMax>
+        <button>
+            onClick={addHourlyWeatherProcessRequest}
+        </button>
     </div>
   );
+
 };
 
 export default MinAndMaxChill

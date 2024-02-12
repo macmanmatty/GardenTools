@@ -60,6 +60,10 @@ const LocationWeather = ({mapLatitude, mapLongitude}) => {
                 setEndDate={setEndDate}
                 dateFormat={"mm-dd-yyyy"}
             />
+            <button>
+                Get Weather
+                onClick={getWeather}
+            </button>
         </div>
 
     );
