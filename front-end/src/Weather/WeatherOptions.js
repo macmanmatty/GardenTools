@@ -7,44 +7,44 @@ export const  weatherOptions=  [
     {
         name: 'Chilling Hours Min and Max',
         data: 'temperature_2m',
-        input: ['minAndMax', 'startAndEndDates'],
+        component: 'minAndMaxChill',
         calcMethod: 'countBetweenMinAndMax'
     },
     {
         name: 'Chilling Hours Utah Method',
         data: 'temperature_2m',
-        input: ['minAndMax', 'startAndEndDates'],
+        component: 'utahChill',
         calcMethod: 'countChillUtah'
     },
     {
         name: 'Rain Fall',
         data: 'rain',
-        input: ['startAndEndDates'],
+        component: 'minMaxTotal',
         calcMethod: 'total'
     },
     {
         name: 'Snow Fall',
         data: 'snowfall',
-        input: ['startAndEndDates'],
+        component: 'minMaxTotal',
         calcMethod: 'total'
     },
     {
         name: 'Precipitation',
         data: 'precipitation',
-        input: ['startAndEndDates'],
+        component: 'minMaxTotal',
         calcMethod: 'total'
     },
     {
         name: 'Max Temperature',
         data: 'temperature_2m',
-        input: ['startAndEndDates'],
+        component: 'minMaxTotal',
         calcMethod: 'max'
 
     },
     {
         name: 'Min Temperature',
         data: 'temperature_2m',
-        input: ['startAndEndDates'],
+        component: 'minMaxTotal',
         calcMethod: 'min'
 
     }]

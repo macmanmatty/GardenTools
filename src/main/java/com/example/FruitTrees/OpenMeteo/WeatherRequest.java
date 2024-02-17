@@ -1,47 +1,54 @@
 package com.example.FruitTrees.OpenMeteo;
 
+import com.fasterxml.jackson.annotation.JsonKey;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.util.ArrayList;
 import java.util.List;
 
 public class WeatherRequest {
 
-    private List<String> hourlyDataTypes = new ArrayList<>();
-    private List<String> dailyDataTypes = new ArrayList<>();
+    public List<String> hourlyDataTypes = new ArrayList<>();
+    public List<String> dailyDataTypes = new ArrayList<>();
 
     /**
      * the list of requests for processing  various open meteo datasets
      */
-    private List<HourlyWeatherProcessRequest> hourlyWeatherProcessRequests = new ArrayList<>();
+    public List<HourlyWeatherProcessRequest> hourlyWeatherProcessRequests = new ArrayList<>();
 
     /**
      * the unit of measurement for temperature
      * either Fahrenheit
      * or empty string  for Celsius
      */
-    private String temperatureUnit;
+    public String temperatureUnit="";
     /**
      * the unit of measurement for wind speed
      */
-    private String windSpeedUnit;
+    public String windSpeedUnit="";
     /**
      * the unit of measurement for snow and rain and precipitation (both snow and rain)
      */
-    private String precipitationUnit;
+    public String precipitationUnit="";
     /**
      * the time zone to use EST EDT CST etc.
      */
-    private String timezone;
+    public String timezone="EST";
     /**
-     * the mm-dd-yyyy date to start processing the weather data on
+     * the yyyy-mm-dd date to start processing the weather data on
      */
-    private String startDate;
+    public String startDate;
     /**
-     * the mm-dd-yyyy date to stop processing the weather data on
+     * the yyyy-mm-dd date to stop processing the weather data on
      */
-    private String endDate;
+    public String endDate;
 
-    private String longitude;
-    private String latitude;
+    /**
+     * the locations latitude and longitude
+     *
+     */
+    public String longitude;
+    public String latitude;
 
     public List<String> getHourlyDataTypes() {
         return hourlyDataTypes;

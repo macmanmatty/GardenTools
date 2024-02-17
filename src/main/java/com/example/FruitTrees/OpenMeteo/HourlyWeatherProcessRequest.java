@@ -14,9 +14,6 @@ public class HourlyWeatherProcessRequest {
      */
     private String processorName;
     /**
-     * the mm-dd-yyyy date to stop processing the weather data on
-     */
-    /**
      * the day to start processing weather data on if calculating chill
      * CANNOT be FEB 29 2-29 FEB 29 will  be converted to MAR 1
      */

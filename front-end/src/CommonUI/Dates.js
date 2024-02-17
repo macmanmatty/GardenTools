@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
+import '../Weather/Weather.css'
 
-const StartAndEndDates = ({dateFormat,  setStartDate, setEndDate}) => {
+const StartAndEndDates = ({ startText, endText, dateFormat,  setStartDate, setEndDate}) => {
   const [endDateText, setEndDateText]= useState('');
   const [startDateText, setStartDateText]= useState('');
 
@@ -29,20 +30,20 @@ const StartAndEndDates = ({dateFormat,  setStartDate, setEndDate}) => {
     };
 
   return (
-    <div>
-      <DatePicker
+    <div className='inlineDropdowns'>
+      {startText} <DatePicker
         selected={endDateText}
         onChange={(date) => setPickerStartDate(date)}
         dateFormat={dateFormat}
         isClearable
-        placeholderText="Select a Start date"
+        placeholderText={endText}
       />
-          <DatePicker
+      {endText}  <DatePicker
               selected={startDateText}
               onChange={(date) => setPickerEndDate(date)}
               dateFormat={dateFormat}
               isClearable
-              placeholderText="Select a End date"
+              placeholderText={startText}
             />
     </div>
   );

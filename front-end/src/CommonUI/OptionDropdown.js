@@ -1,7 +1,7 @@
 import  React, { useState } from 'react';
 import optionsArray from "leaflet";
 
-const OptionDropDown = ({ optionsArray, displayParameter,  onSelected, labelText}) => {
+const OptionDropDown = ({defaultText,  optionsArray, displayParameter, value,  onSelected, labelText}) => {
   // State to manage the selected value
   const [selectedOption, setSelectedOption] = useState('')
 
@@ -17,9 +17,9 @@ const OptionDropDown = ({ optionsArray, displayParameter,  onSelected, labelText
       {/* Dropdown/select element */}
       <select value={selectedOption} onChange={handleSelectChange}>
         {/* Default/empty option */}
-        <option value="">Select Weather Data...</option>
+        <option value="">{defaultText}</option>
                {optionsArray.map((option, index) => (
-                 <option key={option[displayParameter]} value={option[displayParameter]}>
+                 <option key={option[displayParameter]} value={option[value]}>
                    {option[displayParameter]}
                  </option>)) }
                    </select>

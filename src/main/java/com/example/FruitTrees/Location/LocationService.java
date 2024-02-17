@@ -1,7 +1,4 @@
 package com.example.FruitTrees.Location;
-import org.apache.logging.log4j.message.AsynchronouslyFormattable;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Sort;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
@@ -11,11 +8,10 @@ import java.util.List;
 
 public class LocationService {
 
-    private final LocationRepository locationRepository;
+    private  LocationRepository locationRepository;
 
-    @Autowired
-    public LocationService(LocationRepository locationRepository) {
-        this.locationRepository = locationRepository;
+    public LocationService() {
+
     }
 
     // Create a new location

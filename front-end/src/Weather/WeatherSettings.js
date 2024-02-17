@@ -34,6 +34,7 @@ const LocationWeather = ({mapLatitude, mapLongitude}) => {
             <OptionDropDown
                 optionsArray={WeatherOptions.temperatureUnits}
                 displayParameter='key'
+                value='key'
                 onSelected={setTempUnits}
                 labelText={'Select A Temperature  Measure Unit:'}
                 id={'tempUnits'}
@@ -42,6 +43,7 @@ const LocationWeather = ({mapLatitude, mapLongitude}) => {
                     <OptionDropDown
                 optionsArray={WeatherOptions.precipitationUnits}
                 displayParameter='key'
+                value='key'
                 onSelected={setPrecipitationUnits}
                 id={'precipitationUnits'}
                 labelText={'Select A Precipitation Measurement  Unit:'}
@@ -49,21 +51,14 @@ const LocationWeather = ({mapLatitude, mapLongitude}) => {
                 <OptionDropDown
                     optionsArray={WeatherOptions.windSpeedUnits}
                     displayParameter='key'
+                    value='key'
                     onSelected={setPrecipitationUnits}
                     id={'windSpeedUnits'}
                     labelText={'Select A Precipitation Measurement  Unit:'}
                 ></OptionDropDown>
 
             </div>
-            <Dates
-                setStartDate={setStartDate}
-                setEndDate={setEndDate}
-                dateFormat={"mm-dd-yyyy"}
-            />
-            <button>
-                Get Weather
-                onClick={getWeather}
-            </button>
+
         </div>
 
     );

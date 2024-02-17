@@ -27,12 +27,12 @@ public class WeatherDataProcessor {
         for(ChillingCalculationMethod chillingCalculationMethod: chillingCalculationMethods) {
             double maxChillingTemp=chillingCalculationMethod.getMaxChillingTemp();
             double minChillingTemp=chillingCalculationMethod.getMinChillingTemp();
-            List<Double> doubles = openMeteoResponse.getHourly().getTemperature2m();
+            List<Double> doubles = openMeteoResponse.hourly.temperature_2m;
             double chillHours=0;
             for (double temp : doubles) {
-                if (temp<=maxChillingTemp && temp>=minChillingTemp){
-                    chillHours++;
-                }
+             if (temp<=maxChillingTemp && temp>=minChillingTemp){
+                   chillHours++;
+               }
             }
             chillingHours.put(chillingCalculationMethod.getName(), chillHours);
         }
@@ -40,7 +40,7 @@ public class WeatherDataProcessor {
     }
     public WeatherResponse processHourlyData(WeatherResponse chillingHoursResponse , WeatherRequest weatherRequest, OpenMeteoResponse openMeteoResponse){
         WeatherResponse weatherResponse= new WeatherResponse();
-        List<String> time=openMeteoResponse.getHourly().getTime();
+        List<String> time=openMeteoResponse.hourly.time;
         List<HourlyWeatherProcessRequest> hourlyWeatherProcessRequests =weatherRequest.getHourlyWeatherProcessRequests();
         for(HourlyWeatherProcessRequest hourlyWeatherProcessRequest : hourlyWeatherProcessRequests){
             WeatherProcessor weatherProcessor=weatherProcessorMap.get(hourlyWeatherProcessRequest.getProcessorName());
@@ -59,12 +59,6 @@ public class WeatherDataProcessor {
 
         return chillingHoursResponse;
 
-    }
-
-
-    public String getDate(String dateAndTime){
-        String [] dates=dateAndTime.split("T");
-        return dates[0];
     }
 
 }

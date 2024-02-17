@@ -10,13 +10,11 @@ import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.logging.Logger;
 
 @Service
 public class OpenMeteoService {
-    @Value("open-meteo.apikey")
-   private  String apiKey;
-
-    @Value("open-meteo.url")
+    @Value("${open-meteo.url}")
    private  String openMeteoUrl;
 
    private  RestTemplate restTemplate = new RestTemplate();
@@ -36,7 +34,7 @@ public class OpenMeteoService {
     }
 
     private OpenMeteoResponse makeRequest(WeatherRequest chillingHoursRequest) throws IOException {
-        String fullUrl="?latitude="+chillingHoursRequest.getLatitude()+
+        String  fullUrl=openMeteoUrl+"?latitude="+chillingHoursRequest.getLatitude()+
                 "&longitude="+chillingHoursRequest.getLongitude()+
                 "&start_date="+chillingHoursRequest.getStartDate()+
                 "&end_date="+chillingHoursRequest.getEndDate();
@@ -44,7 +42,9 @@ public class OpenMeteoService {
                 for(String dataType: hourlyDataTypes) {
                    fullUrl=fullUrl+ "&hourly=" + dataType;
                 }
-               ResponseEntity<OpenMeteoResponse> response=restTemplate.getForEntity(fullUrl, OpenMeteoResponse.class);
+        Logger.getLogger("").info("full url " +fullUrl);
+
+        ResponseEntity<OpenMeteoResponse> response=restTemplate.getForEntity(fullUrl, OpenMeteoResponse.class);
                if(response.getStatusCode()== HttpStatusCode.valueOf(200)) {
                    return response.getBody();
                }
