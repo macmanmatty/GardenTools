@@ -29,7 +29,7 @@ public class MinMaxChillCalculator  extends WeatherProcessor {
         if(minTemp!=null){
             this.maxTemp=maxTemp;
         }
-
+        values.clear();
     }
 
     @Override
@@ -44,7 +44,7 @@ public class MinMaxChillCalculator  extends WeatherProcessor {
                 chillHours++;
             }
         }
-        if(isEndDate(date)){
+        if(isEndDate(date) && counting){
             LocalDateTime localDateTime=LocalDateTime.parse(date);
             addValue(chillHours, localDateTime.getYear());
             chillHours =0;

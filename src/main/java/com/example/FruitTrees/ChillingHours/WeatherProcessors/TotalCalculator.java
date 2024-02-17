@@ -23,7 +23,7 @@ public class TotalCalculator extends WeatherProcessor {
 
     @Override
     public void before() {
-
+        values.clear();
     }
 
     @Override

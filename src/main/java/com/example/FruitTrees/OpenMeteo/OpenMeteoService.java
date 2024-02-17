@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
@@ -42,22 +43,23 @@ public class OpenMeteoService {
     }
 
     private OpenMeteoResponse makeRequest(WeatherRequest weatherRequest) throws IOException {
-        String  fullUrl=openMeteoUrl+"?latitude="+weatherRequest.getLatitude()+
-                "&longitude="+weatherRequest.getLongitude()+
-                "&start_date="+weatherRequest.getStartDate()+
-                "&end_date="+weatherRequest.getEndDate();
-                Set<String> hourlyDataTypes=weatherRequest.getHourlyDataTypes();
-                for(String dataType: hourlyDataTypes) {
-                   fullUrl=fullUrl+ "&hourly=" + dataType;
-                }
-              fullUrl=  addConversionUnits(fullUrl, weatherRequest);
-        Logger.getLogger("").info("full url " +fullUrl);
+        try {
+            String fullUrl = openMeteoUrl + "?latitude=" + weatherRequest.getLatitude() +
+                    "&longitude=" + weatherRequest.getLongitude() +
+                    "&start_date=" + weatherRequest.getStartDate() +
+                    "&end_date=" + weatherRequest.getEndDate();
+            Set<String> hourlyDataTypes = weatherRequest.getHourlyDataTypes();
+            for (String dataType : hourlyDataTypes) {
+                fullUrl = fullUrl + "&hourly=" + dataType;
+            }
+            fullUrl = addConversionUnits(fullUrl, weatherRequest);
+            Logger.getLogger("").info("full url " + fullUrl);
 
-        ResponseEntity<OpenMeteoResponse> response=restTemplate.getForEntity(fullUrl, OpenMeteoResponse.class);
-               if(response.getStatusCode()== HttpStatusCode.valueOf(200)) {
-                   return response.getBody();
-               }
-               throw new IOException("Bad Response From Open Meteo  With following  Request: " +weatherRequest.toString());
+            ResponseEntity<OpenMeteoResponse> response = restTemplate.getForEntity(fullUrl, OpenMeteoResponse.class);
+            return response.getBody();
+        } catch (RestClientException e) {
+            throw new IOException(e);
+        }
     }
 
   public String addConversionUnits(String openMeteoUrl, WeatherRequest weatherRequest){

@@ -15,6 +15,7 @@ public class MaxCalculator extends WeatherProcessor {
 
     @Override
     public void before() {
+        values.clear();
 
     }
 

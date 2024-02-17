@@ -16,6 +16,7 @@ public class MinCalculator extends WeatherProcessor {
 
     @Override
     public void before() {
+        values.clear();
 
     }
 
