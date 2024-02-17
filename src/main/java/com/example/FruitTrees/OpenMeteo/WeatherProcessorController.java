@@ -8,11 +8,11 @@ import org.springframework.web.bind.annotation.*;
 import java.io.IOException;
 
 @RestController
-public class OpenMeteoController {
+public class WeatherProcessorController {
     OpenMeteoService openMeteoService;
 
     @Autowired
-    public OpenMeteoController(OpenMeteoService openMeteoService) {
+    public WeatherProcessorController(OpenMeteoService openMeteoService) {
         this.openMeteoService = openMeteoService;
     }
 

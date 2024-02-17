@@ -35,17 +35,20 @@ public class MinMaxChillCalculator  extends WeatherProcessor {
     @Override
     public void processWeather(Number number, String date) {
         double value=number.doubleValue();
-        boolean inDate=dateInRange(date);
-        if(inDate){
+        if(isStartDate(date)){
             counting=true;
+        }
+
+        if(counting){
             if( value>=minTemp && value<=maxTemp) {
                 chillHours++;
             }
         }
-        if( counting && isEndDate(date)){
+        if(isEndDate(date)){
             LocalDateTime localDateTime=LocalDateTime.parse(date);
-            addValue(chillHours, localDateTime.getYear() );
+            addValue(chillHours, localDateTime.getYear());
             chillHours =0;
+            counting=false;
         }
     }
 

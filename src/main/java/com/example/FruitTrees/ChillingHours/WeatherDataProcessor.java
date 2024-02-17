@@ -38,14 +38,14 @@ public class WeatherDataProcessor {
         }
 
     }
-    public WeatherResponse processHourlyData(WeatherResponse chillingHoursResponse , WeatherRequest weatherRequest, OpenMeteoResponse openMeteoResponse){
+    public WeatherResponse processHourlyData( WeatherRequest weatherRequest, OpenMeteoResponse openMeteoResponse){
         WeatherResponse weatherResponse= new WeatherResponse();
         List<String> time=openMeteoResponse.hourly.time;
         List<HourlyWeatherProcessRequest> hourlyWeatherProcessRequests =weatherRequest.getHourlyWeatherProcessRequests();
         for(HourlyWeatherProcessRequest hourlyWeatherProcessRequest : hourlyWeatherProcessRequests){
             WeatherProcessor weatherProcessor=weatherProcessorMap.get(hourlyWeatherProcessRequest.getProcessorName());
             weatherProcessor.setStartMonthDay(hourlyWeatherProcessRequest.getStartProcessMonth(), hourlyWeatherProcessRequest.getStartProcessDay());
-            weatherProcessor.setEndMonthDay(weatherProcessor.getEndMonth(), weatherProcessor.getEndDay());
+            weatherProcessor.setEndMonthDay(hourlyWeatherProcessRequest.getEndProcessMonth(), hourlyWeatherProcessRequest.getEndProcessDay());
             weatherProcessor.setInputParameters(hourlyWeatherProcessRequest.getInputParameters());
             List<? extends Number> data=DataUtilities.getHourlyData(openMeteoResponse, hourlyWeatherProcessRequest.getHourlyDataType());
             int size=data.size();
@@ -57,7 +57,7 @@ public class WeatherDataProcessor {
            weatherResponse.getResponses().addAll(values);
         }
 
-        return chillingHoursResponse;
+        return weatherResponse;
 
     }
 

@@ -4,12 +4,14 @@ import com.fasterxml.jackson.annotation.JsonKey;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class WeatherRequest {
 
-    public List<String> hourlyDataTypes = new ArrayList<>();
-    public List<String> dailyDataTypes = new ArrayList<>();
+    public Set<String> hourlyDataTypes = new HashSet<>();
+    public Set<String> dailyDataTypes = new HashSet<>();
 
     /**
      * the list of requests for processing  various open meteo datasets
@@ -50,13 +52,10 @@ public class WeatherRequest {
     public String longitude;
     public String latitude;
 
-    public List<String> getHourlyDataTypes() {
+    public Set<String> getHourlyDataTypes() {
         return hourlyDataTypes;
     }
 
-    public void setHourlyDataTypes(List<String> hourlyDataTypes) {
-        this.hourlyDataTypes = hourlyDataTypes;
-    }
 
     public String getStartDate() {
         return startDate;
@@ -91,11 +90,15 @@ public class WeatherRequest {
     }
 
 
-    public List<String> getDailyDataTypes() {
+    public void setHourlyDataTypes(Set<String> hourlyDataTypes) {
+        this.hourlyDataTypes = hourlyDataTypes;
+    }
+
+    public Set<String> getDailyDataTypes() {
         return dailyDataTypes;
     }
 
-    public void setDailyDataTypes(List<String> dailyDataTypes) {
+    public void setDailyDataTypes(Set<String> dailyDataTypes) {
         this.dailyDataTypes = dailyDataTypes;
     }
 

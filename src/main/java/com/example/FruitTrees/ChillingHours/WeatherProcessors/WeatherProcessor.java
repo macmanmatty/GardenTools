@@ -41,30 +41,57 @@ public abstract class WeatherProcessor {
     /**
      * check to see if a date is between  the start
      * and end dates for processing weather
-     * @param date
+     * @param openMeteoDateAndTime the date and time string from the open meteo service
      * @return
      */
-     boolean dateInRange( String date) {
-        LocalDate localDate=LocalDate.parse(date);
-        int dayOfMonth=localDate.getDayOfMonth();
+     boolean dateInRange( String openMeteoDateAndTime) {
+         String parsedDate=openMeteoDateAndTime.split("T")[0];
+        LocalDate localDate=LocalDate.parse(parsedDate);
+        int day=localDate.getDayOfMonth();
         int month=localDate.getMonthValue();
-        if(dayOfMonth>=startDay && month>= month && dayOfMonth<=endDay && month<=endMonth){
-            return true;
-        }
-        return false;
+         if (month > startMonth && month < endMonth) {
+             return true;
+         } else if (month == startMonth && month == endMonth) {
+             // If the month is the same, check if the day is within the range
+             return day >= startDay && day <= endDay;
+         } else if (month == startMonth) {
+             // If the month is the start month, check if the day is greater than or equal to the start day
+             return day >= startDay;
+         } else if (month == endMonth) {
+             // If the month is the end month, check if the day is less than or equal to the end day
+             return day <= endDay;
+         } else {
+             // If the month is neither the start nor end month, it's outside the range
+             return false;
+         }
     }
 
     /**
      * checks to see if  a given date equals the end date
-     * @param date
+     * @param openMeteoDateAndTime the date and time string from the open meteo service
      * @return
      */
-    boolean isEndDate( String date) {
-        LocalDate localDate=LocalDate.parse(date);
+    boolean isEndDate( String openMeteoDateAndTime) {
+        String parsedDate=openMeteoDateAndTime.split("T")[0];
+        LocalDate localDate=LocalDate.parse(parsedDate);
         int dayOfMonth=localDate.getDayOfMonth();
         int month=localDate.getMonthValue();
-        int hour=localDate.atStartOfDay().getHour();
-        if(dayOfMonth<=endDay && month<=endMonth  && hour==23){
+        if(dayOfMonth==endDay && month==endMonth){
+            return true;
+        }
+        return false;
+    }
+    /**
+     * checks to see if  a given date equals the start date
+     * @param openMeteoDateAndTime the date and time string from the open meteo service
+     * @return
+     */
+    boolean isStartDate( String openMeteoDateAndTime) {
+        String parsedDate=openMeteoDateAndTime.split("T")[0];
+        LocalDate localDate=LocalDate.parse(parsedDate);
+        int dayOfMonth=localDate.getDayOfMonth();
+        int month=localDate.getMonthValue();
+        if(dayOfMonth==startDay && month==startMonth){
             return true;
         }
         return false;
@@ -115,8 +142,8 @@ public abstract class WeatherProcessor {
     }
     public void setEndMonthDay(int endMonth, int endDay) {
         int [] dates= dateCheck(endMonth, endDay);
-        this.endMonth =dates[1];
-        this.endDay =dates[0];
+        this.endDay =dates[1];
+        this.endMonth =dates[0];
     }
     public int getStartMonth() {
         return startMonth;
