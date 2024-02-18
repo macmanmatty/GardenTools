@@ -35,7 +35,14 @@ public class HourlyWeatherProcessRequest {
      */
     private int endProcessMonth;
 
-    private List<Double> inputParameters= new ArrayList<>();
+    /**
+     * the input parameters for the weather processor
+     */
+    private List<String> inputParameters= new ArrayList<>();
+    /**
+     *
+     */
+    private   boolean calculateAverage;
 
 
 
@@ -87,11 +94,19 @@ public class HourlyWeatherProcessRequest {
         this.processorName = processorName;
     }
 
-    public List<Double> getInputParameters() {
+    public List<String> getInputParameters() {
         return inputParameters;
     }
 
-    public void setInputParameters(List<Double> inputParameters) {
+    public void setInputParameters(List<String> inputParameters) {
         this.inputParameters = inputParameters;
+    }
+
+    public boolean isCalculateAverage() {
+        return calculateAverage;
+    }
+
+    public void setCalculateAverage(boolean calculateAverage) {
+        this.calculateAverage = calculateAverage;
     }
 }

@@ -15,7 +15,7 @@ public abstract class WeatherProcessor {
     /**
      * the lis of input values used to process the weather
      */
-    List<Double> inputParameters = new ArrayList<>();
+    List<String> inputParameters = new ArrayList<>();
 
    private String dataName;
 
@@ -163,11 +163,11 @@ public abstract class WeatherProcessor {
         this.dataName = dataName;
     }
 
-    public List<Double> getInputParameters() {
+    public List<String> getInputParameters() {
         return inputParameters;
     }
 
-    public void setInputParameters(List<Double> inputParameters) {
+    public void setInputParameters(List<String> inputParameters) {
         this.inputParameters = inputParameters;
     }
 }

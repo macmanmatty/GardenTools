@@ -6,9 +6,9 @@ import java.time.LocalDateTime;
 
 @Component("Min")
 
-public class MinCalculator extends WeatherProcessor {
+public class MinCalculator extends ProcessWeatherBetweenDates {
     private double finalValue =Double.MAX_VALUE;
-    boolean counting;
+
 
     public MinCalculator() {
         super("Min");
@@ -21,20 +21,23 @@ public class MinCalculator extends WeatherProcessor {
     }
 
     @Override
-    public void processWeather(Number number, String date) {
-        double value=number.doubleValue();
-        if(dateInRange(date)) {
-            if (value < finalValue) {
-                finalValue=value;
-                counting=true;
-            }
-        }
-        if( counting && isEndDate(date)){
+    protected void onStartDate(String date) {
+
+    }
+
+    @Override
+    protected void onEndDate(String date) {
             LocalDateTime localDateTime=LocalDateTime.parse(date);
             addValue(finalValue, localDateTime.getYear() );
             finalValue =Double.MAX_VALUE;
         }
+
+    @Override
+    void processWeatherBetween(Number data, String date) {
+        double value=data.doubleValue();
+        if (value < finalValue) {
+            finalValue = value;
+        }
+
     }
-
-
 }
