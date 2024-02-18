@@ -1,39 +1,30 @@
 package com.example.FruitTrees.ChillingHours.WeatherProcessors;
-
 import org.springframework.stereotype.Component;
-
 import java.time.LocalDateTime;
 @Component("Max")
-
-public class MaxCalculator extends WeatherProcessor {
+public class MaxCalculator extends ProcessWeatherBetweenDates {
     private double finalValue =Double.MIN_VALUE;
-    private boolean counting;
-
     public MaxCalculator() {
         super("Max");
     }
-
     @Override
     public void before() {
         values.clear();
-
     }
-
     @Override
-    public void processWeather(Number number, String date) {
-        double value=number.doubleValue();
-        if(dateInRange(date)) {
-            if (value > finalValue) {
-                counting=true;
-                finalValue = value;
-            }
-        }
-        if( counting && isEndDate(date)){
+    protected void onStartDate(String date) {
+    }
+    @Override
+    protected void onEndDate(String date) {
             LocalDateTime localDateTime=LocalDateTime.parse(date);
             addValue(finalValue, localDateTime.getYear() );
             finalValue =Double.MIN_VALUE;
         }
+    @Override
+    void processWeatherBetween(Number data, String date) {
+        double value=data.doubleValue();
+        if (value > finalValue) {
+            finalValue = value;
+        }
     }
-
-
 }

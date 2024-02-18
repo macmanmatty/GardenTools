@@ -2,8 +2,6 @@ package com.example.FruitTrees.Location;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-
 @Service
 
 public class LocationService {
@@ -18,14 +16,14 @@ public class LocationService {
     @Async
     public LocationDTO createLocation(LocationDTO locationDTO) {
         // Convert LocationDTO to entity if needed
-        LocationEntity locationEntity = mapDTOToEntity(locationDTO);
+        Location locationEntity = mapDTOToEntity(locationDTO);
 
 
         // Perform any additional business logic if necessary
         // ...
 
         // Save the entity
-        LocationEntity savedEntity = locationRepository.save(locationEntity);
+        Location savedEntity = locationRepository.save(locationEntity);
 
         // Convert the saved entity back to DTO and return
         return mapEntityToDTO(savedEntity);
@@ -34,7 +32,7 @@ public class LocationService {
     // Retrieve a location by ID
     public LocationDTO getLocationById(Long id) throws EntityNotFoundException {
         // Retrieve the entity from the repository
-        LocationEntity locationEntity = locationRepository.findById(id)
+        Location locationEntity = locationRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Location not found with id: " + id));
 
         // Convert the entity to DTO and return
@@ -44,7 +42,7 @@ public class LocationService {
     // Update a location by ID
     public LocationDTO updateLocation(Long id, LocationDTO locationDTO) throws EntityNotFoundException {
         // Check if the location with the given ID exists
-        LocationEntity existingEntity = locationRepository.findById(id)
+        Location existingEntity = locationRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Location not found with id: " + id));
 
         // Update the entity with the new data from the DTO
@@ -56,7 +54,7 @@ public class LocationService {
         // ...
 
         // Save the updated entity
-        LocationEntity updatedEntity = locationRepository.save(existingEntity);
+        Location updatedEntity = locationRepository.save(existingEntity);
 
         // Convert the updated entity to DTO and return
         return mapEntityToDTO(updatedEntity);
@@ -65,7 +63,7 @@ public class LocationService {
     // Delete a location by ID
     public void deleteLocation(long id) throws EntityNotFoundException {
         // Check if the location with the given ID exists
-        LocationEntity existingEntity = locationRepository.findById(id)
+        Location existingEntity = locationRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Location not found with id: " + id));
 
         // Perform any additional business logic if necessary
@@ -76,8 +74,8 @@ public class LocationService {
     }
 
     // Helper method to convert LocationDTO to LocationEntity
-    private LocationEntity mapDTOToEntity(LocationDTO locationDTO) {
-       LocationEntity locationEntity=new LocationEntity();
+    private Location mapDTOToEntity(LocationDTO locationDTO) {
+       Location locationEntity=new Location();
        locationEntity.setLatitude(locationDTO.getLatitude());
         locationEntity.setLongitude(locationDTO.getLongitude());
         locationEntity.setName(locationDTO.getName());
@@ -86,7 +84,7 @@ public class LocationService {
     }
 
     // Helper method to convert LocationEntity to LocationDTO
-    private LocationDTO mapEntityToDTO(LocationEntity locationEntity) {
+    private LocationDTO mapEntityToDTO(Location locationEntity) {
         LocationDTO locationDTO=new LocationDTO();
         locationDTO.setLatitude(locationEntity.getLatitude());
         locationDTO.setLongitude(locationEntity.getLongitude());

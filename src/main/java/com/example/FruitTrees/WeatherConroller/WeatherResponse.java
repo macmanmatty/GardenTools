@@ -1,9 +1,9 @@
-package com.example.FruitTrees.OpenMeteo;
-
-import com.example.FruitTrees.ChillingHours.YearlyWeather;
+package com.example.FruitTrees.WeatherConroller;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class WeatherResponse {
   public List<String> responses = new ArrayList<>();
@@ -15,4 +15,5 @@ public class WeatherResponse {
     public void setResponses(List<String> responses) {
         this.responses = responses;
     }
+
 }

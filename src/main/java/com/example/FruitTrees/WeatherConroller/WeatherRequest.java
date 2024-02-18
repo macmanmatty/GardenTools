@@ -1,7 +1,6 @@
-package com.example.FruitTrees.OpenMeteo;
+package com.example.FruitTrees.WeatherConroller;
 
-import com.fasterxml.jackson.annotation.JsonKey;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.example.FruitTrees.Location.Location;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -10,7 +9,13 @@ import java.util.Set;
 
 public class WeatherRequest {
 
+    /**
+     * the hourly data types to retrieve from  the open meteo  API
+     */
     public Set<String> hourlyDataTypes = new HashSet<>();
+    /**
+     * the daily data types to retrieve from  the open meteo  API
+     */
     public Set<String> dailyDataTypes = new HashSet<>();
 
     /**
@@ -51,6 +56,8 @@ public class WeatherRequest {
      */
     public String longitude;
     public String latitude;
+
+    public List<Location> locations= new ArrayList<>();
 
     public Set<String> getHourlyDataTypes() {
         return hourlyDataTypes;
@@ -140,6 +147,14 @@ public class WeatherRequest {
 
     public void setHourlyWeatherProcessRequests(List<HourlyWeatherProcessRequest> hourlyWeatherProcessRequests) {
         this.hourlyWeatherProcessRequests = hourlyWeatherProcessRequests;
+    }
+
+    public List<Location> getLocations() {
+        return locations;
+    }
+
+    public void setLocations(List<Location> locations) {
+        this.locations = locations;
     }
 }
 
