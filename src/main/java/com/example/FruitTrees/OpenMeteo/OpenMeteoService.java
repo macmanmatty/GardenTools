@@ -24,7 +24,8 @@ public class OpenMeteoService {
    private  String openMeteoUrl;
     @Value("${enable.Multiple.Location.Processing}")
     private  boolean processMultipleLocationRequestsEnabled;
-
+    @Value("${max.Multiple.OpenMeteo.Requests}")
+    private  int maxMultipleOpenMeteoRequests;
    private  RestTemplate restTemplate = new RestTemplate();
 
    private WeatherDataProcessor weatherDataProcessor;
@@ -79,12 +80,16 @@ public class OpenMeteoService {
     }
 
     private void locationCheck(List<Location> locations) {
-        if (locations.size()==0){
+        int size=locations.size();
+        if (size==0){
             throw new BadRequestException("No Locations Specified");
         }
-        if(locations.size()>1 && !processMultipleLocationRequestsEnabled){
+        if(size>1 && !processMultipleLocationRequestsEnabled){
             throw new BadRequestException("You may only process one location at time currently");
 
+        }
+        else if(size>maxMultipleOpenMeteoRequests){
+            throw new BadRequestException("You may only process "+maxMultipleOpenMeteoRequests+ " locations at time currently");
         }
     }
 
