@@ -1,5 +1,6 @@
-package com.example.FruitTrees.OpenMeteo;
+package com.example.FruitTrees.WeatherConroller;
 
+import com.example.FruitTrees.OpenMeteo.OpenMeteoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,13 +18,13 @@ public class WeatherProcessorController {
     }
 
     @PostMapping(value = "/weatherInfo", consumes = {"application/json"})
-    public ResponseEntity<WeatherResponse> getWeather( @RequestBody  WeatherRequest weatherRequest) {
+    public ResponseEntity<Object> getWeather( @RequestBody  WeatherRequest weatherRequest) {
         try {
          WeatherResponse weatherResponse=   openMeteoService.getData(weatherRequest);
             return  new ResponseEntity<>(weatherResponse, HttpStatus.OK);
 
         } catch (IOException e) {
-            return  new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+            return  new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
 
     }

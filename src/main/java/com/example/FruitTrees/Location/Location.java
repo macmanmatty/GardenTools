@@ -1,6 +1,6 @@
 package com.example.FruitTrees.Location;
 
-public class LocationEntity {
+public class Location {
     long id;
     String name;
     String latitude;

@@ -4,20 +4,53 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * abstract class for implementing a weather processor
+ */
 public abstract class WeatherProcessor {
+    /**
+     *  the parameters used in processing the data
+     */
     ArrayList<String> values=new ArrayList<>();
+    /**
+     * the day to start processing weather
+     */
     int startDay=1;
-     int  endDay=31;
-    int startMonth =1;
-    int  endMonth=12;
-   private final  String name;
 
     /**
-     * the lis of input values used to process the weather
+     * the day to end processing weather
+     */
+    int  endDay=31;
+    /**
+     * the month to stat processing weather
+     */
+    int startMonth =1;
+    /**
+     * the month to end processing weather
+     */
+    int  endMonth=12;
+    /**
+     * the name of the processor MUST be the same as the spring  component name;
+     *
+     */
+   private final  String name;
+    /**
+     * the type of open meteo data the processor is currently processing
+     */
+
+   private String dataType="";
+    /**
+     * the current of measurement for the data being processed
+     */
+
+    private String dataUnit="";
+
+
+    /**
+     * the list of input values used to process the weather
      */
     List<String> inputParameters = new ArrayList<>();
 
-   private String dataName;
 
     public WeatherProcessor(String name) {
         this.name = name;
@@ -97,7 +130,7 @@ public abstract class WeatherProcessor {
         return false;
     }
     public void addValue(double value, int year){
-        values.add(name+" for "+year+" from: "+ startMonth +"/"+startDay+" to "+endMonth+"/" +endDay+ ": "+ value);
+        values.add(name+" for "+dataType+" "+year+" from: "+ startMonth +"/"+startDay+" to "+endMonth+"/" +endDay+ ": "+ value);
     }
 
     /**
@@ -155,13 +188,6 @@ public abstract class WeatherProcessor {
         return name;
     }
 
-    public String getDataName() {
-        return dataName;
-    }
-
-    public void setDataName(String dataName) {
-        this.dataName = dataName;
-    }
 
     public List<String> getInputParameters() {
         return inputParameters;
@@ -169,5 +195,21 @@ public abstract class WeatherProcessor {
 
     public void setInputParameters(List<String> inputParameters) {
         this.inputParameters = inputParameters;
+    }
+
+    public String getDataType() {
+        return dataType;
+    }
+
+    public void setDataType(String dataType) {
+        this.dataType = dataType;
+    }
+
+    public String getDataUnit() {
+        return dataUnit;
+    }
+
+    public void setDataUnit(String dataUnit) {
+        this.dataUnit = dataUnit;
     }
 }

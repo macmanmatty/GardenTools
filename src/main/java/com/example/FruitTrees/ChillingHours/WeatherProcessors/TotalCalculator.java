@@ -7,16 +7,16 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-
+/**
+ *  A weather processor that calculates the total amount of some
+ * weather type usually rain fall or snow during given dates
+ */
 @Component("Total")
-public class TotalCalculator extends WeatherProcessor {
+public class TotalCalculator extends ProcessWeatherBetweenDates{
+    /**
+     * the total amount of weather
+     */
     private double total;
-    private double maxTemp;
-    private double minTemp;
-    private boolean inDate;
-
-    private boolean counting;
-
     public TotalCalculator() {
         super("Total");
     }
@@ -26,19 +26,24 @@ public class TotalCalculator extends WeatherProcessor {
         values.clear();
     }
 
-    @Override
-    public void processWeather(Number  number, String date) {
-        double value=number.doubleValue();
-        if (inDate) {
-            this.total = this.total + value;
-            counting=true;
-        }
-            if( counting && isEndDate(date)){
-                LocalDateTime localDateTime=LocalDateTime.parse(date);
-                addValue(total, localDateTime.getYear() );
-                total =0;
 
-        }
+    @Override
+    protected void onStartDate(String date) {
+
+    }
+
+    @Override
+    protected void onEndDate(String date) {
+        LocalDateTime localDateTime=LocalDateTime.parse(date);
+        addValue(total, localDateTime.getYear() );
+        total =0;
+    }
+
+    @Override
+    void processWeatherBetween(Number data, String date) {
+        double value=data.doubleValue();
+        this.total = this.total + value;
+
     }
 
 }

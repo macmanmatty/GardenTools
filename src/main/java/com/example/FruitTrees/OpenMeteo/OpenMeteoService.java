@@ -1,9 +1,13 @@
 package com.example.FruitTrees.OpenMeteo;
 
 import com.example.FruitTrees.ChillingHours.WeatherDataProcessor;
+import com.example.FruitTrees.Location.Location;
+import com.example.FruitTrees.WeatherConroller.BadRequestException;
+import com.example.FruitTrees.WeatherConroller.HourlyWeatherProcessRequest;
+import com.example.FruitTrees.WeatherConroller.WeatherRequest;
+import com.example.FruitTrees.WeatherConroller.WeatherResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
@@ -18,6 +22,8 @@ import java.util.logging.Logger;
 public class OpenMeteoService {
     @Value("${open-meteo.url}")
    private  String openMeteoUrl;
+    @Value("${enable.Multiple.Location.Processing}")
+    private  boolean processMultipleLocationRequestsEnabled;
 
    private  RestTemplate restTemplate = new RestTemplate();
 
@@ -30,8 +36,8 @@ public class OpenMeteoService {
 
     public WeatherResponse getData(WeatherRequest weatherRequest ) throws IOException {
         extractAdditionalDataTypes(weatherRequest);
-        OpenMeteoResponse openMeteoResponse=makeRequest(weatherRequest);
-      WeatherResponse  response= weatherDataProcessor.processHourlyData( weatherRequest, openMeteoResponse);
+        OpenMeteoLocationResponses openMeteoResponses=makeRequest(weatherRequest);
+      WeatherResponse  response= weatherDataProcessor.processHourlyData( weatherRequest, openMeteoResponses);
         return  response;
     }
 
@@ -42,27 +48,47 @@ public class OpenMeteoService {
         }
     }
 
-    private OpenMeteoResponse makeRequest(WeatherRequest weatherRequest) throws IOException {
-        try {
-            String fullUrl = openMeteoUrl + "?latitude=" + weatherRequest.getLatitude() +
-                    "&longitude=" + weatherRequest.getLongitude() +
-                    "&start_date=" + weatherRequest.getStartDate() +
-                    "&end_date=" + weatherRequest.getEndDate();
-            Set<String> hourlyDataTypes = weatherRequest.getHourlyDataTypes();
-            for (String dataType : hourlyDataTypes) {
-                fullUrl = fullUrl + "&hourly=" + dataType;
-            }
-            fullUrl = addConversionUnits(fullUrl, weatherRequest);
-            Logger.getLogger("").info("full url " + fullUrl);
+    private OpenMeteoLocationResponses makeRequest(WeatherRequest weatherRequest) throws IOException {
+      OpenMeteoLocationResponses openMeteoResponses=  new OpenMeteoLocationResponses();
+      List<Location> locations=weatherRequest.getLocations();
+      locationCheck(locations);
+      for (Location location: locations) {
+          try {
+              String fullUrl = openMeteoUrl + "?latitude=" + location.getLatitude() +
+                      "&longitude=" + location.getLongitude() +
+                      "&start_date=" + weatherRequest.getStartDate() +
+                      "&end_date=" + weatherRequest.getEndDate();
+              Set<String> hourlyDataTypes = weatherRequest.getHourlyDataTypes();
+              for (String dataType : hourlyDataTypes) {
+                  fullUrl = fullUrl + "&hourly=" + dataType;
+              }
+              fullUrl = addConversionUnits(fullUrl, weatherRequest);
+              Logger.getLogger("").info("full url " + fullUrl);
 
-            ResponseEntity<OpenMeteoResponse> response = restTemplate.getForEntity(fullUrl, OpenMeteoResponse.class);
-            return response.getBody();
-        } catch (RestClientException e) {
-            throw new IOException(e);
+              ResponseEntity<OpenMeteoResponse> response = restTemplate.getForEntity(fullUrl, OpenMeteoResponse.class);
+              LocationResponse locationResponse=new LocationResponse();
+              locationResponse.setOpenMeteoResponse(response.getBody());
+              locationResponse.setLocation(location);
+               openMeteoResponses.getLocationResponses().add(locationResponse);
+          } catch (RestClientException e) {
+              throw new IOException(e);
+          }
+      }
+
+      return  openMeteoResponses;
+    }
+
+    private void locationCheck(List<Location> locations) {
+        if (locations.size()==0){
+            throw new BadRequestException("No Locations Specified");
+        }
+        if(locations.size()>1 && !processMultipleLocationRequestsEnabled){
+            throw new BadRequestException("You may only process one location at time currently");
+
         }
     }
 
-  public String addConversionUnits(String openMeteoUrl, WeatherRequest weatherRequest){
+    public String addConversionUnits(String openMeteoUrl, WeatherRequest weatherRequest){
         String temperatureUnit=weatherRequest.getTemperatureUnit();
         String windSpeedUnit=weatherRequest.getWindSpeedUnit();
         String precipitationUnit=weatherRequest.getPrecipitationUnit();

@@ -1,4 +1,4 @@
-package com.example.FruitTrees.OpenMeteo;
+package com.example.FruitTrees.WeatherConroller;
 
 import java.util.ArrayList;
 import java.util.List;
