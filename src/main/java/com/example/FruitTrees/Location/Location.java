@@ -1,5 +1,7 @@
 package com.example.FruitTrees.Location;
 
+import java.math.BigDecimal;
+
 public class Location {
     long id;
     String name;

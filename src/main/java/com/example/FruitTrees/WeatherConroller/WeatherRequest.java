@@ -50,12 +50,6 @@ public class WeatherRequest {
      */
     public String endDate;
 
-    /**
-     * the locations latitude and longitude
-     *
-     */
-    public String longitude;
-    public String latitude;
 
     public List<Location> locations= new ArrayList<>();
 
@@ -80,21 +74,6 @@ public class WeatherRequest {
         this.endDate = endDate;
     }
 
-    public String getLongitude() {
-        return longitude;
-    }
-
-    public void setLongitude(String longitude) {
-        this.longitude = longitude;
-    }
-
-    public String getLatitude() {
-        return latitude;
-    }
-
-    public void setLatitude(String latitude) {
-        this.latitude = latitude;
-    }
 
 
     public void setHourlyDataTypes(Set<String> hourlyDataTypes) {
