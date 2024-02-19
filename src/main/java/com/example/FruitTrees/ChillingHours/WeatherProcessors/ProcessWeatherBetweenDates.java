@@ -23,7 +23,7 @@ public abstract  class ProcessWeatherBetweenDates  extends WeatherProcessor {
      */
     @Override
     public final  void processWeather(Number value, String date) {
-            if(isStartDate(date)){
+            if(isStartDateTime(date)){
                 processing =true;
                 onStartDate(date);
             }
@@ -31,7 +31,7 @@ public abstract  class ProcessWeatherBetweenDates  extends WeatherProcessor {
                 processWeatherBetween(value, date);
               
             }
-            if(isEndDate(date) && processing){
+            if(isEndDateTime(date) && processing){
                 processing =false;
                 onEndDate(date);
             }

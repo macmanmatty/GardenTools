@@ -1,55 +1,56 @@
 package com.example.FruitTrees.ChillingHours.WeatherProcessors;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * abstract class for implementing a weather processor
+ *a base  abstract class for implementing a weather processor
  */
 public abstract class WeatherProcessor {
     /**
      *  the parameters used in processing the data
      */
-    ArrayList<String> values=new ArrayList<>();
+    protected ArrayList<String> values=new ArrayList<>();
     /**
      * the day to start processing weather
      */
-    int startDay=1;
+   protected  int startDay=1;
 
     /**
      * the day to end processing weather
      */
-    int  endDay=31;
+   protected int  endDay=31;
     /**
      * the month to stat processing weather
      */
-    int startMonth =1;
+   protected  int startMonth =1;
     /**
      * the month to end processing weather
      */
-    int  endMonth=12;
+   protected  int  endMonth=12;
     /**
-     * the name of the processor MUST be the same as the spring  component name;
+     * the name of the processor can be different
+     * from the same as the spring  component name;
      *
      */
-   private final  String name;
+   protected final  String name;
     /**
      * the type of open meteo data the processor is currently processing
      */
 
-   private String dataType="";
+  protected String dataType="";
     /**
      * the current of measurement for the data being processed
      */
-
-    private String dataUnit="";
+    protected String dataUnit="";
 
 
     /**
      * the list of input values used to process the weather
      */
-    List<String> inputParameters = new ArrayList<>();
+   protected  List<String> inputParameters = new ArrayList<>();
 
 
     public WeatherProcessor(String name) {
@@ -104,12 +105,12 @@ public abstract class WeatherProcessor {
      * @param openMeteoDateAndTime the date and time string from the open meteo service
      * @return
      */
-    boolean isEndDate( String openMeteoDateAndTime) {
-        String parsedDate=openMeteoDateAndTime.split("T")[0];
-        LocalDate localDate=LocalDate.parse(parsedDate);
+    boolean isEndDateTime(String openMeteoDateAndTime) {
+        LocalDateTime localDate=LocalDateTime.parse(openMeteoDateAndTime);
         int dayOfMonth=localDate.getDayOfMonth();
         int month=localDate.getMonthValue();
-        if(dayOfMonth==endDay && month==endMonth){
+        int hour=localDate.getHour();
+        if(dayOfMonth==endDay && month==endMonth && hour==23){
             return true;
         }
         return false;
@@ -119,12 +120,12 @@ public abstract class WeatherProcessor {
      * @param openMeteoDateAndTime the date and time string from the open meteo service
      * @return
      */
-    boolean isStartDate( String openMeteoDateAndTime) {
-        String parsedDate=openMeteoDateAndTime.split("T")[0];
-        LocalDate localDate=LocalDate.parse(parsedDate);
+    boolean isStartDateTime(String openMeteoDateAndTime) {
+        LocalDateTime localDate=LocalDateTime.parse(openMeteoDateAndTime);
         int dayOfMonth=localDate.getDayOfMonth();
         int month=localDate.getMonthValue();
-        if(dayOfMonth==startDay && month==startMonth){
+        int hour=localDate.getHour();
+        if(dayOfMonth==startDay && month==startMonth && hour==0){
             return true;
         }
         return false;
