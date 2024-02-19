@@ -1,4 +1,6 @@
-package com.example.FruitTrees.ChillingHours.WeatherProcessors;
+package com.example.FruitTrees.ChillingHours.WeatherProcessors.Monthly;
+import com.example.FruitTrees.ChillingHours.WeatherProcessors.WeatherProcessor;
+
 import java.time.LocalDateTime;
 /**
  * class for weather data processor that processes monthly weather
