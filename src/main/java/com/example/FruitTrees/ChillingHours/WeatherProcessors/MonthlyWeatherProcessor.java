@@ -9,7 +9,6 @@ public abstract  class MonthlyWeatherProcessor extends WeatherProcessor {
      *  this is true if  the weather falls between the given dates
      *  and the weather data is currently processing
      */
-    private boolean processing;
     public MonthlyWeatherProcessor(String name) {
         super(name);
     }
