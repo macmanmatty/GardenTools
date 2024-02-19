@@ -50,6 +50,7 @@ public class WeatherDataProcessor {
                 weatherProcessor.setEndMonthDay(hourlyWeatherProcessRequest.getEndProcessMonth(), hourlyWeatherProcessRequest.getEndProcessDay());
                 weatherProcessor.setInputParameters(hourlyWeatherProcessRequest.getInputParameters());
                 weatherProcessor.setDataType(hourlyWeatherProcessRequest.getHourlyDataType());
+                weatherProcessor.setWeatherResponse(weatherResponse);
                 List<? extends Number> data = DataUtilities.getHourlyData(openMeteoResponse, hourlyWeatherProcessRequest.getHourlyDataType());
                 int size = data.size();
                 weatherProcessor.before();

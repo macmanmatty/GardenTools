@@ -1,5 +1,7 @@
 package com.example.FruitTrees.ChillingHours.WeatherProcessors;
 
+import com.example.FruitTrees.WeatherConroller.WeatherResponse;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -52,6 +54,10 @@ public abstract class WeatherProcessor {
      */
    protected  List<String> inputParameters = new ArrayList<>();
 
+    /**
+     * the weather response object for adding data
+     */
+    protected WeatherResponse weatherResponse;
 
     public WeatherProcessor(String name) {
         this.name = name;
@@ -207,5 +213,13 @@ public abstract class WeatherProcessor {
 
     public void setDataUnit(String dataUnit) {
         this.dataUnit = dataUnit;
+    }
+
+    public WeatherResponse getWeatherResponse() {
+        return weatherResponse;
+    }
+
+    public void setWeatherResponse(WeatherResponse weatherResponse) {
+        this.weatherResponse = weatherResponse;
     }
 }

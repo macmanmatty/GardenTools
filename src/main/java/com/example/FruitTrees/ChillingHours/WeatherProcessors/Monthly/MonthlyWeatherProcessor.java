@@ -26,13 +26,13 @@ public abstract  class MonthlyWeatherProcessor extends WeatherProcessor {
      */
     @Override
     public final  void processWeather(Number value, String date) {
-                if(isFirstDay(date)){
-                    onStartNewMonth(value, date);
-                }
-                processWeatherBetween(value, date);
-                if(isLastDay(date)){
-              onMonthEnd(value, date);
-                }
+        if(isFirstDay(date)){
+            onStartNewMonth(value, date);
+        }
+        processWeatherBetween(value, date);
+        if(isLastDay(date)){
+            onMonthEnd(value, date);
+        }
         }
     public void addValue(double value, int year, String month){
         values.add(name+" for "+dataType+" " +month+" "+year+  " : "+ value);
@@ -58,6 +58,13 @@ public abstract  class MonthlyWeatherProcessor extends WeatherProcessor {
      * @param  data the value of the weather data at the current date and time
      */
     abstract void processWeatherBetween(Number data, String date);
+
+    /**
+     * checks to see if date / time is  the 0 hour of the first day of the month
+     * @param openMeteoDateAndTime the current date and time being processed
+     * @return true if the day / time is the 0 hour of the first day of the month
+     * otherwise returns false
+     */
     boolean isLastDay(String openMeteoDateAndTime) {
         LocalDateTime localDate=LocalDateTime.parse(openMeteoDateAndTime);
         int maxDayOfMonth = localDate.toLocalDate().lengthOfMonth();
@@ -68,6 +75,12 @@ public abstract  class MonthlyWeatherProcessor extends WeatherProcessor {
         }
         return false;
     }
+    /**
+     * checks to see if date / time is  the 23 hour of the last day of the month
+     * @param openMeteoDateAndTime the current date and time being processed
+     * @return true if the day / time is the last  hour of the last day of the month
+     * otherwise returns false
+     */
     boolean isFirstDay(String openMeteoDateAndTime) {
         LocalDateTime localDate=LocalDateTime.parse(openMeteoDateAndTime);
         int dayOfMonth=localDate.getDayOfMonth();
