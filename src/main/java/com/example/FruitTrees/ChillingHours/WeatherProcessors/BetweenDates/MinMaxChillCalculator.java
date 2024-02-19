@@ -8,7 +8,6 @@ import java.time.LocalDateTime;
  * from 11/1 to 3/31
  */
 @Component("MinMaxChill")
-
 public class MinMaxChillCalculator  extends ProcessWeatherBetweenDates {
     /**
      * the counted hours

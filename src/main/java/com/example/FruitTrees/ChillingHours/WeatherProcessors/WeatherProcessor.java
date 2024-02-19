@@ -66,11 +66,6 @@ public abstract class WeatherProcessor {
      * @param date the date and time the value happened
      */
     public abstract void processWeather(Number value, String date);
-    public static String  [] getYearMonthAndDay(String date){
-        String [] dateAndTime=date.split(":");
-        String [] yearMonthAndDay=dateAndTime[0].split("-");
-       return yearMonthAndDay;
-    }
 
     /**
      * check to see if a date is between  the start
@@ -105,7 +100,7 @@ public abstract class WeatherProcessor {
      * @param openMeteoDateAndTime the date and time string from the open meteo service
      * @return
      */
-    boolean isEndDateTime(String openMeteoDateAndTime) {
+    public boolean isEndDateTime(String openMeteoDateAndTime) {
         LocalDateTime localDate=LocalDateTime.parse(openMeteoDateAndTime);
         int dayOfMonth=localDate.getDayOfMonth();
         int month=localDate.getMonthValue();
@@ -120,7 +115,7 @@ public abstract class WeatherProcessor {
      * @param openMeteoDateAndTime the date and time string from the open meteo service
      * @return
      */
-    boolean isStartDateTime(String openMeteoDateAndTime) {
+    public boolean isStartDateTime(String openMeteoDateAndTime) {
         LocalDateTime localDate=LocalDateTime.parse(openMeteoDateAndTime);
         int dayOfMonth=localDate.getDayOfMonth();
         int month=localDate.getMonthValue();
