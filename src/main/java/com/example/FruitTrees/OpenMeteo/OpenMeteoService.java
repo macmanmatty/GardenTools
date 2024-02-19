@@ -7,6 +7,7 @@ import com.example.FruitTrees.WeatherConroller.WeatherRequest;
 import com.example.FruitTrees.WeatherConroller.WeatherResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -29,8 +30,12 @@ public class OpenMeteoService {
     private  int maxMultipleOpenMeteoRequests;
    private final  RestTemplate restTemplate = new RestTemplate();
    private  final WeatherDataProcessor weatherDataProcessor;
-    public OpenMeteoService( @Autowired  WeatherDataProcessor weatherDataProcessor) {
+
+    private final  CacheManager cacheManager;
+
+    public OpenMeteoService( @Autowired  WeatherDataProcessor weatherDataProcessor,  @Autowired  CacheManager cacheManager) {
         this.weatherDataProcessor = weatherDataProcessor;
+        this.cacheManager=cacheManager;
     }
     public WeatherResponse getData(WeatherRequest weatherRequest ) throws IOException {
         extractAdditionalDataTypes(weatherRequest);
@@ -46,9 +51,8 @@ public class OpenMeteoService {
     }
 
     /**
-     * call the open-meteo service to get the data for specified location(s)
+     * calls the open-meteo service to get the data for  each of specified location(s)
      * in the weather request one open-meteo request is required per location
-     *
      * @param weatherRequest the weather request objcet
      * @return
      * @throws IOException
@@ -68,8 +72,17 @@ public class OpenMeteoService {
       return  openMeteoResponses;
     }
 
-
-    @Cacheable("weather")
+    /**
+     * calls the open-meteo service to get the data for specified location(s)
+     * in the weather request one open-meteo request is required per location
+     * @param weatherRequest the weather request object
+     * @return The LocationResponse containing the  OpenMeteoResponse and the Location Object
+     * @throws IOException
+     */
+    @Cacheable(value = "weatherDataCache", key = "#location.latitude + ':' " +
+            "+ #location.longitude + ':' + #weatherRequest.hourlyDataTypes + ':'" +
+            " + #weatherRequest.startDate + ':' " +
+            "+ #weatherRequest.endDate")
     public LocationResponse makeLocationRequest( Location location, WeatherRequest weatherRequest){
         String fullUrl = openMeteoUrl + "?latitude=" + location.getLatitude() +
                 "&longitude=" + location.getLongitude() +
@@ -108,7 +121,7 @@ public class OpenMeteoService {
     }
 
     /**
-     * additional params to the url to specify the units
+     *  adds additional params to the url to specify the units
      * you wish to have data sent back in Fahrenheit, Celsius, Inches , Meters Etc.
      * @param openMeteoUrl the request url for open meteo
      * @param weatherRequest the weather request object
