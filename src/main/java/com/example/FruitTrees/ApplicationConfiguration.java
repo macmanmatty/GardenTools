@@ -10,6 +10,7 @@ public class ApplicationConfiguration {
 
     @Bean
     public CacheManager cacheManager() {
-        return new ConcurrentMapCacheManager("weatherDataCache");
+        return
+       new ConcurrentMapCacheManager("weatherDataCache");
     }
 }

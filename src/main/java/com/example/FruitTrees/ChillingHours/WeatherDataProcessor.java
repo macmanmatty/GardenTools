@@ -1,5 +1,4 @@
 package com.example.FruitTrees.ChillingHours;
-
 import com.example.FruitTrees.ChillingHours.WeatherProcessors.WeatherProcessor;
 import com.example.FruitTrees.Location.Location;
 import com.example.FruitTrees.OpenMeteo.LocationResponse;
@@ -10,18 +9,13 @@ import com.example.FruitTrees.WeatherConroller.WeatherRequest;
 import com.example.FruitTrees.WeatherConroller.WeatherResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
 import java.util.*;
-
 @Component
 public class WeatherDataProcessor {
-
     Map<String, WeatherProcessor> weatherProcessorMap;
-
     public WeatherDataProcessor( @Autowired  Map<String, WeatherProcessor> weatherProcessorMap) {
         this.weatherProcessorMap = weatherProcessorMap;
     }
-
     public void calculateChillingHours(WeatherResponse chillingHoursResponse , WeatherRequest chillingHoursRequest, OpenMeteoResponse openMeteoResponse){
         Map< String,   Double> chillingHours=new HashMap<>();
         List<ChillingCalculationMethod>  chillingCalculationMethods=new ArrayList<>();
@@ -37,7 +31,6 @@ public class WeatherDataProcessor {
             }
             chillingHours.put(chillingCalculationMethod.getName(), chillHours);
         }
-
     }
     public WeatherResponse processHourlyData( WeatherRequest weatherRequest, OpenMeteoLocationResponses openMeteoResponses){
         List<LocationResponse> locationResponses=openMeteoResponses.getLocationResponses();
@@ -69,7 +62,5 @@ public class WeatherDataProcessor {
             }
         }
         return weatherResponse;
-
     }
-
 }

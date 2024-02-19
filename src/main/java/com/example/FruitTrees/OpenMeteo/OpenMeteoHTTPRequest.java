@@ -24,19 +24,13 @@ import java.util.logging.Logger;
 public class OpenMeteoHTTPRequest {
     @Value("${open-meteo.url}")
    private  String openMeteoUrl;
-
    private final  RestTemplate restTemplate = new RestTemplate();
-
     private final  CacheManager cacheManager;
-
-
     @Autowired
     public OpenMeteoHTTPRequest(CacheManager cacheManager) {
         this.cacheManager = cacheManager;
     }
-
-
-
+    
     /**
      * calls the open-meteo service to get the data for specified location(s)
      * in the weather request one open-meteo request is required per location
@@ -44,7 +38,8 @@ public class OpenMeteoHTTPRequest {
      * @return The LocationResponse containing the  OpenMeteoResponse and the Location Object
      * @throws IOException
      */
-    @Cacheable(value = "weatherDataCache")
+    @Cacheable(value = "weatherDataCache",
+      key = "#location.getLatitude() + ':' + #location.getLongitude() + ':' + #weatherRequest.getHourlyDataTypes.hashCode() + ':' + #weatherRequest.getStartDate() + ':' + #weatherRequest.getEndDate()")
     public LocationResponse makeLocationRequest( Location location, WeatherRequest weatherRequest){
         String fullUrl = openMeteoUrl + "?latitude=" + location.getLatitude() +
                 "&longitude=" + location.getLongitude() +
@@ -62,10 +57,7 @@ public class OpenMeteoHTTPRequest {
         locationResponse.setLocation(location);
             return locationResponse;
     }
-
-
-
-
+    
     /**
      *  adds additional params to the url to specify the units
      * you wish to have data sent back in Fahrenheit, Celsius, Inches , Meters Etc.
