@@ -1,4 +1,7 @@
-package com.example.FruitTrees.ChillingHours.WeatherProcessors;
+package com.example.FruitTrees.ChillingHours.WeatherProcessors.BetweenDates;
+
+import com.example.FruitTrees.ChillingHours.WeatherProcessors.WeatherProcessor;
+
 /**
  * class for weather data processor hat process data between dates
  */
