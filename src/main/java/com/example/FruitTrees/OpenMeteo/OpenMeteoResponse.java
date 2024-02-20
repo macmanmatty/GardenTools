@@ -125,7 +125,6 @@ public class OpenMeteoResponse {
 
     public static  class Daily {
         public List<String> time;
-
         public List<Double> weather_code;
         public List<Double> temperature_2m_max;
         public List<Double> temperature_2m_min;

@@ -1,20 +1,14 @@
 package com.example.FruitTrees.OpenMeteo;
-import com.example.FruitTrees.ChillingHours.WeatherDataProcessor;
 import com.example.FruitTrees.Location.Location;
-import com.example.FruitTrees.WeatherConroller.BadRequestException;
-import com.example.FruitTrees.WeatherConroller.HourlyWeatherProcessRequest;
 import com.example.FruitTrees.WeatherConroller.WeatherRequest;
-import com.example.FruitTrees.WeatherConroller.WeatherResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import java.io.IOException;
-import java.util.List;
 import java.util.Set;
 import java.util.logging.Logger;
 /**
@@ -76,7 +70,7 @@ public class OpenMeteoHTTPRequest {
               openMeteoUrl=openMeteoUrl+  "&wind_speed_unit=" + weatherRequest.getWindSpeedUnit();
             }
             if(precipitationUnit!=null && !precipitationUnit.isEmpty()) {
-              openMeteoUrl=openMeteoUrl+  "&precipitation_unit" + weatherRequest.getPrecipitationUnit();
+              openMeteoUrl=openMeteoUrl+  "&precipitation_unit=" + weatherRequest.getPrecipitationUnit();
             }
          return    openMeteoUrl;
   }

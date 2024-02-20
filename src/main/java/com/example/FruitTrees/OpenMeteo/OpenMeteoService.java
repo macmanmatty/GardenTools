@@ -5,7 +5,7 @@ import com.example.FruitTrees.Location.Location;
 import com.example.FruitTrees.WeatherConroller.BadRequestException;
 import com.example.FruitTrees.WeatherConroller.HourlyWeatherProcessRequest;
 import com.example.FruitTrees.WeatherConroller.WeatherRequest;
-import com.example.FruitTrees.WeatherConroller.WeatherResponse;
+import com.example.FruitTrees.WeatherConroller.WeatherResponse.WeatherResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;

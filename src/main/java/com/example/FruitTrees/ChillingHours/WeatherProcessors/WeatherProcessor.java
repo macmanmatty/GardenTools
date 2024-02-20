@@ -1,6 +1,8 @@
 package com.example.FruitTrees.ChillingHours.WeatherProcessors;
 
-import com.example.FruitTrees.WeatherConroller.WeatherResponse;
+import com.example.FruitTrees.WeatherConroller.WeatherResponse.LocationWeatherResponse;
+import com.example.FruitTrees.WeatherConroller.WeatherResponse.MonthlyValues;
+import com.example.FruitTrees.WeatherConroller.WeatherResponse.YearlyValues;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -57,7 +59,15 @@ public abstract class WeatherProcessor {
     /**
      * the weather response object for adding data
      */
-    protected WeatherResponse weatherResponse;
+    protected LocationWeatherResponse locationWeatherResponse;
+
+    /**
+     * the current values objects for the monthly , yearly and daily values
+     */
+    protected YearlyValues currentYearlyValues;
+    protected MonthlyValues currenMonthlyValues;
+    protected  MonthlyValues dailyValues;
+
 
     public WeatherProcessor(String name) {
         this.name = name;
@@ -73,64 +83,9 @@ public abstract class WeatherProcessor {
      */
     public abstract void processWeather(Number value, String date);
 
-    /**
-     * check to see if a date is between  the start
-     * and end dates for processing weather
-     * @param openMeteoDateAndTime the date and time string from the open meteo service
-     * @return
-     */
-     boolean dateInRange( String openMeteoDateAndTime) {
-         String parsedDate=openMeteoDateAndTime.split("T")[0];
-        LocalDate localDate=LocalDate.parse(parsedDate);
-        int day=localDate.getDayOfMonth();
-        int month=localDate.getMonthValue();
-         if (month > startMonth && month < endMonth) {
-             return true;
-         } else if (month == startMonth && month == endMonth) {
-             // If the month is the same, check if the day is within the range
-             return day >= startDay && day <= endDay;
-         } else if (month == startMonth) {
-             // If the month is the start month, check if the day is greater than or equal to the start day
-             return day >= startDay;
-         } else if (month == endMonth) {
-             // If the month is the end month, check if the day is less than or equal to the end day
-             return day <= endDay;
-         } else {
-             // If the month is neither the start nor end month, it's outside the range
-             return false;
-         }
-    }
 
-    /**
-     * checks to see if  a given date equals the end date
-     * @param openMeteoDateAndTime the date and time string from the open meteo service
-     * @return
-     */
-    public boolean isEndDateTime(String openMeteoDateAndTime) {
-        LocalDateTime localDate=LocalDateTime.parse(openMeteoDateAndTime);
-        int dayOfMonth=localDate.getDayOfMonth();
-        int month=localDate.getMonthValue();
-        int hour=localDate.getHour();
-        if(dayOfMonth==endDay && month==endMonth && hour==23){
-            return true;
-        }
-        return false;
-    }
-    /**
-     * checks to see if  a given date equals the start date
-     * @param openMeteoDateAndTime the date and time string from the open meteo service
-     * @return
-     */
-    public boolean isStartDateTime(String openMeteoDateAndTime) {
-        LocalDateTime localDate=LocalDateTime.parse(openMeteoDateAndTime);
-        int dayOfMonth=localDate.getDayOfMonth();
-        int month=localDate.getMonthValue();
-        int hour=localDate.getHour();
-        if(dayOfMonth==startDay && month==startMonth && hour==0){
-            return true;
-        }
-        return false;
-    }
+
+
     public void addValue(double value, int year){
         values.add(name+" for "+dataType+" "+year+" from: "+ startMonth +"/"+startDay+" to "+endMonth+"/" +endDay+ ": "+ value);
     }
@@ -215,11 +170,11 @@ public abstract class WeatherProcessor {
         this.dataUnit = dataUnit;
     }
 
-    public WeatherResponse getWeatherResponse() {
-        return weatherResponse;
+    public LocationWeatherResponse getLocationWeatherResponse() {
+        return locationWeatherResponse;
     }
 
-    public void setWeatherResponse(WeatherResponse weatherResponse) {
-        this.weatherResponse = weatherResponse;
+    public void setLocationWeatherResponse(LocationWeatherResponse locationWeatherResponse) {
+        this.locationWeatherResponse = locationWeatherResponse;
     }
 }
