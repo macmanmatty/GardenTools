@@ -1,4 +1,5 @@
 package com.example.FruitTrees.ChillingHours.WeatherProcessors.BetweenDates;
+import com.example.FruitTrees.WeatherConroller.WeatherResponse.YearlyValues;
 import org.springframework.stereotype.Component;
 import java.time.LocalDateTime;
 /**
@@ -39,7 +40,19 @@ public class MinMaxChillCalculator  extends ProcessWeatherBetweenDates {
     @Override
     protected void onEndDate(String date) {
         LocalDateTime localDateTime=LocalDateTime.parse(date);
-        addValue(chillHours, localDateTime.getYear());
+        int year= localDateTime.getYear();
+       YearlyValues yearlyValues= locationWeatherResponse.getYearlyValues(String.valueOf(year));
+        String text="Chilling Hours";
+        if(inputParameters.size()>2) {
+            String requestText = inputParameters.get(2);
+            if (requestText != null) {
+                text = requestText;
+            }
+        }
+        int lastYear=year-1;
+        String years= text+ " Above "+minTemp+" And Below "+maxTemp;
+        yearlyValues.getValues().put(years, String.valueOf(chillHours));
+        addValue(chillHours, year);
         chillHours =0;
     }
     @Override
