@@ -50,6 +50,8 @@ public class WeatherRequest {
      */
     public String endDate;
 
+    public boolean showStringText;
+
 
     public List<Location> locations= new ArrayList<>();
 
@@ -134,6 +136,14 @@ public class WeatherRequest {
 
     public void setLocations(List<Location> locations) {
         this.locations = locations;
+    }
+
+    public boolean isShowStringText() {
+        return showStringText;
+    }
+
+    public void setShowStringText(boolean showStringText) {
+        this.showStringText = showStringText;
     }
 }
 

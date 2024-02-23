@@ -90,6 +90,8 @@ public abstract class WeatherProcessor {
         values.add(name+" for "+dataType+" "+year+" from: "+ startMonth +"/"+startDay+" to "+endMonth+"/" +endDay+ ": "+ value);
     }
 
+
+
     /**
      * checks to see if the month and day given as month and day of a date   for processing data
      * is valid if the date is 2/29 converts it to 3/1
