@@ -1,10 +1,7 @@
 package com.example.FruitTrees.ChillingHours.WeatherProcessors.Monthly;
 
-import com.example.FruitTrees.ChillingHours.WeatherProcessors.BetweenDates.ProcessWeatherBetweenDates;
-import com.example.FruitTrees.WeatherConroller.WeatherResponse.YearlyValues;
 import org.springframework.stereotype.Component;
 
-import java.time.LocalDateTime;
 
 /**
  *  A weather processor that calculates the total amount of some

@@ -9,10 +9,7 @@ import com.example.FruitTrees.WeatherConroller.WeatherResponse.LocationWeatherRe
 import com.example.FruitTrees.WeatherConroller.WeatherRequest;
 import com.example.FruitTrees.WeatherConroller.WeatherResponse.WeatherResponse;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
-
-import java.time.LocalDateTime;
 import java.util.*;
 @Component
 public class WeatherDataProcessor {

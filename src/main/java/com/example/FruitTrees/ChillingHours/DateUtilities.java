@@ -9,20 +9,9 @@ public class DateUtilities {
 
     /**
      * check if a YYYY-MM-DD date has a time if not adds the 00:00 time to it.
-     * and converts it to a java LocalDateTime object
-     * @param date
-     * @return
-     */
-    public static  LocalDateTime convertStringDateToDateTime(String date){
 
-        return LocalDateTime.parse(convertStringDateStringDateTime(date));
-    }
-
-    /**
-     * check if a YYYY-MM-DD date has a time if not adds the 00:00 time to it.
-
-     * @param date
-     * @return
+     * @param date the date to check
+     * @return the YYYY-MM-DD  date with a time of 0 hours and 0 minutes
      */
     public static  String convertStringDateStringDateTime(String date){
         if(!date.contains("T") &&  !date.contains("t") ){
