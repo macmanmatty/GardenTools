@@ -1,11 +1,7 @@
 package com.example.FruitTrees.ChillingHours.WeatherProcessors;
-
 import com.example.FruitTrees.WeatherConroller.WeatherResponse.LocationWeatherResponse;
 import com.example.FruitTrees.WeatherConroller.WeatherResponse.MonthlyValues;
 import com.example.FruitTrees.WeatherConroller.WeatherResponse.YearlyValues;
-
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -90,12 +86,14 @@ public abstract class WeatherProcessor {
         values.add(name+" for "+dataType+" "+year+" from: "+ startMonth +"/"+startDay+" to "+endMonth+"/" +endDay+ ": "+ value);
     }
 
+
+
     /**
      * checks to see if the month and day given as month and day of a date   for processing data
      * is valid if the date is 2/29 converts it to 3/1
-     * @param month
-     * @param day
-     * @return
+     * @param month the numeric month value to check
+     * @param day the numeric day value to check
+     * @return the new day and  month value
      */
     public int [] dateCheck (int month, int day) {
         int [] monthAndDay=new int [2];

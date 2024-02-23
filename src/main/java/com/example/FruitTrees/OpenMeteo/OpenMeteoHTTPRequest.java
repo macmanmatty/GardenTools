@@ -32,7 +32,7 @@ public class OpenMeteoHTTPRequest {
      * @return The LocationResponse containing the  OpenMeteoResponse and the Location Object
      * @throws IOException
      */
-    @Cacheable(value = "weatherDataCache",
+    @Cacheable(value = "openMeteoDataCache",
       key = "#location.getLatitude() + ':' + #location.getLongitude() + ':' + #weatherRequest.getHourlyDataTypes.hashCode() + ':' + #weatherRequest.getStartDate() + ':' + #weatherRequest.getEndDate()")
     public LocationResponse makeLocationRequest( Location location, WeatherRequest weatherRequest){
         String fullUrl = openMeteoUrl + "?latitude=" + location.getLatitude() +

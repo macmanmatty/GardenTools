@@ -11,6 +11,6 @@ public class ApplicationConfiguration {
     @Bean
     public CacheManager cacheManager() {
         return
-       new ConcurrentMapCacheManager("weatherDataCache");
+       new ConcurrentMapCacheManager("openMeteoDataCache","processedWeatherCache" );
     }
 }

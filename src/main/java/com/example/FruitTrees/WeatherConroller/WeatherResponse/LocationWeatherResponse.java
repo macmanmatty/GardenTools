@@ -2,13 +2,17 @@ package com.example.FruitTrees.WeatherConroller.WeatherResponse;
 
 import com.example.FruitTrees.Location.Location;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class LocationWeatherResponse {
         private Map<String, YearlyValues> yearlyWeatherValuesMap = new HashMap<>();
         private Map<String, String> locationTotals =new HashMap<>();
         private Location location;
+        private List<String> locationResponses = new ArrayList<>();
+
 
     public Map<String, YearlyValues> getYearlyWeatherValuesMap() {
         return yearlyWeatherValuesMap;
@@ -44,6 +48,11 @@ public class LocationWeatherResponse {
             this.location = location;
         }
 
+    public List<String> getLocationResponses() {
+        return locationResponses;
+    }
 
-
+    public void setLocationResponses(List<String> locationResponses) {
+        this.locationResponses = locationResponses;
+    }
 }

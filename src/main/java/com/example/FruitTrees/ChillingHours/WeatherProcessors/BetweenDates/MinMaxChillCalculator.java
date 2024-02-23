@@ -49,10 +49,9 @@ public class MinMaxChillCalculator  extends ProcessWeatherBetweenDates {
                 text = requestText;
             }
         }
-        int lastYear=year-1;
         String years= text+ " Above "+minTemp+" And Below "+maxTemp;
         yearlyValues.getValues().put(years, String.valueOf(chillHours));
-        addValue(chillHours, year);
+        values.add(years+" For " +year+" from: "+ startMonth +"/"+startDay+" to "+endMonth+"/" +endDay+ ": "+ chillHours);
         chillHours =0;
     }
     @Override

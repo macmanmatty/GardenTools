@@ -50,8 +50,10 @@ public class WeatherDataProcessor {
      Location location=locationResponse.getLocation();
     LocationWeatherResponse locationWeatherResponse= new LocationWeatherResponse();
      locationWeatherResponse.setLocation(location);
-     weatherResponse.getLocationWeatherResponses().add(locationWeatherResponse);
-     weatherResponse.getResponses().add("Values For Location: "+location.getName());
+     weatherResponse.getLocationWeatherResponses().put(locationResponse.getLocation().getName(),locationWeatherResponse);
+     String text="Values For Location: "+location.getName();
+     //weatherResponse.getResponses().add(text);
+     locationWeatherResponse.getLocationResponses().add(text);
      OpenMeteoResponse openMeteoResponse=locationResponse.getOpenMeteoResponse();
      List<HourlyWeatherProcessRequest> hourlyWeatherProcessRequests = weatherRequest.getHourlyWeatherProcessRequests();
      List<String> time = openMeteoResponse.hourly.time;
@@ -62,7 +64,7 @@ public class WeatherDataProcessor {
          if(weatherProcessor==null){
              continue;
          }
-         processHourlyWeather( time, weatherProcessor,hourlyWeatherProcessRequest, weatherResponse, openMeteoResponse, locationWeatherResponse);
+         processHourlyWeather( time, weatherProcessor,hourlyWeatherProcessRequest,  openMeteoResponse, locationWeatherResponse);
      }
 
         return weatherResponse;
@@ -72,13 +74,12 @@ public class WeatherDataProcessor {
      *
      * @param weatherProcessor
      * @param hourlyWeatherProcessRequest
-     * @param weatherResponse
      * @param openMeteoResponse
      * @param locationWeatherResponse
-     * @param time
+     * @param openMeteoDateAndTime
      */
- public void processHourlyWeather(List<String> time,  WeatherProcessor weatherProcessor, HourlyWeatherProcessRequest hourlyWeatherProcessRequest,
-                                  WeatherResponse weatherResponse, OpenMeteoResponse openMeteoResponse,
+ public void processHourlyWeather(List<String> openMeteoDateAndTime,  WeatherProcessor weatherProcessor, HourlyWeatherProcessRequest hourlyWeatherProcessRequest,
+                                 OpenMeteoResponse openMeteoResponse,
                                   LocationWeatherResponse locationWeatherResponse){
      weatherProcessor.setStartMonthDay(hourlyWeatherProcessRequest.getStartProcessMonth(), hourlyWeatherProcessRequest.getStartProcessDay());
      weatherProcessor.setEndMonthDay(hourlyWeatherProcessRequest.getEndProcessMonth(), hourlyWeatherProcessRequest.getEndProcessDay());
@@ -89,12 +90,26 @@ public class WeatherDataProcessor {
      int size = data.size();
      weatherProcessor.before();
      for (int count = 0; count < size; count++) {
-         weatherProcessor.processWeather(data.get(count), time.get(count));
+         weatherProcessor.processWeather(data.get(count), openMeteoDateAndTime.get(count));
      }
      List<String> values = weatherProcessor.getValues();
-     weatherResponse.getResponses().addAll(values);
-     weatherResponse.getResponses().add("");
+     //weatherResponse.getResponses().addAll(values);
+     //weatherResponse.getResponses().add("");
+     locationWeatherResponse.getLocationResponses().addAll(values);
 
+
+ }
+
+ public int findDate(List<String> openMeteoDateAndTime, String startDateTime){
+     String localDateTimeStart=DateUtilities.convertStringDateStringDateTime(startDateTime);
+     int size=openMeteoDateAndTime.size();
+     for(int count=0; count<size; count++){
+         if(openMeteoDateAndTime.equals(localDateTimeStart)){
+             return count;
+         }
+
+     }
+     throw new IllegalArgumentException("Date: "+ startDateTime+ "Is  Out Of Bounds");
 
  }
 
