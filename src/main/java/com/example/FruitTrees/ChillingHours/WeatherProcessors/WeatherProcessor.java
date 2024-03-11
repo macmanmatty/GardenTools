@@ -45,8 +45,6 @@ public abstract class WeatherProcessor {
      * the current of measurement for the data being processed
      */
     protected String dataUnit="";
-
-
     /**
      * the list of input values used to process the weather
      */
@@ -114,6 +112,13 @@ public abstract class WeatherProcessor {
     }
 
 
+    /**
+     * overridden method  used to calculate the average
+     * of the processed weather values
+     */
+    public void calculateAverage(){}
+
+
         public ArrayList<String> getValues() {
         return values;
     }
@@ -175,4 +180,5 @@ public abstract class WeatherProcessor {
     public void setLocationWeatherResponse(LocationWeatherResponse locationWeatherResponse) {
         this.locationWeatherResponse = locationWeatherResponse;
     }
+
 }

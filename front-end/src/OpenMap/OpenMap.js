@@ -2,19 +2,22 @@ import React,  { useState} from 'react';
 import { MapContainer, TileLayer, Marker, Popup, useMapEvents, CircleMarker} from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import MarkerPopupLabel from "./MarkerPopup";
-const OpenMap = () => {
+const OpenMap = ({weatherRequestForm}) => {
   const [markers, setMarkers] = useState([]);
  const MapClickHandler = () => {
      const map = useMapEvents({
        click: (e) => {
-         console.log('Clicked at:', e.latlng); // Access latitude and longitude from the event
  const newMarker = {
       id: new Date().getTime(),
       position: [e.latlng.lat, e.latlng.lng],
+     latitude: e.latlng.lat,
+     longitude: e.latlng.lng,
      name:"Marker "+markers.length,
      selected: false
     };
-    setMarkers((prevMarkers) => [...prevMarkers, newMarker]);       },
+           weatherRequestForm.locations.add(newMarker);
+           setMarkers((prevMarkers) => [...prevMarkers, newMarker]);
+           },
      });
      return null;
    };

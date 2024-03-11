@@ -23,19 +23,6 @@ const LocationWeather = ({mapLatitude, mapLongitude}) => {
         // Set the updated array as the new state
         setWeatherDataTypes(updatedItems);
     };
-    const weatherRequestForm={
-        latitude:mapLatitude,
-        longitude:mapLongitude,
-        temperatureUnit:tempUnits,
-        precipitationUnit: precipitationUnits,
-        windSpeedUnits: setWindSpeedUnits,
-        timezone: timeZone,
-        startDate: startDate,
-        endDate: endDate,
-        hourlyDataTypes: new Set(),
-        dailyDataTypes : new Set(),
-        hourlyWeatherProcessRequests: []
-    }
 
     // Handler function to update the selected value
     const getWeather = (event) => {
