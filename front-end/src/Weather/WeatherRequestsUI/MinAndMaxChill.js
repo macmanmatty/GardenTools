@@ -23,7 +23,7 @@ const MinAndMaxChill = ({weatherRequest}) => {
 
 
     const addHourlyWeatherProcessRequest= ()=>{
-        hourlyWeatherProcessRequest.values[0]=minTemp;
+      hourlyWeatherProcessRequest.values[0]=minTemp;
     hourlyWeatherProcessRequest.values[1]=maxTemp;
     hourlyWeatherProcessRequest.startProcessDay= startDate.getDay();
     hourlyWeatherProcessRequest.startProcessMoth=startDate.getMonth();

@@ -10,7 +10,6 @@ const MarkerPopup = ({marker}) => {
 
     }
   return (
-
              <Popup>
                Latitude: {marker.position[0]}, Longitude: {marker.position[1]}
                  <p/>

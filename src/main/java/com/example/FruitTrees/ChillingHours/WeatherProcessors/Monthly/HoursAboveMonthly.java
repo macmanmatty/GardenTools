@@ -18,6 +18,7 @@ public class HoursAboveMonthly extends MonthlyWeatherProcessor {
      * the min value
      */
     private double minValue;
+
     public HoursAboveMonthly() {
         super("Chill Hours");
     }
@@ -45,7 +46,7 @@ public class HoursAboveMonthly extends MonthlyWeatherProcessor {
         hours =0;
     }
     @Override
-    void processWeatherBetween(Number data, String date) {
+    protected void processWeatherBetween(Number data, String date) {
         double value=data.doubleValue();
         if( value>= minValue) {
             hours++;

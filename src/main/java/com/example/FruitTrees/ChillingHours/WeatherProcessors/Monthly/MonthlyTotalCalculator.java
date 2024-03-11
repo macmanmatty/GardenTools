@@ -22,7 +22,7 @@ public class MonthlyTotalCalculator extends MonthlyWeatherProcessor {
         finalValue =0;
     }
     @Override
-    void processWeatherBetween(Number data, String date) {
+    protected void processWeatherBetween(Number data, String date) {
         double value=data.doubleValue();
             finalValue =finalValue+ value;
     }

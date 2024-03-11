@@ -1,15 +1,18 @@
 package com.example.FruitTrees.ChillingHours.WeatherProcessors.BetweenDates;
+
 import com.example.FruitTrees.WeatherConroller.WeatherResponse.YearlyValues;
 import org.springframework.stereotype.Component;
+
 import java.time.LocalDateTime;
+
 /**
- *  A weather processor that calculates the total amount of some
- *  weather value between two  values  and between dates usually used  for counting chilling hours (temperature ) for deciduous fruit trees
- * which  are generally assumed to be  1 chill hour for every hour above 32 and below 45 degrees
+ *  A weather processor that calculates the total amount of
+ *  counting chilling hours (temperature ) for deciduous fruit trees
+ * using the Utah Method
  * from 11/1 to 3/31
  */
-@Component("MinMaxChill")
-public class MinMaxChillCalculator  extends ProcessWeatherBetweenDates {
+@Component("UtahChill")
+public class UtahChillCalculator extends ProcessWeatherBetweenDates {
     /**
      * the counted hours
      */
@@ -22,7 +25,7 @@ public class MinMaxChillCalculator  extends ProcessWeatherBetweenDates {
      * the max value
      */
     private double maxTemp;
-    public MinMaxChillCalculator() {
+    public UtahChillCalculator() {
         super("Chill Hours");
     }
     @Override
@@ -43,13 +46,7 @@ public class MinMaxChillCalculator  extends ProcessWeatherBetweenDates {
         int year= localDateTime.getYear();
        YearlyValues yearlyValues= locationWeatherResponse.getYearlyValues(String.valueOf(year));
         String text="Chilling Hours";
-        if(inputParameters.size()>2) {
-            String requestText = inputParameters.get(2);
-            if (requestText != null) {
-                text = requestText;
-            }
-        }
-        String years= text+ " Above "+minTemp+" And Below "+maxTemp;
+        String years= text+ " Utah Calculation Method ";
         yearlyValues.getValues().put(years, String.valueOf(chillHours));
         values.add(years+" For " +year+" from: "+ startMonth +"/"+startDay+" to "+endMonth+"/" +endDay+ ": "+ chillHours);
         chillHours =0;
@@ -57,8 +54,17 @@ public class MinMaxChillCalculator  extends ProcessWeatherBetweenDates {
     @Override
     void processWeatherBetween(Number data, String date) {
         double value=data.doubleValue();
-        if( value>=minTemp && value<=maxTemp) {
+        if( value>=34 && value<=45) {
             chillHours++;
+        }
+          else  if( value>=45 && value<=55) {
+            chillHours=chillHours+.5;
+        }
+          else if(value>55 && value<=65){
+              chillHours=chillHours-.5;
+        }
+        else if(value>65){
+            chillHours--;
         }
     }
 }

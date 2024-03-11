@@ -4,7 +4,7 @@ import com.example.FruitTrees.ChillingHours.WeatherProcessors.WeatherProcessor;
 
 import java.time.LocalDateTime;
 /**
- * class for weather data processor that processes monthly weather
+ * class for weather data processor that processes yearly from 1/1 to 12/31 and   monthly weather
  * from 1/1 to 12/31.
  */
 public abstract  class MonthlyWeatherProcessor extends WeatherProcessor {
@@ -30,6 +30,11 @@ public abstract  class MonthlyWeatherProcessor extends WeatherProcessor {
      */
     public String currentMonthName="";
 
+    /**
+     *  the total number of processed months
+     */
+    public int totalMonths;
+
 
     @Override
     public void before() {
@@ -46,7 +51,7 @@ public abstract  class MonthlyWeatherProcessor extends WeatherProcessor {
      * @param date the date and time the value happened
      */
     @Override
-    public final  void processWeather(Number value, String date) {
+    public void processWeather(Number value, String date) {
        switch( checkDate(date)){
            case NEW_YEARS_EVE -> {
                onEndYear(value, date);
@@ -61,6 +66,7 @@ public abstract  class MonthlyWeatherProcessor extends WeatherProcessor {
            }
            case FIRST_DAY_OF_MONTH -> {
                onStartNewMonth(value, date);
+               totalMonths++;
                break;
            }
            case LAST_DAY_OF_MONTH -> {
@@ -70,6 +76,8 @@ public abstract  class MonthlyWeatherProcessor extends WeatherProcessor {
        }
         processWeatherBetween(value, date);
         }
+
+
 
 
     public void addValue(double value, int year, String month){
@@ -110,7 +118,7 @@ public abstract  class MonthlyWeatherProcessor extends WeatherProcessor {
      * @param date  the current date and time of the weather  being processed
      * @param  data the value of the weather data at the current date and time
      */
-    abstract void processWeatherBetween(Number data, String date);
+    protected abstract void processWeatherBetween(Number data, String date);
 
     /**
      * checks to see if date / time is  the 0 hour of the first day of the month
@@ -121,7 +129,7 @@ public abstract  class MonthlyWeatherProcessor extends WeatherProcessor {
      * @return true if the day / time is the 0 hour of the first day of the month
      * otherwise returns false
      */
-   DateType checkDate(String openMeteoDateAndTime) {
+    protected DateType checkDate(String openMeteoDateAndTime) {
         LocalDateTime localDate=LocalDateTime.parse(openMeteoDateAndTime);
         int maxDayOfMonth = localDate.toLocalDate().lengthOfMonth();
         int dayOfMonth=localDate.getDayOfMonth();
