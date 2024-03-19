@@ -66,7 +66,19 @@ public abstract class WeatherProcessor {
     public WeatherProcessor(String name) {
         this.name = name;
     }
-    public abstract void  before();
+
+    /**
+     * overridden  method called
+     * before the processing of weather starts
+     */
+    public  void  before(){};
+
+
+    /**
+     * overridden  method called
+     * after the processing of weather ends
+     */
+    public  void  after(){};
 
 
     /**

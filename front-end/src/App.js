@@ -2,6 +2,7 @@ import './App.css';
 import OpenMap from './OpenMap/OpenMap.js';
 import LocationWeather from "./Weather/LocationWeather";
 import WeatherSettings from "./Weather/WeatherSettings";
+import 'bootstrap/dist/css/bootstrap.min.css';
 import React from "react";
 
 function App() {
