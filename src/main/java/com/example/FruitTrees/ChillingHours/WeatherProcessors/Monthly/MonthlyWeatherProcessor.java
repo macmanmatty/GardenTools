@@ -36,6 +36,7 @@ public abstract  class MonthlyWeatherProcessor extends WeatherProcessor {
     public int totalMonths;
 
 
+
     @Override
     public void before() {
         values.clear();
@@ -78,6 +79,14 @@ public abstract  class MonthlyWeatherProcessor extends WeatherProcessor {
         }
 
 
+    /**
+     * subclass implemented method  for
+     * calculating the monthly averages
+     * when the processing of weather ends
+     */
+    protected  void calculateMonthlyAverages(){
+
+    };
 
 
     public void addValue(double value, int year, String month){

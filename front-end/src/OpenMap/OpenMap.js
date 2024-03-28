@@ -4,6 +4,7 @@ import 'leaflet/dist/leaflet.css';
 import MarkerPopupLabel from "./MarkerPopup";
 const OpenMap = ({weatherRequestForm}) => {
   const [markers, setMarkers] = useState([]);
+  const maxLocations=6;
  const MapClickHandler = () => {
      const map = useMapEvents({
        click: (e) => {
