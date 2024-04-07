@@ -1,9 +1,9 @@
 package com.example.FruitTrees.ChillingHours.WeatherProcessors.Daily;
 import com.example.FruitTrees.ChillingHours.WeatherProcessors.DateType;
 import com.example.FruitTrees.ChillingHours.WeatherProcessors.Monthly.MonthlyWeatherProcessor;
-import com.example.FruitTrees.ChillingHours.WeatherProcessors.WeatherProcessor;
+
 import java.time.LocalDateTime;
-import java.util.Date;
+
 /**
  * class for weather data processor that processes yearly  monthly daily  weather from 1/1 to 12/31
  * from 1/1 to 12/31.
@@ -21,8 +21,8 @@ public abstract  class DailyWeatherProcessor extends MonthlyWeatherProcessor {
     @Override
     public void before() {
         values.clear();
-        currentYearlyValues=locationWeatherResponse.getYearlyValues(String.valueOf(currentYear));
-        currenMonthlyValues=currentYearlyValues.getMonthlyValues(currentMonthName);
+        currentYearlyValuesResponse =locationWeatherResponse.getYearlyValues(String.valueOf(currentYear));
+        monthlyValuesResponse = currentYearlyValuesResponse.getMonthlyValues(currentMonthName);
     }
     /**
      * the overridden process data method that  processes 
@@ -107,7 +107,7 @@ public abstract  class DailyWeatherProcessor extends MonthlyWeatherProcessor {
             currentYear=localDate.getYear();
             currentMonth=1;
             currentMonthName=localDate.getMonth().name();
-            currentYearlyValues=locationWeatherResponse.getYearlyValues(String.valueOf(currentYear));
+            currentYearlyValuesResponse =locationWeatherResponse.getYearlyValues(String.valueOf(currentYear));
             dateTypes[1]= DateType.NEW_YEARS_DAY;
             return dateTypes;        }
         if(dayOfMonth==maxDayOfMonth && hour==23){
@@ -117,13 +117,11 @@ public abstract  class DailyWeatherProcessor extends MonthlyWeatherProcessor {
         if(dayOfMonth==1 && hour==0){
             currentMonth=month;
             currentMonthName=localDate.getMonth().name();
-            currenMonthlyValues=currentYearlyValues.getMonthlyValues(currentMonthName);
+            monthlyValuesResponse = currentYearlyValuesResponse.getMonthlyValues(currentMonthName);
             dateTypes[1]= DateType.FIRST_DAY_OF_MONTH;
             return dateTypes;        }
         dateTypes[1]= DateType.STANDARD_DAY;
         return dateTypes;    }
-   
-  
-    
+
 }
     

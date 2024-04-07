@@ -10,9 +10,11 @@ public class MonthlyMinCalculator extends MonthlyWeatherProcessor {
     
     @Override
     protected void onMonthEnd(Number value, String date) {
-        currenMonthlyValues.getValues().put(name+" For "+dataType, String.valueOf(finalValue));
+        monthlyValuesResponse.getValues().put(processorName +" For "+dataType, String.valueOf(finalValue));
         LocalDateTime localDateTime=LocalDateTime.parse(date);
         addValue(finalValue, localDateTime.getYear(), localDateTime.getMonth().name() );
+        monthlyValues.get(currentMonthName).add(finalValue);
+
         finalValue =Double.MAX_VALUE;
     }
     @Override

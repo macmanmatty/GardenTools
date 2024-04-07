@@ -3,7 +3,7 @@ package com.example.FruitTrees.WeatherConroller.WeatherResponse;
 import java.util.HashMap;
 import java.util.Map;
 
-public class DailyValues {
+public class DailyValuesResponse {
         private String name="";
         private Map<String, String> values= new HashMap<>();
 

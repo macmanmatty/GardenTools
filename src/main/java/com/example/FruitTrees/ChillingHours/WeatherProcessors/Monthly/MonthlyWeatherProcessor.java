@@ -1,10 +1,10 @@
 package com.example.FruitTrees.ChillingHours.WeatherProcessors.Monthly;
 import com.example.FruitTrees.ChillingHours.WeatherProcessors.DateType;
 import com.example.FruitTrees.ChillingHours.WeatherProcessors.WeatherProcessor;
-
 import java.time.LocalDateTime;
+import java.util.*;
 /**
- * class for weather data processor that processes yearly from 1/1 to 12/31 and   monthly weather
+ *  base class for weather data processor that processes yearly from 1/1 to 12/31 and   monthly weather
  * from 1/1 to 12/31.
  */
 public abstract  class MonthlyWeatherProcessor extends WeatherProcessor {
@@ -15,7 +15,6 @@ public abstract  class MonthlyWeatherProcessor extends WeatherProcessor {
     public MonthlyWeatherProcessor(String name) {
         super(name);
     }
-
     /**
      * the current year of weather being processed
      */
@@ -24,26 +23,37 @@ public abstract  class MonthlyWeatherProcessor extends WeatherProcessor {
      * the current numeric value  of the month  for weather being processed
      */
     public int currentMonth;
-
     /**
      * the current month name  of weather being processed
      */
     public String currentMonthName="";
-
     /**
      *  the total number of processed months
      */
     public int totalMonths;
-
-
-
+    /**
+     * the map of  monthly values
+     * key= string month name
+     * value=  yearly data for month for the processed weather data
+     */
+    Map<String, List<Double>> monthlyValues=new HashMap<>();
     @Override
     public void before() {
         values.clear();
-        currentYearlyValues=locationWeatherResponse.getYearlyValues(String.valueOf(currentYear));
-
-        currenMonthlyValues=currentYearlyValues.getMonthlyValues(currentMonthName);
-
+        currentYearlyValuesResponse =locationWeatherResponse.getYearlyValues(String.valueOf(currentYear));
+        monthlyValuesResponse = currentYearlyValuesResponse.getMonthlyValues(currentMonthName);
+        monthlyValues.put("JANUARY", new ArrayList<>());
+        monthlyValues.put("FEBRUARY", new ArrayList<>());
+        monthlyValues.put("MARCH", new ArrayList<>());
+        monthlyValues.put("APRIL", new ArrayList<>());
+        monthlyValues.put("MAY", new ArrayList<>());
+        monthlyValues.put("JUNE", new ArrayList<>());
+        monthlyValues.put("JULY", new ArrayList<>());
+        monthlyValues.put("AUGUST", new ArrayList<>());
+        monthlyValues.put("SEPTEMBER", new ArrayList<>());
+        monthlyValues.put("OCTOBER", new ArrayList<>());
+        monthlyValues.put("NOVEMBER", new ArrayList<>());
+        monthlyValues.put("DECEMBER", new ArrayList<>());
     }
     /**
      * the overridden process data method that  processes 
@@ -57,7 +67,6 @@ public abstract  class MonthlyWeatherProcessor extends WeatherProcessor {
            case NEW_YEARS_EVE -> {
                onEndYear(value, date);
                onMonthEnd(value, date);
-
                break;
            }
            case NEW_YEARS_DAY -> {
@@ -77,22 +86,22 @@ public abstract  class MonthlyWeatherProcessor extends WeatherProcessor {
        }
         processWeatherBetween(value, date);
         }
-
-
-    /**
-     * subclass implemented method  for
-     * calculating the monthly averages
-     * when the processing of weather ends
-     */
-    protected  void calculateMonthlyAverages(){
-
-    };
-
-
-    public void addValue(double value, int year, String month){
-        values.add(name+" for "+dataType+" " +month+" "+year+  " : "+ value);
+    @Override
+    public void calculateAverage() {
+      Set<String> monthNames= monthlyValues.keySet();
+      for(String month:monthNames){
+          double total=0;
+          List<Double> monthlyValues=this.monthlyValues.get(month);
+          for(Double doubleNum: monthlyValues){
+              total=total+doubleNum;
+          }
+          double average=total/monthlyValues.size();
+          this.values.add("Average "+processorName+" For Month "+month+" "+average);
+      }
     }
-
+    public void addValue(double value, int year, String month){
+        values.add(processorName +" for "+dataType+" " +month+" "+year+  " : "+ value);
+    }
     /**
      * subclass implemented method  for
      * preforming actions on weather  last hour of dec 31
@@ -128,7 +137,6 @@ public abstract  class MonthlyWeatherProcessor extends WeatherProcessor {
      * @param  data the value of the weather data at the current date and time
      */
     protected abstract void processWeatherBetween(Number data, String date);
-
     /**
      * checks to see if date / time is  the 0 hour of the first day of the month
      * or the last day of the month or new years day or new years eve
@@ -151,7 +159,8 @@ public abstract  class MonthlyWeatherProcessor extends WeatherProcessor {
            currentYear=localDate.getYear();
            currentMonth=1;
            currentMonthName=localDate.getMonth().name();
-           currentYearlyValues=locationWeatherResponse.getYearlyValues(String.valueOf(currentYear));
+           currentYearlyValuesResponse =locationWeatherResponse.getYearlyValues(String.valueOf(currentYear));
+           monthlyValuesResponse = currentYearlyValuesResponse.getMonthlyValues(currentMonthName);
            return DateType.NEW_YEARS_DAY;
        }
         if(dayOfMonth==maxDayOfMonth && hour==23){
@@ -160,13 +169,11 @@ public abstract  class MonthlyWeatherProcessor extends WeatherProcessor {
        if(dayOfMonth==1 && hour==0){
            currentMonth=month;
            currentMonthName=localDate.getMonth().name();
-           currenMonthlyValues=currentYearlyValues.getMonthlyValues(currentMonthName);
+           monthlyValuesResponse = currentYearlyValuesResponse.getMonthlyValues(currentMonthName);
            return DateType.FIRST_DAY_OF_MONTH;
        }
-
         return DateType.STANDARD_DAY;
     }
-
     
 }
     

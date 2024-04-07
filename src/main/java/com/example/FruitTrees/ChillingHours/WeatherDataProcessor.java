@@ -37,7 +37,6 @@ public class WeatherDataProcessor {
         }
         return weatherResponse;
     }
-
     /**
      * processes the data for each individual location specified in the WeatherRequest Object
      * @param locationResponse the location response object holding the location object and
@@ -57,19 +56,15 @@ public class WeatherDataProcessor {
      OpenMeteoResponse openMeteoResponse=locationResponse.getOpenMeteoResponse();
      List<HourlyWeatherProcessRequest> hourlyWeatherProcessRequests = weatherRequest.getHourlyWeatherProcessRequests();
      List<String> time = openMeteoResponse.hourly.time;
-
      for (HourlyWeatherProcessRequest hourlyWeatherProcessRequest : hourlyWeatherProcessRequests) {
          WeatherProcessor weatherProcessor = weatherProcessorMap.get(hourlyWeatherProcessRequest.getProcessorName());
-
          if(weatherProcessor==null){
              continue;
          }
          processHourlyWeather( time, weatherProcessor,hourlyWeatherProcessRequest,  openMeteoResponse, locationWeatherResponse);
      }
-
         return weatherResponse;
  }
-
     /**
      *
      * @param weatherProcessor
@@ -78,7 +73,7 @@ public class WeatherDataProcessor {
      * @param locationWeatherResponse
      * @param openMeteoDateAndTime
      */
- public void processHourlyWeather(List<String> openMeteoDateAndTime,  WeatherProcessor weatherProcessor, HourlyWeatherProcessRequest hourlyWeatherProcessRequest,
+ public void processHourlyWeather( List<String> openMeteoDateAndTime,  WeatherProcessor weatherProcessor, HourlyWeatherProcessRequest hourlyWeatherProcessRequest,
                                  OpenMeteoResponse openMeteoResponse,
                                   LocationWeatherResponse locationWeatherResponse){
      weatherProcessor.setStartMonthDay(hourlyWeatherProcessRequest.getStartProcessMonth(), hourlyWeatherProcessRequest.getStartProcessDay());
@@ -92,14 +87,12 @@ public class WeatherDataProcessor {
      for (int count = 0; count < size; count++) {
          weatherProcessor.processWeather(data.get(count), openMeteoDateAndTime.get(count));
      }
+     if(hourlyWeatherProcessRequest.isCalculateAverage()){
+         weatherProcessor.calculateAverage();
+     }
      List<String> values = weatherProcessor.getValues();
-     //weatherResponse.getResponses().addAll(values);
-     //weatherResponse.getResponses().add("");
      locationWeatherResponse.getLocationResponses().addAll(values);
-
-
  }
-
  public int findDate(List<String> openMeteoDateAndTime, String startDateTime){
      String localDateTimeStart=DateUtilities.convertStringDateStringDateTime(startDateTime);
      int size=openMeteoDateAndTime.size();
@@ -107,10 +100,7 @@ public class WeatherDataProcessor {
          if(openMeteoDateAndTime.equals(localDateTimeStart)){
              return count;
          }
-
      }
      throw new IllegalArgumentException("Date: "+ startDateTime+ "Is  Out Of Bounds");
-
  }
-
 }

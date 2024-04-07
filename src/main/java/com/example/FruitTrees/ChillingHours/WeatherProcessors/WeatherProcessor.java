@@ -1,23 +1,22 @@
 package com.example.FruitTrees.ChillingHours.WeatherProcessors;
+import com.example.FruitTrees.WeatherConroller.WeatherResponse.DailyValuesResponse;
 import com.example.FruitTrees.WeatherConroller.WeatherResponse.LocationWeatherResponse;
-import com.example.FruitTrees.WeatherConroller.WeatherResponse.MonthlyValues;
-import com.example.FruitTrees.WeatherConroller.WeatherResponse.YearlyValues;
+import com.example.FruitTrees.WeatherConroller.WeatherResponse.MonthlyValuesResponse;
+import com.example.FruitTrees.WeatherConroller.WeatherResponse.YearlyValuesResponse;
 import java.util.ArrayList;
 import java.util.List;
-
 /**
  *a base  abstract class for implementing a weather processor
  */
 public abstract class WeatherProcessor {
     /**
-     *  the parameters used in processing the data
+     *  the processed string values for the weather
      */
     protected ArrayList<String> values=new ArrayList<>();
     /**
      * the day to start processing weather
      */
    protected  int startDay=1;
-
     /**
      * the day to end processing weather
      */
@@ -30,16 +29,25 @@ public abstract class WeatherProcessor {
      * the month to end processing weather
      */
    protected  int  endMonth=12;
+
+    /**
+     * the year weather was started processing on
+     */
+    protected int startYear;
+
+    /**
+     * the year weather was ended processing on
+     */
+    protected int endYear;
     /**
      * the name of the processor can be different
      * from the same as the spring  component name;
      *
      */
-   protected final  String name;
+   protected final  String processorName;
     /**
      * the type of open meteo data the processor is currently processing
      */
-
   protected String dataType="";
     /**
      * the current of measurement for the data being processed
@@ -49,38 +57,37 @@ public abstract class WeatherProcessor {
      * the list of input values used to process the weather
      */
    protected  List<String> inputParameters = new ArrayList<>();
-
     /**
      * the weather response object for adding data
      */
     protected LocationWeatherResponse locationWeatherResponse;
-
     /**
-     * the current values objects for the monthly , yearly and daily values
+     * the  response  object for the yearly values
      */
-    protected YearlyValues currentYearlyValues;
-    protected MonthlyValues currenMonthlyValues;
-    protected  MonthlyValues dailyValues;
+    protected YearlyValuesResponse currentYearlyValuesResponse;
+    /**
+     * the  response  object for the monthly values
+     */
+    protected MonthlyValuesResponse monthlyValuesResponse;
+    /**
+     * the  response  object for the daily values
+     */
+    protected DailyValuesResponse dailyValues;
 
 
-    public WeatherProcessor(String name) {
-        this.name = name;
+    public WeatherProcessor(String processorName) {
+        this.processorName = processorName;
     }
-
     /**
      * overridden  method called
      * before the processing of weather starts
      */
     public  void  before(){};
-
-
     /**
      * overridden  method called
      * after the processing of weather ends
      */
     public  void  after(){};
-
-
     /**
      *
      * called for each double in the data set to process weather value
@@ -88,16 +95,9 @@ public abstract class WeatherProcessor {
      * @param date the date and time the value happened
      */
     public abstract void processWeather(Number value, String date);
-
-
-
-
     public void addValue(double value, int year){
-        values.add(name+" for "+dataType+" "+year+" from: "+ startMonth +"/"+startDay+" to "+endMonth+"/" +endDay+ ": "+ value);
+        values.add(processorName +" for "+dataType+" "+year+" from: "+ startMonth +"/"+startDay+" to "+endMonth+"/" +endDay+ ": "+ value);
     }
-
-
-
     /**
      * checks to see if the month and day given as month and day of a date   for processing data
      * is valid if the date is 2/29 converts it to 3/1
@@ -107,7 +107,6 @@ public abstract class WeatherProcessor {
      */
     public int [] dateCheck (int month, int day) {
         int [] monthAndDay=new int [2];
-
         if(month<1 || month>12){
             throw new IllegalArgumentException("month " +month +" is  out of range");
         }
@@ -122,15 +121,11 @@ public abstract class WeatherProcessor {
         monthAndDay[1]=day;
         return  monthAndDay;
     }
-
-
     /**
      * overridden method  used to calculate the average
      * of the processed weather values
      */
     public void calculateAverage(){}
-
-
         public ArrayList<String> getValues() {
         return values;
     }
@@ -156,39 +151,30 @@ public abstract class WeatherProcessor {
     public int getEndMonth() {
         return endMonth;
     }
-    public String getName() {
-        return name;
+    public String getProcessorName() {
+        return processorName;
     }
-
-
     public List<String> getInputParameters() {
         return inputParameters;
     }
-
     public void setInputParameters(List<String> inputParameters) {
         this.inputParameters = inputParameters;
     }
-
     public String getDataType() {
         return dataType;
     }
-
     public void setDataType(String dataType) {
         this.dataType = dataType;
     }
-
     public String getDataUnit() {
         return dataUnit;
     }
-
     public void setDataUnit(String dataUnit) {
         this.dataUnit = dataUnit;
     }
-
     public LocationWeatherResponse getLocationWeatherResponse() {
         return locationWeatherResponse;
     }
-
     public void setLocationWeatherResponse(LocationWeatherResponse locationWeatherResponse) {
         this.locationWeatherResponse = locationWeatherResponse;
     }

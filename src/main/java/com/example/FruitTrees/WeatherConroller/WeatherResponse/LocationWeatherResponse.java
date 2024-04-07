@@ -7,28 +7,44 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * the response for the processed weather data for a passed in location
+ */
 public class LocationWeatherResponse {
-        private Map<String, YearlyValues> yearlyWeatherValuesMap = new HashMap<>();
+    /**
+     * the map of yearly weather responses
+     * key= location name
+     * value= YearlyValuesResponse
+     */
+        private Map<String, YearlyValuesResponse> yearlyWeatherValuesMap = new HashMap<>();
+    /**
+     * the map of yearly weather responses
+     * key= location name
+     * value= location processed weather data
+     */
         private Map<String, String> locationTotals =new HashMap<>();
+    /**
+     * the location object containing data about the location
+     */
         private Location location;
         private List<String> locationResponses = new ArrayList<>();
 
 
-    public Map<String, YearlyValues> getYearlyWeatherValuesMap() {
+    public Map<String, YearlyValuesResponse> getYearlyWeatherValuesMap() {
         return yearlyWeatherValuesMap;
     }
 
-    public YearlyValues getYearlyValues(String year){
-        YearlyValues yearlyValues=this.yearlyWeatherValuesMap.get(year);
-        if(yearlyValues==null){
-            yearlyValues=new YearlyValues();
-            this.yearlyWeatherValuesMap.put(year, yearlyValues);
+    public YearlyValuesResponse getYearlyValues(String year){
+        YearlyValuesResponse yearlyValuesResponse =this.yearlyWeatherValuesMap.get(year);
+        if(yearlyValuesResponse ==null){
+            yearlyValuesResponse =new YearlyValuesResponse();
+            this.yearlyWeatherValuesMap.put(year, yearlyValuesResponse);
         }
-        return yearlyValues;
+        return yearlyValuesResponse;
 
     }
 
-    public void setYearlyWeatherValuesMap(Map<String, YearlyValues> yearlyWeatherValuesMap) {
+    public void setYearlyWeatherValuesMap(Map<String, YearlyValuesResponse> yearlyWeatherValuesMap) {
         this.yearlyWeatherValuesMap = yearlyWeatherValuesMap;
     }
 

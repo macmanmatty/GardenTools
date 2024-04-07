@@ -21,6 +21,7 @@ public class TotalCalculator extends ProcessWeatherBetweenDates{
     @Override
     protected void onEndDate(String date) {
         LocalDateTime localDateTime=LocalDateTime.parse(date);
+        super.yearlyDataValues.add(total);
         addValue(total, localDateTime.getYear() );
         total =0;
     }
