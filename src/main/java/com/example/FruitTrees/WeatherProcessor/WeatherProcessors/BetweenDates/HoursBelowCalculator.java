@@ -1,4 +1,4 @@
-package com.example.FruitTrees.ChillingHours.WeatherProcessors.BetweenDates;
+package com.example.FruitTrees.WeatherProcessor.WeatherProcessors.BetweenDates;
 
 import com.example.FruitTrees.WeatherConroller.WeatherResponse.YearlyValuesResponse;
 import org.springframework.stereotype.Component;
@@ -7,11 +7,10 @@ import java.time.LocalDateTime;
 
 /**
  *  A weather processor that calculates the total amount of some
- *  weather value above a certain value  and between dates
+ *  weather value below a certain value  and between dates
  *
- */
-@Component("HoursAbove")
-public class HoursAboveCalculator extends ProcessWeatherBetweenDates {
+ */@Component("HoursBelow")
+public class HoursBelowCalculator extends ProcessWeatherBetweenDates {
     /**
      * the counted hours
      */
@@ -19,16 +18,17 @@ public class HoursAboveCalculator extends ProcessWeatherBetweenDates {
     /**
      * the min value
      */
-    private double minValue;
-    public HoursAboveCalculator() {
+    private double maxValue;
+
+    public HoursBelowCalculator() {
         super("Chill Hours");
     }
     @Override
     public void before() {
         if(inputParameters.size()<1){
-            throw new IllegalArgumentException("Parameter");
+            throw new IllegalArgumentException("Missing parameter");
         }
-        this.minValue = Double.parseDouble(inputParameters.get(0));
+        this.maxValue = Double.parseDouble(inputParameters.get(0));
         values.clear();
     }
     @Override
@@ -39,8 +39,8 @@ public class HoursAboveCalculator extends ProcessWeatherBetweenDates {
         LocalDateTime localDateTime=LocalDateTime.parse(date);
         int year= localDateTime.getYear();
         super.yearlyDataValues.add(hours);
-       YearlyValuesResponse yearlyValuesResponse = locationWeatherResponse.getYearlyValues(String.valueOf(year));
-        String text="Hours Of " +dataType+  " Above "+minValue;
+        YearlyValuesResponse yearlyValuesResponse = locationWeatherResponse.getYearlyValues(String.valueOf(year));
+        String text="Hours Of " +dataType+  " Below "+maxValue;
         if(inputParameters.size()>1) {
             String requestText = inputParameters.get(1);
             if (requestText != null) {
@@ -54,7 +54,7 @@ public class HoursAboveCalculator extends ProcessWeatherBetweenDates {
     @Override
     void processWeatherBetween(Number data, String date) {
         double value=data.doubleValue();
-        if( value>= minValue) {
+        if( value<=maxValue) {
             hours++;
         }
     }

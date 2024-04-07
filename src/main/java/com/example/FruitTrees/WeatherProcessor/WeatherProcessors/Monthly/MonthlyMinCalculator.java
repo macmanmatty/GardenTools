@@ -1,28 +1,27 @@
-package com.example.FruitTrees.ChillingHours.WeatherProcessors.Monthly;
+package com.example.FruitTrees.WeatherProcessor.WeatherProcessors.Monthly;
 import org.springframework.stereotype.Component;
 import java.time.LocalDateTime;
-@Component("TotalMonthly")
-public class MonthlyTotalCalculator extends MonthlyWeatherProcessor {
-    private double finalValue =Double.MIN_VALUE;
-    public MonthlyTotalCalculator() {
-        super("Monthly Total");
+@Component("MinMonthly")
+public class MonthlyMinCalculator extends MonthlyWeatherProcessor {
+    private double finalValue =Double.MAX_VALUE;
+    public MonthlyMinCalculator() {
+        super("Monthly Min");
     }
-    @Override
-    public void before() {
-        super.before();
-    }
-   
+    
     @Override
     protected void onMonthEnd(Number value, String date) {
         monthlyValuesResponse.getValues().put(processorName +" For "+dataType, String.valueOf(finalValue));
         LocalDateTime localDateTime=LocalDateTime.parse(date);
         addValue(finalValue, localDateTime.getYear(), localDateTime.getMonth().name() );
         monthlyValues.get(currentMonthName).add(finalValue);
-        finalValue =0;
+
+        finalValue =Double.MAX_VALUE;
     }
     @Override
     protected void processWeatherBetween(Number data, String date) {
         double value=data.doubleValue();
-            finalValue =finalValue+ value;
+        if (value < finalValue) {
+            finalValue = value;
+        }
     }
 }

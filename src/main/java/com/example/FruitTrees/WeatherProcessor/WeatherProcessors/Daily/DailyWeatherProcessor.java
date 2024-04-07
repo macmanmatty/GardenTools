@@ -1,6 +1,6 @@
-package com.example.FruitTrees.ChillingHours.WeatherProcessors.Daily;
-import com.example.FruitTrees.ChillingHours.WeatherProcessors.DateType;
-import com.example.FruitTrees.ChillingHours.WeatherProcessors.Monthly.MonthlyWeatherProcessor;
+package com.example.FruitTrees.WeatherProcessor.WeatherProcessors.Daily;
+import com.example.FruitTrees.WeatherProcessor.WeatherProcessors.DateType;
+import com.example.FruitTrees.WeatherProcessor.WeatherProcessors.Monthly.MonthlyWeatherProcessor;
 
 import java.time.LocalDateTime;
 

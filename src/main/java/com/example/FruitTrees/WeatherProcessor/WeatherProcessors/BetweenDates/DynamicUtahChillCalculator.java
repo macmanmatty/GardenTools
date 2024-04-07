@@ -1,4 +1,4 @@
-package com.example.FruitTrees.ChillingHours.WeatherProcessors.BetweenDates;
+package com.example.FruitTrees.WeatherProcessor.WeatherProcessors.BetweenDates;
 
 import com.example.FruitTrees.WeatherConroller.WeatherResponse.YearlyValuesResponse;
 import org.springframework.stereotype.Component;

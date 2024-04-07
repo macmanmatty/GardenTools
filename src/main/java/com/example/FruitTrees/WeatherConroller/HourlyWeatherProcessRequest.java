@@ -44,6 +44,12 @@ public class HourlyWeatherProcessRequest {
      */
     private   boolean calculateAverage;
 
+    /**
+     * the decimal places to round the processed data to
+     * -1 = don't round
+     */
+    private int roundTo;
+
 
 
     public String getHourlyDataType() {
@@ -108,5 +114,13 @@ public class HourlyWeatherProcessRequest {
 
     public void setCalculateAverage(boolean calculateAverage) {
         this.calculateAverage = calculateAverage;
+    }
+
+    public int getRoundTo() {
+        return roundTo;
+    }
+
+    public void setRoundTo(int roundTo) {
+        this.roundTo = roundTo;
     }
 }

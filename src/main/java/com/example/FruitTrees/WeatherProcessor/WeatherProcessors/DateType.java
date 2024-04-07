@@ -1,4 +1,4 @@
-package com.example.FruitTrees.ChillingHours.WeatherProcessors;
+package com.example.FruitTrees.WeatherProcessor.WeatherProcessors;
 
 public enum DateType {
     NEW_YEARS_EVE, NEW_YEARS_DAY, FIRST_DAY_OF_MONTH, LAST_DAY_OF_MONTH, STANDARD_DAY,

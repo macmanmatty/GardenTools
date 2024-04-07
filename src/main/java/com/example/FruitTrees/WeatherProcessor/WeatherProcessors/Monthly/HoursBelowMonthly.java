@@ -1,4 +1,4 @@
-package com.example.FruitTrees.ChillingHours.WeatherProcessors.Monthly;
+package com.example.FruitTrees.WeatherProcessor.WeatherProcessors.Monthly;
 
 import org.springframework.stereotype.Component;
 

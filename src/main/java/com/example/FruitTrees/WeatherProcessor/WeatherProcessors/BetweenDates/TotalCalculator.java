@@ -1,4 +1,4 @@
-package com.example.FruitTrees.ChillingHours.WeatherProcessors.BetweenDates;
+package com.example.FruitTrees.WeatherProcessor.WeatherProcessors.BetweenDates;
 import org.springframework.stereotype.Component;
 import java.time.LocalDateTime;
 /**

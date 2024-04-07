@@ -1,7 +1,7 @@
-package com.example.FruitTrees.ChillingHours.WeatherProcessors.BetweenDates;
+package com.example.FruitTrees.WeatherProcessor.WeatherProcessors.BetweenDates;
 
-import com.example.FruitTrees.ChillingHours.WeatherProcessors.DateType;
-import com.example.FruitTrees.ChillingHours.WeatherProcessors.WeatherProcessor;
+import com.example.FruitTrees.WeatherProcessor.WeatherProcessors.DateType;
+import com.example.FruitTrees.WeatherProcessor.WeatherProcessors.WeatherProcessor;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -101,7 +101,7 @@ public abstract  class ProcessWeatherBetweenDates  extends WeatherProcessor {
        for( Double doubleNum: yearlyDataValues){
           total= doubleNum+total;
         }
-       double average=total/yearlyDataValues.size();
+       double average=Math.round(total/yearlyDataValues.size());
        values.add("Average "+ processorName +" "+average);
        //currentYearlyValuesResponse.getValues().put("Average "+dataType+ " for ", String.valueOf(average));
     }
