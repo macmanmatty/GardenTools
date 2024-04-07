@@ -1,5 +1,5 @@
-package com.example.FruitTrees.ChillingHours;
-import com.example.FruitTrees.ChillingHours.WeatherProcessors.WeatherProcessor;
+package com.example.FruitTrees.WeatherProcessor;
+import com.example.FruitTrees.WeatherProcessor.WeatherProcessors.WeatherProcessor;
 import com.example.FruitTrees.Location.Location;
 import com.example.FruitTrees.OpenMeteo.LocationResponse;
 import com.example.FruitTrees.OpenMeteo.OpenMeteoResponse;

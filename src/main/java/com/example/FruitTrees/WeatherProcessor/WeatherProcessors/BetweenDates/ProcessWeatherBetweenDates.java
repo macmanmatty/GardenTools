@@ -1,7 +1,7 @@
-package com.example.FruitTrees.ChillingHours.WeatherProcessors.BetweenDates;
+package com.example.FruitTrees.WeatherProcessor.WeatherProcessors.BetweenDates;
 
-import com.example.FruitTrees.ChillingHours.WeatherProcessors.DateType;
-import com.example.FruitTrees.ChillingHours.WeatherProcessors.WeatherProcessor;
+import com.example.FruitTrees.WeatherProcessor.WeatherProcessors.DateType;
+import com.example.FruitTrees.WeatherProcessor.WeatherProcessors.WeatherProcessor;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -27,6 +27,7 @@ public abstract  class ProcessWeatherBetweenDates  extends WeatherProcessor {
     @Override
     public void before() {
         values.clear();
+        yearlyDataValues.clear();
     }
     /**
      * the overridden process data method that  processes 
@@ -53,20 +54,25 @@ public abstract  class ProcessWeatherBetweenDates  extends WeatherProcessor {
             }
         }
     /**
-     * subclass implemented method  for
+     * method  for
      * preforming actions on weather start date
      * when the processing of weather starts
      * @param date  the current date and time of the weather  being processed
      * 
      */
-    protected abstract void onStartDate(String date);
+    protected  void onStartDate(String date){}
     /**
-     * subclass implemented method  for
+     *  method  for
      * preforming actions on weather end date
      * when the processing of weather ends
      * @param date  the current date and time of the weather  being processed
      */
-    protected abstract void onEndDate(String date);
+    protected void onEndDate(String date){
+        LocalDateTime localDateTime=LocalDateTime.parse(date);
+        int year=localDateTime.getYear();
+        yearlyDataValues.add(finalValue);
+
+    }
     /**
      * subclass implemented method  for
      * processing the weather
@@ -101,7 +107,7 @@ public abstract  class ProcessWeatherBetweenDates  extends WeatherProcessor {
        for( Double doubleNum: yearlyDataValues){
           total= doubleNum+total;
         }
-       double average=total/yearlyDataValues.size();
+       double average=Math.round(total/yearlyDataValues.size());
        values.add("Average "+ processorName +" "+average);
        //currentYearlyValuesResponse.getValues().put("Average "+dataType+ " for ", String.valueOf(average));
     }

@@ -1,4 +1,4 @@
-package com.example.FruitTrees.ChillingHours;
+package com.example.FruitTrees.WeatherProcessor;
 
 import java.util.HashMap;
 import java.util.Map;

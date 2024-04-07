@@ -1,6 +1,6 @@
-package com.example.FruitTrees.ChillingHours.WeatherProcessors.Monthly;
-import com.example.FruitTrees.ChillingHours.WeatherProcessors.DateType;
-import com.example.FruitTrees.ChillingHours.WeatherProcessors.WeatherProcessor;
+package com.example.FruitTrees.WeatherProcessor.WeatherProcessors.Monthly;
+import com.example.FruitTrees.WeatherProcessor.WeatherProcessors.DateType;
+import com.example.FruitTrees.WeatherProcessor.WeatherProcessors.WeatherProcessor;
 import java.time.LocalDateTime;
 import java.util.*;
 /**
@@ -95,7 +95,7 @@ public abstract  class MonthlyWeatherProcessor extends WeatherProcessor {
           for(Double doubleNum: monthlyValues){
               total=total+doubleNum;
           }
-          double average=total/monthlyValues.size();
+          double average=Math.round(total/monthlyValues.size());
           this.values.add("Average "+processorName+" For Month "+month+" "+average);
       }
     }
@@ -140,7 +140,7 @@ public abstract  class MonthlyWeatherProcessor extends WeatherProcessor {
     /**
      * checks to see if date / time is  the 0 hour of the first day of the month
      * or the last day of the month or new years day or new years eve
-     * if so sets teh current years and month and returns a enum used to call
+     * if so sets the current years and month and returns a enum used to call
      * the correct abstract processing method
      * @param openMeteoDateAndTime the current date and time being processed
      * @return true if the day / time is the 0 hour of the first day of the month

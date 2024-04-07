@@ -1,4 +1,4 @@
-package com.example.FruitTrees.ChillingHours;
+package com.example.FruitTrees.WeatherProcessor;
 
 import com.example.FruitTrees.OpenMeteo.OpenMeteoResponse;
 

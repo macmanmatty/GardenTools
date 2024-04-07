@@ -1,4 +1,4 @@
-package com.example.FruitTrees.ChillingHours.WeatherProcessors;
+package com.example.FruitTrees.WeatherProcessor.WeatherProcessors;
 import com.example.FruitTrees.WeatherConroller.WeatherResponse.DailyValuesResponse;
 import com.example.FruitTrees.WeatherConroller.WeatherResponse.LocationWeatherResponse;
 import com.example.FruitTrees.WeatherConroller.WeatherResponse.MonthlyValuesResponse;

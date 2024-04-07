@@ -1,6 +1,6 @@
 package com.example.FruitTrees.OpenMeteo;
 
-import com.example.FruitTrees.ChillingHours.WeatherDataProcessor;
+import com.example.FruitTrees.WeatherProcessor.WeatherDataProcessor;
 import com.example.FruitTrees.Location.Location;
 import com.example.FruitTrees.WeatherConroller.BadRequestException;
 import com.example.FruitTrees.WeatherConroller.HourlyWeatherProcessRequest;

@@ -1,4 +1,4 @@
-package com.example.FruitTrees.ChillingHours.WeatherProcessors.BetweenDates;
+package com.example.FruitTrees.WeatherProcessor.WeatherProcessors.BetweenDates;
 
 import com.example.FruitTrees.WeatherConroller.WeatherResponse.YearlyValuesResponse;
 import org.springframework.stereotype.Component;
@@ -30,6 +30,7 @@ public class HoursAboveCalculator extends ProcessWeatherBetweenDates {
         }
         this.minValue = Double.parseDouble(inputParameters.get(0));
         values.clear();
+        yearlyDataValues.clear();
     }
     @Override
     protected void onStartDate(String date) {

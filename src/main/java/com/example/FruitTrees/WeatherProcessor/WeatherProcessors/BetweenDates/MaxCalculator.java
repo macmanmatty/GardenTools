@@ -1,4 +1,4 @@
-package com.example.FruitTrees.ChillingHours.WeatherProcessors.BetweenDates;
+package com.example.FruitTrees.WeatherProcessor.WeatherProcessors.BetweenDates;
 import com.example.FruitTrees.WeatherConroller.WeatherResponse.YearlyValuesResponse;
 import org.springframework.stereotype.Component;
 import java.time.LocalDateTime;
@@ -7,9 +7,6 @@ public class MaxCalculator extends ProcessWeatherBetweenDates {
     private double finalValue =Double.MIN_VALUE;
     public MaxCalculator() {
         super("Max");
-    }
-    @Override
-    protected void onStartDate(String date) {
     }
     @Override
     protected void onEndDate(String date) {
