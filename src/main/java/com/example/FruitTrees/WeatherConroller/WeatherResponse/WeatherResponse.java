@@ -5,8 +5,19 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * the base weather response object for an API call to /weatherInfo endpoint
+ */
 public class WeatherResponse {
-  private List<String> responses = new ArrayList<>();
+    /**
+     *
+     */
+    private List<String> responses = new ArrayList<>();
+    /**
+     *  map of weather responses to  LocationWeatherResponses
+     *  key=location name
+     *  value= LocationWeatherResponses
+     */
     private Map<String,LocationWeatherResponse> locationWeatherResponses= new HashMap<>();
     public List<String> getResponses() {
         return responses;

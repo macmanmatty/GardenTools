@@ -2,11 +2,26 @@ package com.example.FruitTrees.Location;
 
 import java.math.BigDecimal;
 
+/**
+ * class the represents a location
+ */
 public class Location {
+    /**
+     * the id of the location
+     */
     long id;
+    /**
+     * the name of the location
+     */
     String name;
+    /**
+     * the latitude and longititude of the location
+     */
     String latitude;
     String longitude;
+    /**
+    the weather station id currently not used
+     */
     String stationId;
 
     public String getName() {

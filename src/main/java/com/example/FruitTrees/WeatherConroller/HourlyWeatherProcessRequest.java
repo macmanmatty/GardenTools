@@ -40,7 +40,7 @@ public class HourlyWeatherProcessRequest {
      */
     private List<String> inputParameters= new ArrayList<>();
     /**
-     *
+     * whether to calculate the average of the processed data
      */
     private   boolean calculateAverage;
 

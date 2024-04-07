@@ -4,11 +4,17 @@ import com.example.FruitTrees.ChillingHours.WeatherProcessors.DateType;
 import com.example.FruitTrees.ChillingHours.WeatherProcessors.WeatherProcessor;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
- * class for weather data processor hat process data between dates
+ *  base class for weather data processor that process data between dates yearly or semi-yearly weather between dates
  */
 public abstract  class ProcessWeatherBetweenDates  extends WeatherProcessor {
+    /**
+     * the processed values for each year or semi year
+     */
+    protected List<Double>  yearlyDataValues=new ArrayList<>();
     /**
      *  this is true if  the weather falls between the given dates
      *  and the weather data is currently processing
@@ -39,6 +45,7 @@ public abstract  class ProcessWeatherBetweenDates  extends WeatherProcessor {
                 case END_PROCESSING -> {
                     processing =false;
                     onEndDate(date);
+                    break;
                 }
             }
             if(processing){
@@ -64,11 +71,16 @@ public abstract  class ProcessWeatherBetweenDates  extends WeatherProcessor {
      * subclass implemented method  for
      * processing the weather
      * @param date  the current date and time of the weather  being processed
-     * @param  data the value of the weather data at he current date and time
+     * @param  data the value of the weather data at the current date and time
      */
     abstract void processWeatherBetween(Number data, String date);
 
-
+    /**
+     *  checks a string  date in YYYY-MM-DDTHH:MM format   to see if
+     *  it is the start date or the end date or justa normal date
+     * @param openMeteoDateAndTime
+     * @return
+     */
     public DateType checkDate(String openMeteoDateAndTime){
         LocalDateTime localDate=LocalDateTime.parse(openMeteoDateAndTime);
         int dayOfMonth=localDate.getDayOfMonth();
@@ -82,6 +94,18 @@ public abstract  class ProcessWeatherBetweenDates  extends WeatherProcessor {
         }
         return  DateType.STANDARD_DAY;
     }
+
+    @Override
+    public void calculateAverage() {
+        double total=0;
+       for( Double doubleNum: yearlyDataValues){
+          total= doubleNum+total;
+        }
+       double average=total/yearlyDataValues.size();
+       values.add("Average "+ processorName +" "+average);
+       //currentYearlyValuesResponse.getValues().put("Average "+dataType+ " for ", String.valueOf(average));
+    }
+
     /**
      * checks to see if a date is between  the start
      * and end dates for processing weather

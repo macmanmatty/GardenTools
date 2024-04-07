@@ -1,6 +1,6 @@
 package com.example.FruitTrees.ChillingHours.WeatherProcessors.BetweenDates;
 
-import com.example.FruitTrees.WeatherConroller.WeatherResponse.YearlyValues;
+import com.example.FruitTrees.WeatherConroller.WeatherResponse.YearlyValuesResponse;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
@@ -26,7 +26,7 @@ public class UtahChillCalculator extends ProcessWeatherBetweenDates {
      */
     private double maxTemp;
     public UtahChillCalculator() {
-        super("Chill Hours");
+        super("  Utah Chill Hours");
     }
     @Override
     public void before() {
@@ -44,10 +44,11 @@ public class UtahChillCalculator extends ProcessWeatherBetweenDates {
     protected void onEndDate(String date) {
         LocalDateTime localDateTime=LocalDateTime.parse(date);
         int year= localDateTime.getYear();
-       YearlyValues yearlyValues= locationWeatherResponse.getYearlyValues(String.valueOf(year));
+        super.yearlyDataValues.add(chillHours);
+        YearlyValuesResponse yearlyValuesResponse = locationWeatherResponse.getYearlyValues(String.valueOf(year));
         String text="Chilling Hours";
         String years= text+ " Utah Calculation Method ";
-        yearlyValues.getValues().put(years, String.valueOf(chillHours));
+        yearlyValuesResponse.getValues().put(years, String.valueOf(chillHours));
         values.add(years+" For " +year+" from: "+ startMonth +"/"+startDay+" to "+endMonth+"/" +endDay+ ": "+ chillHours);
         chillHours =0;
     }

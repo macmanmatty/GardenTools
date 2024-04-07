@@ -20,13 +20,13 @@ public class HoursAboveMonthly extends MonthlyWeatherProcessor {
     private double minValue;
 
     public HoursAboveMonthly() {
-        super("Chill Hours");
+        super("Hours Above Monthly");
     }
     @Override
     public void before() {
         super.before();
         if(inputParameters.size()<1){
-            throw new IllegalArgumentException("Parameter");
+            throw new IllegalArgumentException(" Params Array Size<1 You Must Include  The Minimum Value In The Array Of Parameters ");
         }
         this.minValue = Double.parseDouble(inputParameters.get(0));
         values.clear();
@@ -41,8 +41,9 @@ public class HoursAboveMonthly extends MonthlyWeatherProcessor {
                 text = requestText;
             }
         }
-        currenMonthlyValues.getValues().put(text, String.valueOf(hours));
+        monthlyValuesResponse.getValues().put(text, String.valueOf(hours));
         values.add(text+ " For "+ currentMonthName+"  "+currentYear+" : "+ hours);
+        monthlyValues.get(currentMonthName).add(hours);
         hours =0;
     }
     @Override
