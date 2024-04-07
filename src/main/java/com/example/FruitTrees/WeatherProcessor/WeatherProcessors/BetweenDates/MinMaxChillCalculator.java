@@ -33,6 +33,8 @@ public class MinMaxChillCalculator  extends ProcessWeatherBetweenDates {
         this.minTemp= Double.parseDouble(inputParameters.get(0));
         this.maxTemp= Double.parseDouble(inputParameters.get(1));
         values.clear();
+        yearlyDataValues.clear();
+
     }
     @Override
     protected void onStartDate(String date) {

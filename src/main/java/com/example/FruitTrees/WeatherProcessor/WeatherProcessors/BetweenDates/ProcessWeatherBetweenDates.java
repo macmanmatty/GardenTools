@@ -27,6 +27,7 @@ public abstract  class ProcessWeatherBetweenDates  extends WeatherProcessor {
     @Override
     public void before() {
         values.clear();
+        yearlyDataValues.clear();
     }
     /**
      * the overridden process data method that  processes 

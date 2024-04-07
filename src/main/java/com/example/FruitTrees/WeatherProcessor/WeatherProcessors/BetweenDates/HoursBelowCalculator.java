@@ -30,6 +30,8 @@ public class HoursBelowCalculator extends ProcessWeatherBetweenDates {
         }
         this.maxValue = Double.parseDouble(inputParameters.get(0));
         values.clear();
+        yearlyDataValues.clear();
+
     }
     @Override
     protected void onStartDate(String date) {
