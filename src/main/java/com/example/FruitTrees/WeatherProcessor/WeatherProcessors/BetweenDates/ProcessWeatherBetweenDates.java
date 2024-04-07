@@ -54,20 +54,25 @@ public abstract  class ProcessWeatherBetweenDates  extends WeatherProcessor {
             }
         }
     /**
-     * subclass implemented method  for
+     * method  for
      * preforming actions on weather start date
      * when the processing of weather starts
      * @param date  the current date and time of the weather  being processed
      * 
      */
-    protected abstract void onStartDate(String date);
+    protected  void onStartDate(String date){}
     /**
-     * subclass implemented method  for
+     *  method  for
      * preforming actions on weather end date
      * when the processing of weather ends
      * @param date  the current date and time of the weather  being processed
      */
-    protected abstract void onEndDate(String date);
+    protected void onEndDate(String date){
+        LocalDateTime localDateTime=LocalDateTime.parse(date);
+        int year=localDateTime.getYear();
+        yearlyDataValues.add(finalValue);
+
+    }
     /**
      * subclass implemented method  for
      * processing the weather

@@ -9,9 +9,6 @@ public class MaxCalculator extends ProcessWeatherBetweenDates {
         super("Max");
     }
     @Override
-    protected void onStartDate(String date) {
-    }
-    @Override
     protected void onEndDate(String date) {
             LocalDateTime localDateTime=LocalDateTime.parse(date);
             int year=localDateTime.getYear();
