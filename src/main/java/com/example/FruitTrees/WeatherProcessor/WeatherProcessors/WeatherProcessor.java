@@ -74,6 +74,11 @@ public abstract class WeatherProcessor {
      */
     protected DailyValuesResponse dailyValues;
 
+    /**
+     *  the current  processed  weather value
+     */
+    protected  double currentProcessedValue;
+
 
     public WeatherProcessor(String processorName) {
         this.processorName = processorName;

@@ -68,9 +68,6 @@ public abstract  class ProcessWeatherBetweenDates  extends WeatherProcessor {
      * @param date  the current date and time of the weather  being processed
      */
     protected void onEndDate(String date){
-        LocalDateTime localDateTime=LocalDateTime.parse(date);
-        int year=localDateTime.getYear();
-        yearlyDataValues.add(finalValue);
 
     }
     /**
@@ -112,29 +109,6 @@ public abstract  class ProcessWeatherBetweenDates  extends WeatherProcessor {
        //currentYearlyValuesResponse.getValues().put("Average "+dataType+ " for ", String.valueOf(average));
     }
 
-    /**
-     * checks to see if a date is between  the start
-     * and end dates for processing weather
-     * @param month numeric month value
-     * @param day  the numeric day value
-     * @return
-     */
-    boolean dateInRange(int month, int day) {
-        if (month > startMonth && month < endMonth) {
-            return true;
-        } else if (month == startMonth && month == endMonth) {
-            // If the month is the same, check if the day is within the range
-            return day >= startDay && day <= endDay;
-        } else if (month == startMonth) {
-            // If the month is the start month, check if the day is greater than or equal to the start day
-            return day >= startDay;
-        } else if (month == endMonth) {
-            // If the month is the end month, check if the day is less than or equal to the end day
-            return day <= endDay;
-        } else {
-            // If the month is neither the start nor end month, it's outside the range
-            return false;
-        }
-    }
+
 }
     
