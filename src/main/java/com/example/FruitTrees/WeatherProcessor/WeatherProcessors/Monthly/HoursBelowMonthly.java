@@ -24,7 +24,7 @@ public class HoursBelowMonthly extends MonthlyWeatherProcessor {
     public void before() {
         super.before();
 
-        if(inputParameters.size()<1){
+        if(inputParameters.isEmpty()){
             throw new IllegalArgumentException(" Params Array Size<1 You Must Include  The Maximum Value In The Array Of Parameters ");
         }
         super.processorName="Hours Below "+inputParameters.get(0)+"Monthly";

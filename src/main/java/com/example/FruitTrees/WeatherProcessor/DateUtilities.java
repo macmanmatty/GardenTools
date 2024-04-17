@@ -25,7 +25,7 @@ public class DateUtilities {
      * and end dates for processing weather
      * @param currentMonth numeric month value
      * @param currentDay  the numeric day value
-     * @return
+     * @return true if the date is range false if not
      */
     boolean dateInRange( int startMonth, int endMonth, int startDay, int endDay, int currentMonth, int currentDay) {
         if (currentMonth > startMonth && currentMonth < endMonth) {

@@ -9,7 +9,6 @@ import com.example.FruitTrees.WeatherConroller.WeatherResponse.LocationWeatherRe
 import com.example.FruitTrees.WeatherConroller.WeatherRequest;
 import com.example.FruitTrees.WeatherConroller.WeatherResponse.WeatherResponse;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -90,6 +89,7 @@ private void processHourlyWeather( List<String> openMeteoDateAndTime,  WeatherPr
      for (int count = 0; count < size; count++) {
          weatherProcessor.processWeather(data.get(count), openMeteoDateAndTime.get(count));
      }
+     weatherProcessor.after();
      if(hourlyWeatherProcessRequest.isCalculateAverage()){
          weatherProcessor.calculateAverage();
      }

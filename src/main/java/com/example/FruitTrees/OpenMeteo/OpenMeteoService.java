@@ -17,8 +17,8 @@ import java.util.List;
 @Service
 public class OpenMeteoService {
 
-   private OpenMeteoHTTPRequest openMeteoHTTPRequest;
-   private WeatherProcessorService weatherProcessorService;
+   private final  OpenMeteoHTTPRequest openMeteoHTTPRequest;
+   private  final WeatherProcessorService weatherProcessorService;
 
     @Value("${enable.Multiple.Location.Processing}")
     private  boolean processMultipleLocationRequestsEnabled;

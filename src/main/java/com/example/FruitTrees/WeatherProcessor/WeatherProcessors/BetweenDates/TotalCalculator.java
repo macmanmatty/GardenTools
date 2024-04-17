@@ -14,10 +14,7 @@ public class TotalCalculator extends ProcessWeatherBetweenDates{
     public TotalCalculator() {
         super("Total");
     }
-  
-    @Override
-    protected void onStartDate(String date) {
-    }
+
     @Override
     protected void onEndDate(String date) {
         LocalDateTime localDateTime=LocalDateTime.parse(date);

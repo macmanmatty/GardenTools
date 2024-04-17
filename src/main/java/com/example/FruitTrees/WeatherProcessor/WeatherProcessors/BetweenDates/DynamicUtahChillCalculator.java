@@ -22,14 +22,14 @@ public class DynamicUtahChillCalculator extends ProcessWeatherBetweenDates {
     /**
      * the min value
      */
-    private List<Double> ragesBottom= new ArrayList<>();
+    private final List<Double> ragesBottom= new ArrayList<>();
 
     /**
      * the max value
      */
-    private List<Double> ragesTop= new ArrayList<>();
+    private final  List<Double> ragesTop= new ArrayList<>();
 
-    private List<Double> chillAmounts=new ArrayList<>();
+    private final  List<Double> chillAmounts=new ArrayList<>();
     public DynamicUtahChillCalculator() {
         super("Chill Hours");
     }
@@ -46,9 +46,7 @@ public class DynamicUtahChillCalculator extends ProcessWeatherBetweenDates {
         }
         values.clear();
     }
-    @Override
-    protected void onStartDate(String date) {
-    }
+
     @Override
     protected void onEndDate(String date) {
         LocalDateTime localDateTime=LocalDateTime.parse(date);
