@@ -10,16 +10,18 @@ import com.example.FruitTrees.WeatherConroller.WeatherRequest;
 import com.example.FruitTrees.WeatherConroller.WeatherResponse.WeatherResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
+
 import java.util.*;
-@Component
-public class WeatherDataProcessor {
+@Service
+public class WeatherProcessorService {
     /**
      * map of WeatherProcessor Components auto generated  by spring
      * key=component name
      * value= WeatherProcessor
      */
     Map<String, WeatherProcessor> weatherProcessorMap;
-    public WeatherDataProcessor( @Autowired  Map<String, WeatherProcessor> weatherProcessorMap) {
+    public WeatherProcessorService(@Autowired  Map<String, WeatherProcessor> weatherProcessorMap) {
         this.weatherProcessorMap = weatherProcessorMap;
     }
     /**
@@ -73,7 +75,7 @@ public class WeatherDataProcessor {
      * @param locationWeatherResponse
      * @param openMeteoDateAndTime
      */
- public void processHourlyWeather( List<String> openMeteoDateAndTime,  WeatherProcessor weatherProcessor, HourlyWeatherProcessRequest hourlyWeatherProcessRequest,
+private void processHourlyWeather( List<String> openMeteoDateAndTime,  WeatherProcessor weatherProcessor, HourlyWeatherProcessRequest hourlyWeatherProcessRequest,
                                  OpenMeteoResponse openMeteoResponse,
                                   LocationWeatherResponse locationWeatherResponse){
      weatherProcessor.setStartMonthDay(hourlyWeatherProcessRequest.getStartProcessMonth(), hourlyWeatherProcessRequest.getStartProcessDay());
@@ -81,6 +83,7 @@ public class WeatherDataProcessor {
      weatherProcessor.setInputParameters(hourlyWeatherProcessRequest.getInputParameters());
      weatherProcessor.setDataType(hourlyWeatherProcessRequest.getHourlyDataType());
      weatherProcessor.setLocationWeatherResponse(locationWeatherResponse);
+     weatherProcessor.setOnlyCalculateAverage(hourlyWeatherProcessRequest.isOnlyCalculateAverage() && hourlyWeatherProcessRequest.isCalculateAverage());
      List<? extends Number> data = DataUtilities.getHourlyData(openMeteoResponse, hourlyWeatherProcessRequest.getHourlyDataType());
      int size = data.size();
      weatherProcessor.before();
@@ -93,14 +96,5 @@ public class WeatherDataProcessor {
      List<String> values = weatherProcessor.getValues();
      locationWeatherResponse.getLocationResponses().addAll(values);
  }
- public int findDate(List<String> openMeteoDateAndTime, String startDateTime){
-     String localDateTimeStart=DateUtilities.convertStringDateStringDateTime(startDateTime);
-     int size=openMeteoDateAndTime.size();
-     for(int count=0; count<size; count++){
-         if(openMeteoDateAndTime.equals(localDateTimeStart)){
-             return count;
-         }
-     }
-     throw new IllegalArgumentException("Date: "+ startDateTime+ "Is  Out Of Bounds");
- }
+
 }

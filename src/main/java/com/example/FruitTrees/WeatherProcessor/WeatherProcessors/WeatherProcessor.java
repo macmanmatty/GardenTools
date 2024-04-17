@@ -3,10 +3,13 @@ import com.example.FruitTrees.WeatherConroller.WeatherResponse.DailyValuesRespon
 import com.example.FruitTrees.WeatherConroller.WeatherResponse.LocationWeatherResponse;
 import com.example.FruitTrees.WeatherConroller.WeatherResponse.MonthlyValuesResponse;
 import com.example.FruitTrees.WeatherConroller.WeatherResponse.YearlyValuesResponse;
+
 import java.util.ArrayList;
 import java.util.List;
 /**
  *a base  abstract class for implementing a weather processor
+ * identified by the component name in the map of weather processors
+ * in the WeatherDataProcessor class
  */
 public abstract class WeatherProcessor {
     /**
@@ -44,7 +47,7 @@ public abstract class WeatherProcessor {
      * from the same as the spring  component name;
      *
      */
-   protected final  String processorName;
+   protected String processorName;
     /**
      * the type of open meteo data the processor is currently processing
      */
@@ -75,9 +78,9 @@ public abstract class WeatherProcessor {
     protected DailyValuesResponse dailyValues;
 
     /**
-     *  the current  processed  weather value
+     * weather or not to only calculate the average
      */
-    protected  double currentProcessedValue;
+    protected  boolean onlyCalculateAverage;
 
 
     public WeatherProcessor(String processorName) {
@@ -100,9 +103,26 @@ public abstract class WeatherProcessor {
      * @param date the date and time the value happened
      */
     public abstract void processWeather(Number value, String date);
-    public void addValue(double value, int year){
-        values.add(processorName +" for "+dataType+" "+year+" from: "+ startMonth +"/"+startDay+" to "+endMonth+"/" +endDay+ ": "+ value);
+
+    /**
+     *
+     * @param value
+     * @param year
+     */
+
+    public void addProcessedValue(double value, int year){
+        addProcessedValue(processorName +" for "+dataType+" "+year+" from: "+ startMonth +"/"+startDay+" to "+endMonth+"/" +endDay+ ": "+ value);
     }
+    /**
+     *
+     * @param text
+     */
+    public void addProcessedValue(String text){
+        if(!onlyCalculateAverage) {
+            values.add(text);
+        }
+    }
+
     /**
      * checks to see if the month and day given as month and day of a date   for processing data
      * is valid if the date is 2/29 converts it to 3/1
@@ -184,4 +204,11 @@ public abstract class WeatherProcessor {
         this.locationWeatherResponse = locationWeatherResponse;
     }
 
+    public boolean isOnlyCalculateAverage() {
+        return onlyCalculateAverage;
+    }
+
+    public void setOnlyCalculateAverage(boolean onlyCalculateAverage) {
+        this.onlyCalculateAverage = onlyCalculateAverage;
+    }
 }

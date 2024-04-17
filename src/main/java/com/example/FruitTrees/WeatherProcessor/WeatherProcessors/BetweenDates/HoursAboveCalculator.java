@@ -49,7 +49,9 @@ public class HoursAboveCalculator extends ProcessWeatherBetweenDates {
             }
         }
         yearlyValuesResponse.getValues().put(text, String.valueOf(hours));
-        values.add(text+ year+" from: "+ startMonth +"/"+startDay+" to "+endMonth+"/" +endDay+ ": "+ hours);
+        if(!isOnlyCalculateAverage()) {
+            values.add(text + year + " from: " + startMonth + "/" + startDay + " to " + endMonth + "/" + endDay + ": " + hours);
+        }
         hours =0;
     }
     @Override

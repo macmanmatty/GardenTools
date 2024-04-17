@@ -17,24 +17,11 @@ public class UtahChillCalculator extends ProcessWeatherBetweenDates {
      * the counted hours
      */
     private double chillHours;
-    /**
-     * the min value
-     */
-    private double minTemp;
-    /**
-     * the max value
-     */
-    private double maxTemp;
     public UtahChillCalculator() {
         super("  Utah Chill Hours");
     }
     @Override
     public void before() {
-        if(inputParameters.size()<2){
-            throw new IllegalArgumentException("Missing min and max parameters");
-        }
-        this.minTemp= Double.parseDouble(inputParameters.get(0));
-        this.maxTemp= Double.parseDouble(inputParameters.get(1));
         values.clear();
         yearlyDataValues.clear();
 
@@ -51,7 +38,7 @@ public class UtahChillCalculator extends ProcessWeatherBetweenDates {
         String text="Chilling Hours";
         String years= text+ " Utah Calculation Method ";
         yearlyValuesResponse.getValues().put(years, String.valueOf(chillHours));
-        values.add(years+" For " +year+" from: "+ startMonth +"/"+startDay+" to "+endMonth+"/" +endDay+ ": "+ chillHours);
+        addProcessedValue(years+" For " +year+" from: "+ startMonth +"/"+startDay+" to "+endMonth+"/" +endDay+ ": "+ chillHours);
         chillHours =0;
     }
     @Override

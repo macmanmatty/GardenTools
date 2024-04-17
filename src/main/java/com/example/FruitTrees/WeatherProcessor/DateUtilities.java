@@ -1,5 +1,7 @@
 package com.example.FruitTrees.WeatherProcessor;
 
+import java.util.List;
+
 public class DateUtilities {
 
     private DateUtilities() {
@@ -16,6 +18,42 @@ public class DateUtilities {
             date=date+"T00:00";
         }
         return date;
+    }
+
+    /**
+     * checks to see if a date is between  the start
+     * and end dates for processing weather
+     * @param currentMonth numeric month value
+     * @param currentDay  the numeric day value
+     * @return
+     */
+    boolean dateInRange( int startMonth, int endMonth, int startDay, int endDay, int currentMonth, int currentDay) {
+        if (currentMonth > startMonth && currentMonth < endMonth) {
+            return true;
+        } else if (currentMonth == startMonth && currentMonth == endMonth) {
+            // If the month is the same, check if the day is within the range
+            return currentDay >= startDay && currentDay <= endDay;
+        } else if (currentMonth == startMonth) {
+            // If the month is the start month, check if the day is greater than or equal to the start day
+            return currentDay >= startDay;
+        } else if (currentMonth == endMonth) {
+            // If the month is the end month, check if the day is less than or equal to the end day
+            return currentDay <= endDay;
+        } else {
+            // If the month is neither the start nor end month, it's outside the range
+            return false;
+        }
+    }
+
+    public int findDate(List<String> openMeteoDateAndTime, String startDateTime){
+        String localDateTimeStart=DateUtilities.convertStringDateStringDateTime(startDateTime);
+        int size=openMeteoDateAndTime.size();
+        for(int count=0; count<size; count++){
+            if(openMeteoDateAndTime.equals(localDateTimeStart)){
+                return count;
+            }
+        }
+        throw new IllegalArgumentException("Date: "+ startDateTime+ "Is  Out Of Bounds");
     }
 
 }

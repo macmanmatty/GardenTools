@@ -13,7 +13,7 @@ public class MaxCalculator extends ProcessWeatherBetweenDates {
             LocalDateTime localDateTime=LocalDateTime.parse(date);
             int year=localDateTime.getYear();
             super.yearlyDataValues.add(finalValue);
-             addValue(finalValue, year);
+             addProcessedValue(finalValue, year);
             YearlyValuesResponse yearlyValuesResponse = locationWeatherResponse.getYearlyValues(String.valueOf(year));
             yearlyValuesResponse.getValues().put(processorName +" For "+dataType, String.valueOf(values));
             finalValue =Double.MIN_VALUE;
