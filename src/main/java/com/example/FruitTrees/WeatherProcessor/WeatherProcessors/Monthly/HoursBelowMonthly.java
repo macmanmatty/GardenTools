@@ -23,9 +23,11 @@ public class HoursBelowMonthly extends MonthlyWeatherProcessor {
     @Override
     public void before() {
         super.before();
-        if(inputParameters.size()<1){
+
+        if(inputParameters.isEmpty()){
             throw new IllegalArgumentException(" Params Array Size<1 You Must Include  The Maximum Value In The Array Of Parameters ");
         }
+        super.processorName="Hours Below "+inputParameters.get(0)+"Monthly";
         this.maxValue = Double.parseDouble(inputParameters.get(0));
         values.clear();
     }
@@ -40,7 +42,8 @@ public class HoursBelowMonthly extends MonthlyWeatherProcessor {
             }
         }
         monthlyValuesResponse.getValues().put(text, String.valueOf(hours));
-        values.add(text+ " For "+ currentMonthName+" "+currentYear+" : "+ hours);
+            addProcessedValue(text + " For " + currentMonthName + " " + currentYear + " : " + hours);
+
         monthlyValues.get(currentMonthName).add(hours);
         hours =0;
     }

@@ -22,13 +22,14 @@ public class DynamicUtahChillCalculator extends ProcessWeatherBetweenDates {
     /**
      * the min value
      */
-    private List<Double> ragesBottom= new ArrayList<>();
-    private List<Double> ragesTop= new ArrayList<>();
+    private final List<Double> ragesBottom= new ArrayList<>();
 
     /**
      * the max value
      */
-    private List<Double> chillHoursValues=new ArrayList<>();
+    private final  List<Double> ragesTop= new ArrayList<>();
+
+    private final  List<Double> chillAmounts=new ArrayList<>();
     public DynamicUtahChillCalculator() {
         super("Chill Hours");
     }
@@ -41,14 +42,11 @@ public class DynamicUtahChillCalculator extends ProcessWeatherBetweenDates {
         for(int count=0; count<size; count=count+3){
             ragesBottom.add(Double.valueOf(inputParameters.get(count)));
             ragesTop.add(Double.valueOf(inputParameters.get(count+1)));
-            chillHoursValues.add(Double.valueOf(inputParameters.get(count+2)));
+            chillAmounts.add(Double.valueOf(inputParameters.get(count+2)));
         }
-
         values.clear();
     }
-    @Override
-    protected void onStartDate(String date) {
-    }
+
     @Override
     protected void onEndDate(String date) {
         LocalDateTime localDateTime=LocalDateTime.parse(date);
@@ -56,15 +54,24 @@ public class DynamicUtahChillCalculator extends ProcessWeatherBetweenDates {
         super.yearlyDataValues.add(chillHours);
         YearlyValuesResponse yearlyValuesResponse = locationWeatherResponse.getYearlyValues(String.valueOf(year));
         String text="Chilling Hours";
-        String years= text+ " Utah Calculation Method ";
+        String years= text+ "  Dynamic Utah Calculation Method ";
         yearlyValuesResponse.getValues().put(years, String.valueOf(chillHours));
 
-        values.add(years+" For " +year+" from: "+ startMonth +"/"+startDay+" to "+endMonth+"/" +endDay+ ": "+ chillHours);
+        addProcessedValue(years+" For " +year+" from: "+ startMonth +"/"+startDay+" to "+endMonth+"/" +endDay+ ": "+ chillHours);
         chillHours =0;
     }
     @Override
     void processWeatherBetween(Number data, String date) {
         double value=data.doubleValue();
+        int size=ragesBottom.size();
+        for(int count=0; count<size; count++){
+            double min=ragesBottom.get(count);
+            double max=ragesTop.get(count);
+            double chillAmount=chillAmounts.get(count);
+            if(value>=min && value<=max){
+                chillHours=chillHours+chillAmount;
+            }
+        }
 
     }
 }

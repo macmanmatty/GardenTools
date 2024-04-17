@@ -43,6 +43,10 @@ public class HourlyWeatherProcessRequest {
      * whether to calculate the average of the processed data
      */
     private   boolean calculateAverage;
+    /**
+     * whether to only  calculate the average of the processed data
+     */
+    private   boolean onlyCalculateAverage;
 
     /**
      * the decimal places to round the processed data to
@@ -114,6 +118,9 @@ public class HourlyWeatherProcessRequest {
 
     public void setCalculateAverage(boolean calculateAverage) {
         this.calculateAverage = calculateAverage;
+        if(!calculateAverage){
+            onlyCalculateAverage=false;
+        }
     }
 
     public int getRoundTo() {
@@ -122,5 +129,14 @@ public class HourlyWeatherProcessRequest {
 
     public void setRoundTo(int roundTo) {
         this.roundTo = roundTo;
+    }
+
+    public boolean isOnlyCalculateAverage() {
+        return onlyCalculateAverage;
+    }
+
+    public void setOnlyCalculateAverage(boolean onlyCalculateAverage) {
+        this.onlyCalculateAverage = onlyCalculateAverage;
+        this.calculateAverage=onlyCalculateAverage;
     }
 }

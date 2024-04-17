@@ -5,16 +5,18 @@ import java.time.LocalDateTime;
 @Component("MaxMonthly")
 public class MonthlyMaxCalculator extends MonthlyWeatherProcessor {
     private double finalValue =Double.MIN_VALUE;
-    private YearlyValuesResponse yearlyValuesResponse;
     public MonthlyMaxCalculator() {
         super("Monthly Max");
     }
+
+
     
     @Override
     protected void onMonthEnd(Number value, String date) {
         monthlyValuesResponse.getValues().put(processorName +" For "+dataType, String.valueOf(finalValue));
         LocalDateTime localDateTime=LocalDateTime.parse(date);
-        addValue(finalValue, localDateTime.getYear(), localDateTime.getMonth().name() );
+            addValue(finalValue, localDateTime.getYear(), localDateTime.getMonth().name());
+
         monthlyValues.get(currentMonthName).add(finalValue);
 
         finalValue =Double.MIN_VALUE;

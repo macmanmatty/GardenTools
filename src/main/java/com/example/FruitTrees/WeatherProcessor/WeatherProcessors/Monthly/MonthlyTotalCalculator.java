@@ -16,7 +16,8 @@ public class MonthlyTotalCalculator extends MonthlyWeatherProcessor {
     protected void onMonthEnd(Number value, String date) {
         monthlyValuesResponse.getValues().put(processorName +" For "+dataType, String.valueOf(finalValue));
         LocalDateTime localDateTime=LocalDateTime.parse(date);
-        addValue(finalValue, localDateTime.getYear(), localDateTime.getMonth().name() );
+            addValue(finalValue, localDateTime.getYear(), localDateTime.getMonth().name());
+
         monthlyValues.get(currentMonthName).add(finalValue);
         finalValue =0;
     }

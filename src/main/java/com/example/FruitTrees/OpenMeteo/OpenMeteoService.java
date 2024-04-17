@@ -1,6 +1,6 @@
 package com.example.FruitTrees.OpenMeteo;
 
-import com.example.FruitTrees.WeatherProcessor.WeatherDataProcessor;
+import com.example.FruitTrees.WeatherProcessor.WeatherProcessorService;
 import com.example.FruitTrees.Location.Location;
 import com.example.FruitTrees.WeatherConroller.BadRequestException;
 import com.example.FruitTrees.WeatherConroller.HourlyWeatherProcessRequest;
@@ -17,8 +17,8 @@ import java.util.List;
 @Service
 public class OpenMeteoService {
 
-   private OpenMeteoHTTPRequest openMeteoHTTPRequest;
-   private WeatherDataProcessor weatherDataProcessor;
+   private final  OpenMeteoHTTPRequest openMeteoHTTPRequest;
+   private  final WeatherProcessorService weatherProcessorService;
 
     @Value("${enable.Multiple.Location.Processing}")
     private  boolean processMultipleLocationRequestsEnabled;
@@ -26,15 +26,15 @@ public class OpenMeteoService {
     private  int maxMultipleOpenMeteoRequests;
 
    @Autowired
-    public OpenMeteoService(OpenMeteoHTTPRequest openMeteoHTTPRequest, WeatherDataProcessor weatherDataProcessor) {
+    public OpenMeteoService(OpenMeteoHTTPRequest openMeteoHTTPRequest, WeatherProcessorService weatherProcessorService) {
         this.openMeteoHTTPRequest = openMeteoHTTPRequest;
-        this.weatherDataProcessor = weatherDataProcessor;
+        this.weatherProcessorService = weatherProcessorService;
     }
 
     public WeatherResponse getData(WeatherRequest weatherRequest ) throws IOException {
         extractAdditionalDataTypes(weatherRequest);
         OpenMeteoLocationResponses openMeteoResponses=makeRequest(weatherRequest);
-        WeatherResponse  response= weatherDataProcessor.processHourlyData( weatherRequest, openMeteoResponses);
+        WeatherResponse  response= weatherProcessorService.processHourlyData( weatherRequest, openMeteoResponses);
         return  response;
     }
     private void extractAdditionalDataTypes(WeatherRequest weatherRequest) {

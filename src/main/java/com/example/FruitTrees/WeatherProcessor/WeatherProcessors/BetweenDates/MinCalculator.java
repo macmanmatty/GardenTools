@@ -10,9 +10,6 @@ public class MinCalculator extends ProcessWeatherBetweenDates {
     }
 
     @Override
-    protected void onStartDate(String date) {
-    }
-    @Override
     protected void onEndDate(String date) {
             LocalDateTime localDateTime=LocalDateTime.parse(date);
             int year=localDateTime.getYear();
@@ -21,7 +18,7 @@ public class MinCalculator extends ProcessWeatherBetweenDates {
         YearlyValuesResponse yearlyValuesResponse = locationWeatherResponse.getYearlyValues(String.valueOf(year));
         yearlyValuesResponse.getValues().put(processorName +" For "+dataType, String.valueOf(values));
 
-        addValue(finalValue, year);
+        addProcessedValue(finalValue, year);
             finalValue =Double.MAX_VALUE;
         }
     @Override

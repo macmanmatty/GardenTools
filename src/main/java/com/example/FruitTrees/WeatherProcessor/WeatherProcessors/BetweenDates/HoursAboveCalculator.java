@@ -25,16 +25,14 @@ public class HoursAboveCalculator extends ProcessWeatherBetweenDates {
     }
     @Override
     public void before() {
-        if(inputParameters.size()<1){
+        if(inputParameters.isEmpty()){
             throw new IllegalArgumentException("Parameter");
         }
         this.minValue = Double.parseDouble(inputParameters.get(0));
         values.clear();
         yearlyDataValues.clear();
     }
-    @Override
-    protected void onStartDate(String date) {
-    }
+
     @Override
     protected void onEndDate(String date) {
         LocalDateTime localDateTime=LocalDateTime.parse(date);
@@ -49,7 +47,9 @@ public class HoursAboveCalculator extends ProcessWeatherBetweenDates {
             }
         }
         yearlyValuesResponse.getValues().put(text, String.valueOf(hours));
-        values.add(text+ year+" from: "+ startMonth +"/"+startDay+" to "+endMonth+"/" +endDay+ ": "+ hours);
+        if(!isOnlyCalculateAverage()) {
+            values.add(text + year + " from: " + startMonth + "/" + startDay + " to " + endMonth + "/" + endDay + ": " + hours);
+        }
         hours =0;
     }
     @Override
