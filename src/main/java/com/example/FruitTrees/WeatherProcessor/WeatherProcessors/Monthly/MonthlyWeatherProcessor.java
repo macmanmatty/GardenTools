@@ -71,21 +71,17 @@ public abstract  class MonthlyWeatherProcessor extends WeatherProcessor {
            case NEW_YEARS_EVE -> {
                onEndYear(value, date);
                onMonthEnd(value, date);
-               break;
            }
            case NEW_YEARS_DAY -> {
                onStartNewYear(value, date);
                onStartNewMonth(value, date);
-               break;
            }
            case FIRST_DAY_OF_MONTH -> {
                onStartNewMonth(value, date);
                totalMonths++;
-               break;
            }
            case LAST_DAY_OF_MONTH -> {
                onMonthEnd(value, date);
-               break;
            }
        }
         processWeatherBetween(value, date);
@@ -112,28 +108,28 @@ public abstract  class MonthlyWeatherProcessor extends WeatherProcessor {
      * when the processing of weather ends
      * @param date  the current date and time of the weather  being processed
      */
-    protected  void onEndYear(Number value, String date){};
+    protected  void onEndYear(Number value, String date){}
     /**
      * subclass implemented method  for
      * preforming actions on weather  the first hour jan 1
      * when the processing of weather ends
      * @param date  the current date and time of the weather  being processed
      */
-    protected  void onStartNewYear(Number value, String date) {};
+    protected  void onStartNewYear(Number value, String date) {}
     /**
      * subclass implemented method  for
      * preforming actions on weather first day of the first hour
      * when the processing of weather ends
      * @param date  the current date and time of the weather  being processed
      */
-    protected  void onStartNewMonth(Number value, String date){};
+    protected  void onStartNewMonth(Number value, String date){}
     /**
      * subclass implemented method  for
      * preforming actions on weather last day of the  month on the 23 hour
      * when the processing of weather ends
      * @param date  the current date and time of the weather  being processed
      */
-    protected  void onMonthEnd(Number value, String date){};
+    protected  void onMonthEnd(Number value, String date){}
     /**
      * subclass implemented method  for
      * processing the weather

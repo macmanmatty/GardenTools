@@ -98,12 +98,12 @@ public abstract class WeatherProcessor {
      * overridden  method called
      * before the processing of weather starts
      */
-    public  void  before(){};
+    public  void  before(){}
     /**
      * overridden  method called
      * after the processing of weather ends
      */
-    public  void  after(){};
+    public  void  after(){}
     /**
      *
      * called for each double in the data set to process weather value

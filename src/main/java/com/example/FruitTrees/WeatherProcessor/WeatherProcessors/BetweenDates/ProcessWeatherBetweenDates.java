@@ -44,12 +44,10 @@ public abstract  class ProcessWeatherBetweenDates  extends WeatherProcessor {
                 case START_PROCESSING -> {
                     processing =true;
                     onStartDate(date);
-                    break;
                 }
                 case END_PROCESSING -> {
                     processing =false;
                     onEndDate(date);
-                    break;
                 }
             }
             if(processing){

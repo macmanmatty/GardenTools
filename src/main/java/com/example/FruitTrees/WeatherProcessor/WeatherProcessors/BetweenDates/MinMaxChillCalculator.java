@@ -38,9 +38,6 @@ public class MinMaxChillCalculator  extends ProcessWeatherBetweenDates {
 
     }
     @Override
-    protected void onStartDate(String date) {
-    }
-    @Override
     protected void onEndDate(String date) {
         LocalDateTime localDateTime=LocalDateTime.parse(date);
         int year= localDateTime.getYear();
