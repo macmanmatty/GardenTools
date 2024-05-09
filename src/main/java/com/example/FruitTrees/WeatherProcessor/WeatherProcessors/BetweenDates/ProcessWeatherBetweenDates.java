@@ -24,6 +24,9 @@ public abstract  class ProcessWeatherBetweenDates  extends WeatherProcessor {
         super(name);
     }
 
+    protected ProcessWeatherBetweenDates() {
+    }
+
     @Override
     public void before() {
         values.clear();

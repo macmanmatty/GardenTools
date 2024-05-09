@@ -21,13 +21,14 @@ public class HoursAboveCalculator extends ProcessWeatherBetweenDates {
      */
     private double minValue;
     public HoursAboveCalculator() {
-        super("Chill Hours");
     }
     @Override
     public void before() {
         if(inputParameters.isEmpty()){
             throw new IllegalArgumentException("Parameter");
         }
+        this.processorName="Hours Above "+inputParameters.get(0);
+
         this.minValue = Double.parseDouble(inputParameters.get(0));
         values.clear();
         yearlyDataValues.clear();

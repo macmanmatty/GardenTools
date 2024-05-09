@@ -37,6 +37,10 @@ public abstract  class MonthlyWeatherProcessor extends WeatherProcessor {
      * value=  yearly data for month for the processed weather data
      */
     Map<String, List<Double>> monthlyValues=new HashMap<>();
+
+    protected MonthlyWeatherProcessor() {
+    }
+
     @Override
     public void before() {
         values.clear();
