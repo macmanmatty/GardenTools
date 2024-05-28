@@ -23,21 +23,19 @@ public class MinMaxChillCalculator  extends ProcessWeatherBetweenDates {
      */
     private double maxTemp;
     public MinMaxChillCalculator() {
-        super("Chill Hours");
     }
     @Override
     public void before() {
         if(inputParameters.size()<2){
             throw new IllegalArgumentException("Missing min and max parameters");
         }
+        this.processorName="Hours Between "+inputParameters.get(0)+" And "+inputParameters.get(1);
+
         this.minTemp= Double.parseDouble(inputParameters.get(0));
         this.maxTemp= Double.parseDouble(inputParameters.get(1));
         values.clear();
         yearlyDataValues.clear();
 
-    }
-    @Override
-    protected void onStartDate(String date) {
     }
     @Override
     protected void onEndDate(String date) {

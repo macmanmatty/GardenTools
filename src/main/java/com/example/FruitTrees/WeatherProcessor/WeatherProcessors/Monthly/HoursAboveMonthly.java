@@ -20,7 +20,6 @@ public class HoursAboveMonthly extends MonthlyWeatherProcessor {
     private double minValue;
 
     public HoursAboveMonthly() {
-        super("Hours Above Monthly");
     }
     @Override
     public void before() {
@@ -28,6 +27,7 @@ public class HoursAboveMonthly extends MonthlyWeatherProcessor {
         if(inputParameters.isEmpty()){
             throw new IllegalArgumentException(" Params Array Size<1 You Must Include  The Minimum Value In The Array Of Parameters ");
         }
+
         super.processorName="Hours Above "+inputParameters.get(0)+"Monthly";
         this.minValue = Double.parseDouble(inputParameters.get(0));
         values.clear();

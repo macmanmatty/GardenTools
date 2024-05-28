@@ -5,6 +5,9 @@ import org.springframework.cache.concurrent.ConcurrentMapCacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
 @Configuration
 public class ApplicationConfiguration {
 
@@ -12,5 +15,10 @@ public class ApplicationConfiguration {
     public CacheManager cacheManager() {
         return
        new ConcurrentMapCacheManager("openMeteoDataCache","processedWeatherCache" );
+    }
+
+    @Bean
+    public ExecutorService executorService() {
+        return Executors.newFixedThreadPool(8);
     }
 }

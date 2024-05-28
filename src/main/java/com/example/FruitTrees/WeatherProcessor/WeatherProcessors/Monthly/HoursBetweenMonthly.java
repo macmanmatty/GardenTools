@@ -4,11 +4,11 @@ import org.springframework.stereotype.Component;
 
 /**
  *  A weather processor that calculates the total amount of some
- *  weather value above a certain value  for each month
+ *  weather value between a min and max   value  for each month
  *
  */
-@Component("HoursBelowMonthly")
-public class HoursBelowMonthly extends MonthlyWeatherProcessor {
+@Component("HoursBetweenMonthly")
+public class HoursBetweenMonthly extends MonthlyWeatherProcessor {
     /**
      * the counted hours
      */
@@ -17,25 +17,27 @@ public class HoursBelowMonthly extends MonthlyWeatherProcessor {
      * the max value
      */
     private double maxValue;
-    public HoursBelowMonthly() {
+    private double minValue;
+
+    public HoursBetweenMonthly() {
     }
     @Override
     public void before() {
         super.before();
-
-        if(inputParameters.isEmpty()){
-            throw new IllegalArgumentException(" Params Array Size<1 You Must Include  The Maximum Value In The Array Of Parameters ");
+        if(inputParameters.size()<2){
+            throw new IllegalArgumentException(" Params Array Size<2 You Must Include  The Maximum and Minimum Values In The Array Of Parameters ");
         }
-        super.processorName="Hours Below "+inputParameters.get(0)+"Monthly";
-        this.maxValue = Double.parseDouble(inputParameters.get(0));
+        super.processorName="Hours Between "+inputParameters.get(0)+ "And "+inputParameters.get(1)+ " Monthly";
+        this.maxValue = Double.parseDouble(inputParameters.get(1));
+        this.minValue=Double.parseDouble(inputParameters.get(0));
         values.clear();
     }
 
     @Override
     protected void onMonthEnd(Number value, String date) {
-        String text="Monthly Hours Of " +dataType+  " Above "+ maxValue;
-        if(inputParameters.size()>1) {
-            String requestText = inputParameters.get(1);
+        String text="Monthly Hours Of " +dataType+  " Between "+minValue+ " And " + maxValue;
+        if(inputParameters.size()>2) {
+            String requestText = inputParameters.get(2);
             if (requestText != null) {
                 text = requestText;
             }
@@ -50,7 +52,7 @@ public class HoursBelowMonthly extends MonthlyWeatherProcessor {
     @Override
     protected void processWeatherBetween(Number data, String date) {
         double value=data.doubleValue();
-        if( value<= maxValue) {
+        if( value<= maxValue && value>=minValue) {
             hours++;
         }
     }

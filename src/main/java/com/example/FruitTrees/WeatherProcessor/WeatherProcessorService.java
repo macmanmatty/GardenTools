@@ -8,20 +8,17 @@ import com.example.FruitTrees.WeatherConroller.HourlyWeatherProcessRequest;
 import com.example.FruitTrees.WeatherConroller.WeatherResponse.LocationWeatherResponse;
 import com.example.FruitTrees.WeatherConroller.WeatherRequest;
 import com.example.FruitTrees.WeatherConroller.WeatherResponse.WeatherResponse;
+import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
 @Service
 public class WeatherProcessorService {
-    /**
-     * map of WeatherProcessor Components auto generated  by spring
-     * key=component name
-     * value= WeatherProcessor
-     */
-    Map<String, WeatherProcessor> weatherProcessorMap;
-    public WeatherProcessorService(@Autowired  Map<String, WeatherProcessor> weatherProcessorMap) {
-        this.weatherProcessorMap = weatherProcessorMap;
+    ApplicationContext applicationContext;
+    public WeatherProcessorService(@Autowired  ApplicationContext applicationContext) {
+        this.applicationContext = applicationContext;
     }
     /**
      *  processes hourly weather data
@@ -44,7 +41,7 @@ public class WeatherProcessorService {
      *  open meteo data for that location
      * @param weatherRequest The WeatherRequest Object
      * @param weatherResponse  The WeatherResponse object to add all of  processed data from the processors to
-     * @return WeatherResponse object containing all of the processed data from the processors
+     * @return WeatherResponse object containing all the processed data from the processors
      */
  private WeatherResponse   processLocationData(LocationResponse locationResponse, WeatherRequest weatherRequest,  WeatherResponse weatherResponse){
      Location location=locationResponse.getLocation();
@@ -52,17 +49,17 @@ public class WeatherProcessorService {
      locationWeatherResponse.setLocation(location);
      weatherResponse.getLocationWeatherResponses().put(locationResponse.getLocation().getName(),locationWeatherResponse);
      String text="Values For Location: "+location.getName();
-     //weatherResponse.getResponses().add(text);
      locationWeatherResponse.getLocationResponses().add(text);
      OpenMeteoResponse openMeteoResponse=locationResponse.getOpenMeteoResponse();
      List<HourlyWeatherProcessRequest> hourlyWeatherProcessRequests = weatherRequest.getHourlyWeatherProcessRequests();
      List<String> time = openMeteoResponse.hourly.time;
      for (HourlyWeatherProcessRequest hourlyWeatherProcessRequest : hourlyWeatherProcessRequests) {
-         WeatherProcessor weatherProcessor = weatherProcessorMap.get(hourlyWeatherProcessRequest.getProcessorName());
-         if(weatherProcessor==null){
-             continue;
+         try {
+             WeatherProcessor weatherProcessor = applicationContext.getBean(hourlyWeatherProcessRequest.getProcessorName(), WeatherProcessor.class);
+             processHourlyWeather( time, weatherProcessor,hourlyWeatherProcessRequest,  openMeteoResponse, locationWeatherResponse);
          }
-         processHourlyWeather( time, weatherProcessor,hourlyWeatherProcessRequest,  openMeteoResponse, locationWeatherResponse);
+         catch( BeanCreationException e){
+         }
      }
         return weatherResponse;
  }
@@ -74,7 +71,7 @@ public class WeatherProcessorService {
      * @param locationWeatherResponse
      * @param openMeteoDateAndTime
      */
-private void processHourlyWeather( List<String> openMeteoDateAndTime,  WeatherProcessor weatherProcessor, HourlyWeatherProcessRequest hourlyWeatherProcessRequest,
+public void processHourlyWeather( List<String> openMeteoDateAndTime,  WeatherProcessor weatherProcessor, HourlyWeatherProcessRequest hourlyWeatherProcessRequest,
                                  OpenMeteoResponse openMeteoResponse,
                                   LocationWeatherResponse locationWeatherResponse){
      weatherProcessor.setStartMonthDay(hourlyWeatherProcessRequest.getStartProcessMonth(), hourlyWeatherProcessRequest.getStartProcessDay());

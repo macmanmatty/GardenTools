@@ -21,7 +21,6 @@ public class HoursBelowCalculator extends ProcessWeatherBetweenDates {
     private double maxValue;
 
     public HoursBelowCalculator() {
-        super("Chill Hours");
     }
     @Override
     public void before() {
@@ -29,13 +28,12 @@ public class HoursBelowCalculator extends ProcessWeatherBetweenDates {
             throw new IllegalArgumentException("Missing parameter");
         }
         this.maxValue = Double.parseDouble(inputParameters.get(0));
+        this.processorName="hours Below "+inputParameters.get(0);
         values.clear();
         yearlyDataValues.clear();
 
     }
-    @Override
-    protected void onStartDate(String date) {
-    }
+
     @Override
     protected void onEndDate(String date) {
         LocalDateTime localDateTime=LocalDateTime.parse(date);

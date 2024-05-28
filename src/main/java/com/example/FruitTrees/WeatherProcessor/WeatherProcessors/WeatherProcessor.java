@@ -3,6 +3,8 @@ import com.example.FruitTrees.WeatherConroller.WeatherResponse.DailyValuesRespon
 import com.example.FruitTrees.WeatherConroller.WeatherResponse.LocationWeatherResponse;
 import com.example.FruitTrees.WeatherConroller.WeatherResponse.MonthlyValuesResponse;
 import com.example.FruitTrees.WeatherConroller.WeatherResponse.YearlyValuesResponse;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,6 +13,8 @@ import java.util.List;
  * identified by the component name in the map of weather processors
  * in the WeatherDataProcessor class
  */
+@Scope("prototype")
+@Component
 public abstract class WeatherProcessor {
     /**
      *  the processed string values for the weather
@@ -86,16 +90,20 @@ public abstract class WeatherProcessor {
     public WeatherProcessor(String processorName) {
         this.processorName = processorName;
     }
+
+    protected WeatherProcessor() {
+    }
+
     /**
      * overridden  method called
      * before the processing of weather starts
      */
-    public  void  before(){};
+    public  void  before(){}
     /**
      * overridden  method called
      * after the processing of weather ends
      */
-    public  void  after(){};
+    public  void  after(){}
     /**
      *
      * called for each double in the data set to process weather value
