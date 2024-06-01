@@ -1,6 +1,7 @@
 package com.example.FruitTrees.WeatherConroller;
 
 import com.example.FruitTrees.OpenMeteo.OpenMeteoService;
+import com.example.FruitTrees.OpenStreetLocation.OpenStreetLocationService;
 import com.example.FruitTrees.WeatherConroller.WeatherResponse.WeatherResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -29,11 +30,6 @@ public class WeatherProcessorController {
         }
 
     }
-    @GetMapping("/test")
-    public ResponseEntity<String> test() {
-
-            return  new ResponseEntity<>("Success", HttpStatus.OK);
 
 
-    }
 }

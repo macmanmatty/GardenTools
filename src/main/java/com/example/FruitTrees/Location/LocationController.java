@@ -1,19 +1,40 @@
 package com.example.FruitTrees.Location;
+import com.example.FruitTrees.OpenStreetLocation.OpenStreetLocationResponse;
+import com.example.FruitTrees.OpenStreetLocation.OpenStreetLocationService;
+import com.example.FruitTrees.WeatherConroller.WeatherRequest;
+import com.example.FruitTrees.WeatherConroller.WeatherResponse.WeatherResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
+
 @RestController
-@RequestMapping("/locations")
 public class LocationController {
 
     private final LocationService locationService;
 
+    private final OpenStreetLocationService openStreetLocationService;
+
+
     @Autowired
-    public LocationController( @Autowired  LocationService locationService) {
+    public LocationController( @Autowired OpenStreetLocationService openStreetLocationService,  LocationService locationService) {
         this.locationService = locationService;
+        this.openStreetLocationService=openStreetLocationService;
     }
+    @PostMapping(value = "/locationInfo", consumes = {"application/json"})
+    public ResponseEntity<Object> getLocationInfo( @RequestBody Location location) {
+        try {
+           OpenStreetLocationResponse locationResponse=   openStreetLocationService.getLocationDataByCountyAndState(location);
+            return  new ResponseEntity<>(locationResponse, HttpStatus.OK);
+
+        } catch (IOException e) {
+            return  new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+
+    }
+
 
     // Create a new location
     @PostMapping

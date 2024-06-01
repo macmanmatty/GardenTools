@@ -55,7 +55,6 @@ public class HourlyWeatherProcessRequest {
     private int roundTo;
 
 
-
     public String getHourlyDataType() {
         return hourlyDataType;
     }

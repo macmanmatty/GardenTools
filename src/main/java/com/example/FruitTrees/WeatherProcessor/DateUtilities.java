@@ -1,5 +1,8 @@
 package com.example.FruitTrees.WeatherProcessor;
 
+import com.example.FruitTrees.WeatherProcessor.WeatherProcessors.DateType;
+
+import java.time.LocalDateTime;
 import java.util.List;
 
 public class DateUtilities {
@@ -55,5 +58,26 @@ public class DateUtilities {
         }
         throw new IllegalArgumentException("Date: "+ startDateTime+ "Is  Out Of Bounds");
     }
+
+    /**
+     *  checks a string  date in YYYY-MM-DDTHH:MM format   to see if
+     *  it is the start date or the end date or justa normal date
+     * @param openMeteoDateAndTime
+     * @return
+     */
+    public static  DateType checkDate(String openMeteoDateAndTime, int startDay,  int startMonth, int  endDay, int endMonth){
+        LocalDateTime localDate=LocalDateTime.parse(openMeteoDateAndTime);
+        int dayOfMonth=localDate.getDayOfMonth();
+        int month=localDate.getMonthValue();
+        int hour=localDate.getHour();
+        if(dayOfMonth==endDay && month==endMonth && hour==23){
+            return DateType.END_PROCESSING;
+        }
+        if(dayOfMonth==startDay && month==startMonth && hour==0){
+            return DateType.START_PROCESSING;
+        }
+        return  DateType.STANDARD_DAY;
+    }
+
 
 }

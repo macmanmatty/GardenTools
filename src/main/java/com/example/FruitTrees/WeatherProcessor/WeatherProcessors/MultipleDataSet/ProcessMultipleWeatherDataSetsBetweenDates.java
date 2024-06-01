@@ -1,4 +1,4 @@
-package com.example.FruitTrees.WeatherProcessor.WeatherProcessors.BetweenDates;
+package com.example.FruitTrees.WeatherProcessor.WeatherProcessors.MultipleDataSet;
 
 import com.example.FruitTrees.WeatherProcessor.DateUtilities;
 import com.example.FruitTrees.WeatherProcessor.WeatherProcessors.DateType;
@@ -11,7 +11,7 @@ import java.util.List;
 /**
  *  base class for weather data processor that process data between dates yearly or semi-yearly weather between dates
  */
-public abstract  class ProcessWeatherBetweenDates  extends WeatherProcessor {
+public abstract  class ProcessMultipleWeatherDataSetsBetweenDates extends MultipleDataSetWeatherProcessor {
     /**
      * the processed values for each year or semi year
      */
@@ -21,11 +21,8 @@ public abstract  class ProcessWeatherBetweenDates  extends WeatherProcessor {
      *  and the weather data is currently processing
      */
     private boolean processing;
-    public ProcessWeatherBetweenDates(String name) {
-        super(name);
-    }
 
-    protected ProcessWeatherBetweenDates() {
+    protected ProcessMultipleWeatherDataSetsBetweenDates() {
     }
 
     @Override
@@ -36,12 +33,12 @@ public abstract  class ProcessWeatherBetweenDates  extends WeatherProcessor {
     /**
      * the overridden process data method that  processes 
      * weather data between dates
-     * @param value the number value of the weather parameter
+     * @param values the number value of the weather parameter
      * @param date the date and time the value happened
      */
     @Override
-    public final  void processWeather(Number value, String date) {
-        switch(DateUtilities.checkDate(date, startDay, startMonth, endDay, endMonth)){
+    public final  void processWeather(List<Number> values, List<String> dataTypes, String date) {
+            switch(DateUtilities.checkDate(date, startDay, startMonth, endDay, endMonth)){
                 case START_PROCESSING -> {
                     processing =true;
                     onStartDate(date);
@@ -52,7 +49,7 @@ public abstract  class ProcessWeatherBetweenDates  extends WeatherProcessor {
                 }
             }
             if(processing){
-                processWeatherBetween(value, date);
+                processWeatherBetween(values,dataTypes, date);
             }
         }
     /**
@@ -78,7 +75,7 @@ public abstract  class ProcessWeatherBetweenDates  extends WeatherProcessor {
      * @param date  the current date and time of the weather  being processed
      * @param  data the value of the weather data at the current date and time
      */
-    abstract void processWeatherBetween(Number data, String date);
+    abstract void processWeatherBetween(List<Number> data, List<String> dataType, String date);
 
 
     @Override
