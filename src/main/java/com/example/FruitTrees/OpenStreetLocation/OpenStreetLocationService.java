@@ -1,31 +1,21 @@
 package com.example.FruitTrees.OpenStreetLocation;
-
 import com.example.FruitTrees.Location.Location;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
-
 import java.io.IOException;
-
 @Service
 public class OpenStreetLocationService {
-
-
     private final OpenStreetLocationHTTPRequest openStreetLocationHTTPRequest;
    @Autowired
     public OpenStreetLocationService(OpenStreetLocationHTTPRequest openStreetLocationHTTPRequest) {
        this.openStreetLocationHTTPRequest = openStreetLocationHTTPRequest;
     }
-
-
-
         public Location populateLocationData(Location location ) throws IOException {
        OpenStreetLocationResponse openStreetLocationResponse = getLocationData(location);
        populateLocationData(location, openStreetLocationResponse);
         return  location;
     }
-
-
     /**
      * calls the open-meteo service to get the data for  each of specified location(s)
      * in the weather request one open-meteo request is required per location
@@ -36,13 +26,11 @@ public class OpenStreetLocationService {
         OpenStreetLocationResponse openStreetLocationResponse = new OpenStreetLocationResponse();
             try {
                 openStreetLocationResponse = openStreetLocationHTTPRequest.makeOpenStreetLocationRequest(location);
-
             } catch (RestClientException e) {
                 throw new IOException(e);
             }
             return openStreetLocationResponse;
     }
-
     /**
      * returns a OpenStreetLocationResponse object for a location object wih a given county and state
      * @param location the location object
@@ -53,7 +41,6 @@ public class OpenStreetLocationService {
         OpenStreetLocationResponse openStreetLocationResponse = new OpenStreetLocationResponse();
         try {
             openStreetLocationResponse = openStreetLocationHTTPRequest.makeOpenStreetLocationRequestByCountyAndState(location);
-
         } catch (RestClientException e) {
             throw new IOException(e);
         }
@@ -89,5 +76,4 @@ public class OpenStreetLocationService {
             location.setName(text);
         }
     }
-
 }

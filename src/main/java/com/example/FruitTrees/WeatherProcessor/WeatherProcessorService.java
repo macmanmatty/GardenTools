@@ -47,7 +47,8 @@ public class WeatherProcessorService {
      Location location=locationResponse.getLocation();
     LocationWeatherResponse locationWeatherResponse= new LocationWeatherResponse();
      locationWeatherResponse.setLocation(location);
-     weatherResponse.getLocationWeatherResponses().put(locationResponse.getLocation().getName(),locationWeatherResponse);
+     String name = locationResponse.getLocation().getName()+" At: "+"Lat: " + locationResponse.getLocation().getLatitude()+" Lon: " +locationResponse.getLocation().getLongitude();
+     weatherResponse.getLocationWeatherResponses().put(name,locationWeatherResponse);
      String text="Values For Location: "+location.getName();
      locationWeatherResponse.getLocationResponses().add(text);
      OpenMeteoResponse openMeteoResponse=locationResponse.getOpenMeteoResponse();
