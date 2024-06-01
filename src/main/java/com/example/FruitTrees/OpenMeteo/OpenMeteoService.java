@@ -1,5 +1,4 @@
 package com.example.FruitTrees.OpenMeteo;
-
 import com.example.FruitTrees.OpenStreetLocation.OpenStreetLocationService;
 import com.example.FruitTrees.WeatherProcessor.WeatherProcessorService;
 import com.example.FruitTrees.Location.Location;
@@ -11,23 +10,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
-
 import java.io.IOException;
 import java.util.List;
-
 @Service
 public class OpenMeteoService {
-
    private final  OpenMeteoHTTPRequest openMeteoHTTPRequest;
    private  final WeatherProcessorService weatherProcessorService;
-
    private final OpenStreetLocationService openStreetLocationService;
-
     @Value("${enable.Multiple.Location.Processing}")
     private  boolean processMultipleLocationRequestsEnabled;
     @Value("${max.Multiple.OpenMeteo.Requests}")
     private  int maxMultipleOpenMeteoRequests;
-
    @Autowired
     public OpenMeteoService(OpenMeteoHTTPRequest openMeteoHTTPRequest, WeatherProcessorService weatherProcessorService,
    OpenStreetLocationService openStreetLocationService) {
@@ -35,14 +28,12 @@ public class OpenMeteoService {
         this.weatherProcessorService = weatherProcessorService;
         this.openStreetLocationService=openStreetLocationService;
     }
-
     public WeatherResponse getData(WeatherRequest weatherRequest ) throws IOException {
         extractHourlyDataTypes(weatherRequest);
         OpenMeteoLocationResponses openMeteoResponses=makeRequest(weatherRequest);
         WeatherResponse  response= weatherProcessorService.processHourlyData( weatherRequest, openMeteoResponses);
         return  response;
     }
-
     /**
      * extracts the   hourly  data types  from the HourlyWeatherProcessRequest objects
      * @param weatherRequest
@@ -54,7 +45,6 @@ public class OpenMeteoService {
             weatherRequest.getHourlyDataTypes().add(hourlyWeatherProcessRequest.getHourlyDataType());
         }
     }
-
     /**
      * calls the open-meteo service to get the data for  each of specified location(s)
      * in the weather request one open-meteo request is required per location
@@ -80,7 +70,6 @@ public class OpenMeteoService {
         }
         return  openMeteoResponses;
     }
-
     /**
      * checks to make sure the number of locations
      * you are attempting to retrieve  data for is allowed
