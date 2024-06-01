@@ -1,10 +1,7 @@
 package com.example.FruitTrees.WeatherProcessor.WeatherProcessors.MultipleDataSet;
 
 import com.example.FruitTrees.WeatherProcessor.DateUtilities;
-import com.example.FruitTrees.WeatherProcessor.WeatherProcessors.DateType;
-import com.example.FruitTrees.WeatherProcessor.WeatherProcessors.WeatherProcessor;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 

@@ -1,8 +1,6 @@
 package com.example.FruitTrees.Location;
 import com.example.FruitTrees.OpenStreetLocation.OpenStreetLocationResponse;
 import com.example.FruitTrees.OpenStreetLocation.OpenStreetLocationService;
-import com.example.FruitTrees.WeatherConroller.WeatherRequest;
-import com.example.FruitTrees.WeatherConroller.WeatherResponse.WeatherResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

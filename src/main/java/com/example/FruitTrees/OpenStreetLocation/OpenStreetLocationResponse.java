@@ -1,6 +1,5 @@
 package com.example.FruitTrees.OpenStreetLocation;
 
-import org.springframework.boot.autoconfigure.amqp.RabbitConnectionDetails;
 
 import java.util.List;
 
