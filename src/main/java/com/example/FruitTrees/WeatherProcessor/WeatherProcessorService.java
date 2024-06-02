@@ -63,7 +63,7 @@ public class WeatherProcessorService {
              processHourlyWeather( time, weatherProcessor,hourlyWeatherProcessRequest,  openMeteoResponse, locationWeatherResponse);
          }
          catch( BeanCreationException e){
-             Lo
+
          }
      }
         return weatherResponse;
