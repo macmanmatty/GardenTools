@@ -1,7 +1,7 @@
 package com.example.FruitTrees.WeatherProcessor.WeatherProcessors.MultipleDataSet;
 
 import com.example.FruitTrees.WeatherConroller.WeatherResponse.YearlyValuesResponse;
-import com.example.FruitTrees.WeatherProcessor.DataUtilities;
+import com.example.FruitTrees.Utilities.DataUtilities;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;

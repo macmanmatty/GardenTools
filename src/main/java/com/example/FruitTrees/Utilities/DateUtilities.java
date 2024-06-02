@@ -1,4 +1,4 @@
-package com.example.FruitTrees.WeatherProcessor;
+package com.example.FruitTrees.Utilities;
 
 import com.example.FruitTrees.WeatherProcessor.WeatherProcessors.DateType;
 

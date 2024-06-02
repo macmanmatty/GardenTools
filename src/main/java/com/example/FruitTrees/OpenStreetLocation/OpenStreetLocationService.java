@@ -1,5 +1,6 @@
 package com.example.FruitTrees.OpenStreetLocation;
 import com.example.FruitTrees.Location.Location;
+import com.example.FruitTrees.Utilities.LocationUtilities;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
@@ -47,23 +48,20 @@ public class OpenStreetLocationService {
         return openStreetLocationResponse;
     }
     /**
-     * populates a location  object for a location object wih a given latitude and longitude
+     * populates data for  location  object for a location object wih a given latitude and longitude
+     * if location does not have a name gives it one based on the state and county or city
      * @param location the location object
-     * @return
-     * @throws IOException
      */
     private void populateLocationData(Location location, OpenStreetLocationResponse openStreetLocationResponse){
-        if(location.getCounty()==null){
             location.setCounty(openStreetLocationResponse.getAddress().getCounty());
-        }
-        if(location.getState()==null){
-            location.setState(openStreetLocationResponse.getAddress().getState());
-        }
-        if(location.getCity()==null){
+             location.setState(openStreetLocationResponse.getAddress().getState());
             location.setCity(openStreetLocationResponse.getAddress().getCity());
-        }
-        if(location.getZipCode()==null){
-            location.setZipCode(openStreetLocationResponse.getAddress().getPostcode());
+          location.setZipCode(openStreetLocationResponse.getAddress().getPostcode());
+          if(location.getState()!=null) {
+              location.setStateFips(LocationUtilities.getStateFipsCode(location.getState()));
+          }
+        if(location.getCounty()!=null) {
+            location.setCountyFips(LocationUtilities.getStateFipsCode(location.getState()));
         }
         if(location.getName()==null){
             String text="";

@@ -1,13 +1,46 @@
-package com.example.FruitTrees.WeatherProcessor;
+package com.example.FruitTrees.Utilities;
 
 import com.example.FruitTrees.OpenMeteo.OpenMeteoResponse;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class DataUtilities {
 
     private  DataUtilities() {
     }
+
+    public static Map<String, String> acsDataFields = new HashMap<>();
+
+    static {
+        acsDataFields.put("B01003_001E", "Total Population");
+        acsDataFields.put("B01002_001E", "Median Age");
+        acsDataFields.put("B01001_001E", "Sex by Age (Total Population)");
+        acsDataFields.put("B02001_001E", "Race (Total Population)");
+        acsDataFields.put("B03001_001E", "Hispanic or Latino Origin by Race (Total Population)");
+        acsDataFields.put("B05001_001E", "Nativity and Citizenship Status in the United States (Total Population)");
+        acsDataFields.put("B06009_001E", "Educational Attainment by Age (Total Population)");
+        acsDataFields.put("B07013_001E", "Geographical Mobility in the Past Year by Age for Current Residence in the United States");
+        acsDataFields.put("B08006_001E", "Sex of Workers by Means of Transportation to Work (Total Population)");
+        acsDataFields.put("B19013_001E", "Median Household Income in the Past 12 Months (inflation-adjusted dollars)");
+        acsDataFields.put("B19083_001E", "Gini Index of Income Inequality");
+        acsDataFields.put("B25003_001E", "Total Housing Units");
+        acsDataFields.put("B25001_001E", "Housing Units by Type (Total Housing Units)");
+        acsDataFields.put("B25002_001E", "Occupancy Status (Total Housing Units)");
+        acsDataFields.put("B25004_001E", "Vacancy Status (Total Housing Units)");
+        acsDataFields.put("B19301_001E", "Per Capita Income in the Past 12 Months (inflation-adjusted dollars)");
+        acsDataFields.put("B19025_001E", "Mean Household Income in the Past 12 Months (inflation-adjusted dollars)");
+        acsDataFields.put("B20002_001E", "Total Earnings in the Past 12 Months (inflation-adjusted dollars)");
+        acsDataFields.put("B17020_001E", "Income-to-Poverty Ratio");
+        acsDataFields.put("B17001_001E", "Population Below Poverty Level");
+        acsDataFields.put("B19313_001E", "Aggregate Income in the Past 12 Months (inflation-adjusted dollars)");
+
+    }
+
+
+
+
 
     public static List<? extends Number> getHourlyData(OpenMeteoResponse openMeteoResponse, String fieldName) {
         OpenMeteoResponse.Hourly data=openMeteoResponse.hourly;
@@ -56,5 +89,9 @@ public class DataUtilities {
             default -> "Not Soil";
         };
     }
+
+
+
+
 
 }

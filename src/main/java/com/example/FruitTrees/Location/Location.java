@@ -20,10 +20,25 @@ public class Location {
     the weather station id currently not used
      */
    private  String stationId;
+
+   private String streetName;
+
+   private String streetNumber;
+
+   private String stateAbbreviation;
    private String county;
    private  String zipCode;
    private  String city;
    private String state;
+    /**
+     * the US FIPS Code For the state
+     */
+   private String stateFips;
+
+    /**
+     * the US FIPS Code For the county
+     */
+    private String countyFips;
     public String getName() {
         return name;
     }
@@ -77,5 +92,45 @@ public class Location {
     }
     public void setState(String state) {
         this.state = state;
+    }
+
+    public String getStreetName() {
+        return streetName;
+    }
+
+    public void setStreetName(String streetName) {
+        this.streetName = streetName;
+    }
+
+    public String getStreetNumber() {
+        return streetNumber;
+    }
+
+    public void setStreetNumber(String streetNumber) {
+        this.streetNumber = streetNumber;
+    }
+
+    public String getStateAbbreviation() {
+        return stateAbbreviation;
+    }
+
+    public void setStateAbbreviation(String stateAbbreviation) {
+        this.stateAbbreviation = stateAbbreviation;
+    }
+
+    public String getStateFips() {
+        return stateFips;
+    }
+
+    public void setStateFips(String stateFips) {
+        this.stateFips = stateFips;
+    }
+
+    public String getCountyFips() {
+        return countyFips;
+    }
+
+    public void setCountyFips(String countyFips) {
+        this.countyFips = countyFips;
     }
 }
