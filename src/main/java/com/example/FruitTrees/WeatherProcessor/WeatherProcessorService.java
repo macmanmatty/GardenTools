@@ -1,5 +1,4 @@
 package com.example.FruitTrees.WeatherProcessor;
-import ch.qos.logback.classic.Logger;
 import com.example.FruitTrees.Utilities.DataUtilities;
 import com.example.FruitTrees.WeatherProcessor.WeatherProcessors.WeatherProcessor;
 import com.example.FruitTrees.Location.Location;
