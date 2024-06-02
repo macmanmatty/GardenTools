@@ -1,4 +1,5 @@
 package com.example.FruitTrees.WeatherProcessor;
+import ch.qos.logback.classic.Logger;
 import com.example.FruitTrees.Utilities.DataUtilities;
 import com.example.FruitTrees.WeatherProcessor.WeatherProcessors.WeatherProcessor;
 import com.example.FruitTrees.Location.Location;
@@ -15,9 +16,10 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+
 @Service
 public class WeatherProcessorService {
-    ApplicationContext applicationContext;
+   private  ApplicationContext applicationContext;
     public WeatherProcessorService(@Autowired  ApplicationContext applicationContext) {
         this.applicationContext = applicationContext;
     }
@@ -61,6 +63,7 @@ public class WeatherProcessorService {
              processHourlyWeather( time, weatherProcessor,hourlyWeatherProcessRequest,  openMeteoResponse, locationWeatherResponse);
          }
          catch( BeanCreationException e){
+             Lo
          }
      }
         return weatherResponse;

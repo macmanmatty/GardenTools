@@ -1,6 +1,5 @@
 package com.example.FruitTrees.UsCensus;
 
-import com.example.FruitTrees.Location.Location;
 import com.example.FruitTrees.UsCensus.Request.USCensusRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
