@@ -1,4 +1,5 @@
 package com.example.FruitTrees.WeatherProcessor;
+import com.example.FruitTrees.Utilities.DataUtilities;
 import com.example.FruitTrees.WeatherProcessor.WeatherProcessors.WeatherProcessor;
 import com.example.FruitTrees.Location.Location;
 import com.example.FruitTrees.OpenMeteo.LocationResponse;
@@ -14,9 +15,10 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+
 @Service
 public class WeatherProcessorService {
-    ApplicationContext applicationContext;
+   private  ApplicationContext applicationContext;
     public WeatherProcessorService(@Autowired  ApplicationContext applicationContext) {
         this.applicationContext = applicationContext;
     }
@@ -47,7 +49,8 @@ public class WeatherProcessorService {
      Location location=locationResponse.getLocation();
     LocationWeatherResponse locationWeatherResponse= new LocationWeatherResponse();
      locationWeatherResponse.setLocation(location);
-     weatherResponse.getLocationWeatherResponses().put(locationResponse.getLocation().getName(),locationWeatherResponse);
+     String name = locationResponse.getLocation().getName()+" At: "+"Lat: " + locationResponse.getLocation().getLatitude()+" Lon: " +locationResponse.getLocation().getLongitude();
+     weatherResponse.getLocationWeatherResponses().put(name,locationWeatherResponse);
      String text="Values For Location: "+location.getName();
      locationWeatherResponse.getLocationResponses().add(text);
      OpenMeteoResponse openMeteoResponse=locationResponse.getOpenMeteoResponse();
@@ -59,6 +62,7 @@ public class WeatherProcessorService {
              processHourlyWeather( time, weatherProcessor,hourlyWeatherProcessRequest,  openMeteoResponse, locationWeatherResponse);
          }
          catch( BeanCreationException e){
+
          }
      }
         return weatherResponse;

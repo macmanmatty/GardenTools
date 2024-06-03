@@ -1,5 +1,5 @@
 package com.example.FruitTrees.OpenMeteo;
-
+import com.example.FruitTrees.OpenStreetLocation.OpenStreetLocationService;
 import com.example.FruitTrees.WeatherProcessor.WeatherProcessorService;
 import com.example.FruitTrees.Location.Location;
 import com.example.FruitTrees.WeatherConroller.BadRequestException;
@@ -10,40 +10,41 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
-
 import java.io.IOException;
 import java.util.List;
-
 @Service
 public class OpenMeteoService {
-
    private final  OpenMeteoHTTPRequest openMeteoHTTPRequest;
    private  final WeatherProcessorService weatherProcessorService;
-
+   private final OpenStreetLocationService openStreetLocationService;
     @Value("${enable.Multiple.Location.Processing}")
     private  boolean processMultipleLocationRequestsEnabled;
     @Value("${max.Multiple.OpenMeteo.Requests}")
     private  int maxMultipleOpenMeteoRequests;
-
    @Autowired
-    public OpenMeteoService(OpenMeteoHTTPRequest openMeteoHTTPRequest, WeatherProcessorService weatherProcessorService) {
+    public OpenMeteoService(OpenMeteoHTTPRequest openMeteoHTTPRequest, WeatherProcessorService weatherProcessorService,
+   OpenStreetLocationService openStreetLocationService) {
         this.openMeteoHTTPRequest = openMeteoHTTPRequest;
         this.weatherProcessorService = weatherProcessorService;
+        this.openStreetLocationService=openStreetLocationService;
     }
-
     public WeatherResponse getData(WeatherRequest weatherRequest ) throws IOException {
-        extractAdditionalDataTypes(weatherRequest);
+        extractHourlyDataTypes(weatherRequest);
         OpenMeteoLocationResponses openMeteoResponses=makeRequest(weatherRequest);
         WeatherResponse  response= weatherProcessorService.processHourlyData( weatherRequest, openMeteoResponses);
         return  response;
     }
-    private void extractAdditionalDataTypes(WeatherRequest weatherRequest) {
-        List<HourlyWeatherProcessRequest> hourlyWeatherProcessRequests=weatherRequest.hourlyWeatherProcessRequests;
+    /**
+     * extracts the   hourly  data types  from the HourlyWeatherProcessRequest objects
+     * @param weatherRequest
+     */
+    private void extractHourlyDataTypes(WeatherRequest weatherRequest) {
+        List<HourlyWeatherProcessRequest> hourlyWeatherProcessRequests=weatherRequest.getHourlyWeatherProcessRequests();
+        weatherRequest.getHourlyDataTypes().clear();
         for(HourlyWeatherProcessRequest hourlyWeatherProcessRequest:hourlyWeatherProcessRequests){
             weatherRequest.getHourlyDataTypes().add(hourlyWeatherProcessRequest.getHourlyDataType());
         }
     }
-
     /**
      * calls the open-meteo service to get the data for  each of specified location(s)
      * in the weather request one open-meteo request is required per location
@@ -55,17 +56,20 @@ public class OpenMeteoService {
         OpenMeteoLocationResponses openMeteoResponses=  new OpenMeteoLocationResponses();
         List<Location> locations=weatherRequest.getLocations();
         locationCheck(locations);
+        boolean populateLocationData= weatherRequest.isPopulateLocationData();
         for (Location location: locations) {
             try {
                 LocationResponse locationResponse= openMeteoHTTPRequest.makeLocationRequest(location, weatherRequest);
                 openMeteoResponses.getLocationResponses().add(locationResponse);
+                if(populateLocationData){
+                    openStreetLocationService.populateLocationData(location);
+                }
             } catch (RestClientException e) {
                 throw new IOException(e);
             }
         }
         return  openMeteoResponses;
     }
-
     /**
      * checks to make sure the number of locations
      * you are attempting to retrieve  data for is allowed

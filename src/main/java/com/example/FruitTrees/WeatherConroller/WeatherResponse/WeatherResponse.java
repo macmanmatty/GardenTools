@@ -31,6 +31,7 @@ public class WeatherResponse {
         return locationWeatherResponses;
     }
 
+
     public void setLocationWeatherResponses(Map<String, LocationWeatherResponse> locationWeatherResponses) {
         this.locationWeatherResponses = locationWeatherResponses;
     }

@@ -29,11 +29,6 @@ public class WeatherProcessorController {
         }
 
     }
-    @GetMapping("/test")
-    public ResponseEntity<String> test() {
-
-            return  new ResponseEntity<>("Success", HttpStatus.OK);
 
 
-    }
 }

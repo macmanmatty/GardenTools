@@ -112,6 +112,9 @@ public abstract class WeatherProcessor {
      */
     public abstract void processWeather(Number value, String date);
 
+
+
+
     /**
      *
      * @param value

@@ -1,13 +1,17 @@
-package com.example.FruitTrees.WeatherProcessor;
+package com.example.FruitTrees.Utilities;
 
 import com.example.FruitTrees.OpenMeteo.OpenMeteoResponse;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class DataUtilities {
 
     private  DataUtilities() {
     }
+
+
 
     public static List<? extends Number> getHourlyData(OpenMeteoResponse openMeteoResponse, String fieldName) {
         OpenMeteoResponse.Hourly data=openMeteoResponse.hourly;
@@ -45,4 +49,20 @@ public class DataUtilities {
             default -> throw new IllegalArgumentException("Invalid field name: " + fieldName);
         };
     }
+
+
+    public static String extractValuesForSoil(String fieldName) {
+        return switch (fieldName) {
+            case "soil_moisture_0_to_7cm", "soil_temperature_0_to_7cm" -> "0 to 7 cm";
+            case "soil_temperature_7_to_28cm", "soil_moisture_7_to_28cm" -> "7 to 28 cm";
+            case "soil_moisture_28_to_100cm", "soil_temperature_28_to_100cm" -> "28 to 100 cm";
+            case "soil_moisture_100_to_255cm", "soil_temperature_100_to_255cm" -> "100 to 255 cm";
+            default -> "Not Soil";
+        };
+    }
+
+
+
+
+
 }

@@ -52,6 +52,12 @@ public class WeatherRequest {
 
     public boolean showStringText;
 
+    /**
+     * whether or not to retrieve the unpopulated location data
+     *
+     */
+    private boolean populateLocationData;
+
 
     public List<Location> locations= new ArrayList<>();
 
@@ -144,6 +150,14 @@ public class WeatherRequest {
 
     public void setShowStringText(boolean showStringText) {
         this.showStringText = showStringText;
+    }
+
+    public boolean isPopulateLocationData() {
+        return populateLocationData;
+    }
+
+    public void setPopulateLocationData(boolean populateLocationData) {
+        this.populateLocationData = populateLocationData;
     }
 }
 
