@@ -2,7 +2,9 @@ package com.example.FruitTrees.Utilities;
 
 import com.example.FruitTrees.WeatherProcessor.WeatherProcessors.DateType;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.List;
 
 public class DateUtilities {
@@ -77,6 +79,20 @@ public class DateUtilities {
             return DateType.START_PROCESSING;
         }
         return  DateType.STANDARD_DAY;
+    }
+
+    public static LocalDate averageDate(List<LocalDate> dates) {
+        if (dates == null || dates.isEmpty()) {
+            return null;
+        }
+
+        long sum = 0;
+        for (LocalDate date : dates) {
+            sum += date.toEpochDay();
+        }
+
+        long averageEpochDay = sum / dates.size();
+        return LocalDate.ofEpochDay(averageEpochDay);
     }
 
 
