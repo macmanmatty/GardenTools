@@ -10,14 +10,14 @@ import java.time.LocalDateTime;
  *  weather value above a certain value  and between dates
  *
  */
-@Component("FirstOccurrence")
-public class FirstOccurrenceCalculator extends ProcessWeatherBetweenDates {
+@Component("FirstOccurrenceBelow")
+public class FirstOccurrenceBelowCalculator extends ProcessWeatherBetweenDates {
     /**
      * the min value
      */
     private double valueToReach;
 
-    public FirstOccurrenceCalculator() {
+    public FirstOccurrenceBelowCalculator() {
     }
     @Override
     public void before() {
@@ -25,7 +25,7 @@ public class FirstOccurrenceCalculator extends ProcessWeatherBetweenDates {
             throw new IllegalArgumentException("Parameter");
         }
         this.valueToReach = Double.parseDouble(inputParameters.get(0));
-        this.processorName="Fist Occurrence Of "+valueToReach+" for "+dataType;
+        this.processorName="Fist Occurrence Below "+valueToReach+" for "+dataType;
         values.clear();
         yearlyDataValues.clear();
     }
@@ -51,7 +51,7 @@ public class FirstOccurrenceCalculator extends ProcessWeatherBetweenDates {
     @Override
     void processWeatherBetween(Number data, String date) {
         double value=data.doubleValue();
-        if( value== valueToReach) {
+        if( value <valueToReach) {
             LocalDateTime localDateTime=LocalDateTime.parse(date);
             int year= localDateTime.getYear();
             YearlyValuesResponse yearlyValuesResponse = locationWeatherResponse.getYearlyValues(String.valueOf(year));
