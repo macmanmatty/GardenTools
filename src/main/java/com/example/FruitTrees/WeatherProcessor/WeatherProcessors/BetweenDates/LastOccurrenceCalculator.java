@@ -10,14 +10,16 @@ import java.time.LocalDateTime;
  *  weather value above a certain value  and between dates
  *
  */
-@Component("LastOccurrenceAbove")
-public class LastOccurrenceAboveCalculator extends ProcessWeatherBetweenDates {
+@Component("LastOccurrence")
+public class LastOccurrenceCalculator extends ProcessWeatherBetweenDates {
     /**
      * the min value
      */
     private double valueToReach;
     private String lastDate;
-    public LastOccurrenceAboveCalculator() {
+    private String mode="above";
+
+    public LastOccurrenceCalculator() {
     }
     @Override
     public void before() {
@@ -25,8 +27,9 @@ public class LastOccurrenceAboveCalculator extends ProcessWeatherBetweenDates {
         if(inputParameters.isEmpty()){
             throw new IllegalArgumentException("Parameter");
         }
-        this.valueToReach = Double.parseDouble(inputParameters.get(0));
-        this.processorName="Last Occurrence Above "+valueToReach+" for "+dataType;
+        this.valueToReach = Double.parseDouble(inputParameters.get(0).trim());
+        this.mode=inputParameters.get(1).trim();
+        this.processorName="Fist Occurrence "+mode+ " +valueToReach+"+" for "+dataType;
         values.clear();
         yearlyDataValues.clear();
     }
@@ -56,8 +59,20 @@ public class LastOccurrenceAboveCalculator extends ProcessWeatherBetweenDates {
     @Override
     void processWeatherBetween(Number data, String date) {
         double value=data.doubleValue();
-        if( value> valueToReach) {
-            this.lastDate =date;
+        if(mode.equalsIgnoreCase("above")) {
+            if (value < valueToReach) {
+                this.lastDate = date;
+            }
+        }
+        else if(mode.equalsIgnoreCase("below")) {
+            if (value > valueToReach) {
+                this.lastDate = date;
+            }
+        }
+        else  {
+            if (value == valueToReach) {
+                this.lastDate = date;
+            }
         }
     }
 }

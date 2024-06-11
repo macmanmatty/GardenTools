@@ -10,22 +10,25 @@ import java.time.LocalDateTime;
  *  weather value above a certain value  and between dates
  *
  */
-@Component("FirstOccurrenceBelow")
-public class FirstOccurrenceBelowCalculator extends ProcessWeatherBetweenDates {
+@Component("FirstOccurrence")
+public class FirstOccurrenceCalculator extends ProcessWeatherBetweenDates {
     /**
      * the min value
      */
     private double valueToReach;
 
-    public FirstOccurrenceBelowCalculator() {
+    private String mode="above";
+
+    public FirstOccurrenceCalculator() {
     }
     @Override
     public void before() {
-        if(inputParameters.isEmpty()){
+        if(inputParameters.size()<2){
             throw new IllegalArgumentException("Parameter");
         }
-        this.valueToReach = Double.parseDouble(inputParameters.get(0));
-        this.processorName="Fist Occurrence Below "+valueToReach+" for "+dataType;
+        this.valueToReach = Double.parseDouble(inputParameters.get(0).trim());
+        this.mode=inputParameters.get(1).trim();
+        this.processorName="Fist Occurrence "+mode+ " +valueToReach+"+" for "+dataType;
         values.clear();
         yearlyDataValues.clear();
     }
@@ -51,14 +54,32 @@ public class FirstOccurrenceBelowCalculator extends ProcessWeatherBetweenDates {
     @Override
     void processWeatherBetween(Number data, String date) {
         double value=data.doubleValue();
-        if( value <valueToReach) {
-            LocalDateTime localDateTime=LocalDateTime.parse(date);
-            int year= localDateTime.getYear();
-            YearlyValuesResponse yearlyValuesResponse = locationWeatherResponse.getYearlyValues(String.valueOf(year));
-            String text=processorName+" was on "+localDateTime.toLocalDate()+" for "+year;
-            values.add(text );
-            yearlyValuesResponse.getValues().put(processorName, text);
-            processing=false;
+        if(mode.equalsIgnoreCase("below")) {
+            if (value < valueToReach) {
+                setValue(date);
+            }
         }
+        if(mode.equalsIgnoreCase("above")) {
+            if (value > valueToReach) {
+                setValue(date);
+            }
+        }
+        else{
+            if (value == valueToReach) {
+                setValue(date);
+            }
+
+        }
+    }
+
+    private  void setValue(String date){
+
+        LocalDateTime localDateTime=LocalDateTime.parse(date);
+        int year= localDateTime.getYear();
+        YearlyValuesResponse yearlyValuesResponse = locationWeatherResponse.getYearlyValues(String.valueOf(year));
+        String text=processorName+" was on "+localDateTime.toLocalDate()+" for "+year;
+        values.add(text );
+        yearlyValuesResponse.getValues().put(processorName, text);
+        processing=false;
     }
 }
