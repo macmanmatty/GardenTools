@@ -29,7 +29,7 @@ public class LastOccurrenceCalculator extends ProcessWeatherBetweenDates {
         }
         this.valueToReach = Double.parseDouble(inputParameters.get(0).trim());
         this.mode=inputParameters.get(1).trim();
-        this.processorName="Fist Occurrence "+mode+ " +valueToReach+"+" for "+dataType;
+        this.processorName="Last Occurrence "+mode+ valueToReach+" for "+dataType;
         values.clear();
         yearlyDataValues.clear();
     }
@@ -60,12 +60,12 @@ public class LastOccurrenceCalculator extends ProcessWeatherBetweenDates {
     void processWeatherBetween(Number data, String date) {
         double value=data.doubleValue();
         if(mode.equalsIgnoreCase("above")) {
-            if (value < valueToReach) {
+            if (value > valueToReach) {
                 this.lastDate = date;
             }
         }
         else if(mode.equalsIgnoreCase("below")) {
-            if (value > valueToReach) {
+            if (value < valueToReach) {
                 this.lastDate = date;
             }
         }

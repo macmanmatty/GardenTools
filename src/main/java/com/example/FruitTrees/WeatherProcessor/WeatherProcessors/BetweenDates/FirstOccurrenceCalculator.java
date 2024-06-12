@@ -28,7 +28,7 @@ public class FirstOccurrenceCalculator extends ProcessWeatherBetweenDates {
         }
         this.valueToReach = Double.parseDouble(inputParameters.get(0).trim());
         this.mode=inputParameters.get(1).trim();
-        this.processorName="Fist Occurrence "+mode+ " +valueToReach+"+" for "+dataType;
+        this.processorName="Fist Occurrence "+mode+  +valueToReach+" for "+dataType;
         values.clear();
         yearlyDataValues.clear();
     }
