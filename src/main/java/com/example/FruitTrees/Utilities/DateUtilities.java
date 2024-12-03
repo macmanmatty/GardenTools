@@ -2,6 +2,7 @@ package com.example.FruitTrees.Utilities;
 
 import com.example.FruitTrees.WeatherProcessor.WeatherProcessors.DateType;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -78,6 +79,32 @@ public class DateUtilities {
         }
         return  DateType.STANDARD_DAY;
     }
+
+        public static LocalDate calculateAverageDate(List<LocalDate> dates) {
+            long totalTime = 0;
+
+            // Sum the milliseconds of all the dates
+            for (LocalDate date : dates) {
+                totalTime =totalTime+ date.toEpochDay();
+            }
+
+            // Calculate the average milliseconds
+            long averageTime = totalTime / dates.size();
+
+            // Return the average date
+            return LocalDate.ofEpochDay(averageTime);  // Convert back to Date object
+        }
+
+    /**
+     * gets the year from a string date
+     * @param date
+     * @return
+     */
+    public  static int getYear(String date){
+      LocalDateTime localDateTime=LocalDateTime.parse(date);
+     return localDateTime.getYear();
+   }
+
 
 
 }

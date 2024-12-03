@@ -20,8 +20,6 @@ public class UtahChillCalculator extends ProcessWeatherBetweenDates {
     public UtahChillCalculator() {
         super("  Utah Chill Hours");
     }
-
-
     @Override
     protected void onEndDate(String date) {
         LocalDateTime localDateTime=LocalDateTime.parse(date);

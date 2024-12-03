@@ -90,6 +90,14 @@ public abstract  class ProcessWeatherBetweenDates  extends WeatherProcessor {
        //currentYearlyValuesResponse.getValues().put("Average "+dataType+ " for ", String.valueOf(average));
     }
 
+    /**
+     * stops all processing of data
+     */
+    public void terminate(){
+        processing=false;
+        stopProcessing();
+    }
+
 
 }
     

@@ -1,4 +1,5 @@
 package com.example.FruitTrees.WeatherProcessor.WeatherProcessors.BetweenDates;
+import com.example.FruitTrees.Utilities.DateUtilities;
 import com.example.FruitTrees.WeatherConroller.WeatherResponse.YearlyValuesResponse;
 import org.springframework.stereotype.Component;
 import java.time.LocalDateTime;
@@ -39,18 +40,10 @@ public class HoursBetweenCalculator extends ProcessWeatherBetweenDates {
     }
     @Override
     protected void onEndDate(String date) {
-        LocalDateTime localDateTime=LocalDateTime.parse(date);
-        int year= localDateTime.getYear();
+        int year= DateUtilities.getYear(date);
         super.yearlyDataValues.add(chillHours);
-
         YearlyValuesResponse yearlyValuesResponse = locationWeatherResponse.getYearlyValues(String.valueOf(year));
         String text="Chilling Hours";
-        if(inputParameters.size()>2) {
-            String requestText = inputParameters.get(2);
-            if (requestText != null) {
-                text = requestText;
-            }
-        }
         String years= text+ " Above "+minTemp+" And Below "+maxTemp;
         yearlyValuesResponse.getValues().put(years, String.valueOf(chillHours));
         addProcessedValue(years+" For " +year+" from: "+ startMonth +"/"+startDay+" to "+endMonth+"/" +endDay+ ": "+ chillHours);
