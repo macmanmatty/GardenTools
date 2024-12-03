@@ -8,8 +8,8 @@ import java.time.LocalDateTime;
  * which  are generally assumed to be  1 chill hour for every hour above 32 and below 45 degrees
  * from 11/1 to 3/31
  */
-@Component("MinMaxChill")
-public class MinMaxChillCalculator  extends ProcessWeatherBetweenDates {
+@Component("HoursBetween")
+public class HoursBetweenCalculator extends ProcessWeatherBetweenDates {
     /**
      * the counted hours
      */
@@ -22,7 +22,7 @@ public class MinMaxChillCalculator  extends ProcessWeatherBetweenDates {
      * the max value
      */
     private double maxTemp;
-    public MinMaxChillCalculator() {
+    public HoursBetweenCalculator() {
     }
     @Override
     public void before() {
