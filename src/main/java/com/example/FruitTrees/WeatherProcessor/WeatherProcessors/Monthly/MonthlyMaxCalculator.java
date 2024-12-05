@@ -16,9 +16,7 @@ public class MonthlyMaxCalculator extends MonthlyWeatherProcessor {
         monthlyValuesResponse.getValues().put(processorName +" For "+dataType, String.valueOf(finalValue));
         LocalDateTime localDateTime=LocalDateTime.parse(date);
             addValue(finalValue, localDateTime.getYear(), localDateTime.getMonth().name());
-
         monthlyValues.get(currentMonthName).add(finalValue);
-
         finalValue =Double.MIN_VALUE;
     }
     @Override

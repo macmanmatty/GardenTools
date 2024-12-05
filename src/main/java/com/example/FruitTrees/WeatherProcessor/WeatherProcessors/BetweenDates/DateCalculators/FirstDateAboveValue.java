@@ -1,8 +1,9 @@
-package com.example.FruitTrees.WeatherProcessor.WeatherProcessors.BetweenDates;
+package com.example.FruitTrees.WeatherProcessor.WeatherProcessors.BetweenDates.DateCalculators;
 
 import com.example.FruitTrees.WeatherConroller.WeatherResponse.YearlyValuesResponse;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 /**
@@ -10,7 +11,7 @@ import java.time.LocalDateTime;
  *  weather value above a certain value  and between dates
  *
  */@Component("FirstDateWithValue")
-public class FirstDateAboveValue extends ProcessWeatherBetweenDates {
+public class FirstDateAboveValue extends DateValueProcessor {
     /**
      * the first value date
      */
@@ -37,14 +38,16 @@ public class FirstDateAboveValue extends ProcessWeatherBetweenDates {
     protected void onEndDate(String date) {
         LocalDateTime localDateTime=LocalDateTime.parse(this.date);
         int year= localDateTime.getYear();
+        LocalDate localDate=localDateTime.toLocalDate();
+        super.yearlyDates.add(localDate);
         YearlyValuesResponse yearlyValuesResponse = locationWeatherResponse.getYearlyValues(String.valueOf(year));
         String text="First instance of " +dataType+  " Above "+ firstValue;
-        yearlyValuesResponse.getValues().put(text, localDateTime.toLocalDate().toString());
+        yearlyValuesResponse.getValues().put(text, localDate.toString());
         values.add(text+ year+" from: "+ startMonth +"/"+startDay+" to "+endMonth+"/" +endDay+ " was on  "+ localDateTime.toLocalDate().toString()+ " at "+localDateTime.getHour());
         this.date=null;
     }
     @Override
-    void processWeatherBetween(Number data, String date) {
+    protected void processWeatherBetween(Number data, String date) {
         double value=data.doubleValue();
         if(value>=firstValue){
             this.date=date;

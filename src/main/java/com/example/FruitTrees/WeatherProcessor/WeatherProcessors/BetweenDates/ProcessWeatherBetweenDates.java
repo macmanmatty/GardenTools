@@ -14,6 +14,7 @@ public abstract  class ProcessWeatherBetweenDates  extends WeatherProcessor {
      * the processed values for each year or semi year
      */
     protected List<Double>  yearlyDataValues=new ArrayList<>();
+
     /**
      *  this is true if  the weather falls between the given dates
      *  and the weather data is currently processing
@@ -76,7 +77,7 @@ public abstract  class ProcessWeatherBetweenDates  extends WeatherProcessor {
      * @param date  the current date and time of the weather  being processed
      * @param  data the value of the weather data at the current date and time
      */
-    abstract void processWeatherBetween(Number data, String date);
+    protected abstract void processWeatherBetween(Number data, String date);
 
 
     @Override
@@ -87,8 +88,8 @@ public abstract  class ProcessWeatherBetweenDates  extends WeatherProcessor {
         }
        double average=Math.round(total/yearlyDataValues.size());
        values.add("Average "+ processorName +" "+average);
-       //currentYearlyValuesResponse.getValues().put("Average "+dataType+ " for ", String.valueOf(average));
     }
+
 
     /**
      * stops all processing of data

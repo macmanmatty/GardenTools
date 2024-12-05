@@ -19,7 +19,7 @@ public class MaxCalculator extends ProcessWeatherBetweenDates {
             finalValue =Double.MIN_VALUE;
         }
     @Override
-    void processWeatherBetween(Number data, String date) {
+    protected void processWeatherBetween(Number data, String date) {
         double value=data.doubleValue();
         if (value > finalValue) {
             finalValue = value;

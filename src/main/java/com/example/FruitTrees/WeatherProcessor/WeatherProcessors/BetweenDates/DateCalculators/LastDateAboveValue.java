@@ -1,13 +1,18 @@
-package com.example.FruitTrees.WeatherProcessor.WeatherProcessors.BetweenDates;
+package com.example.FruitTrees.WeatherProcessor.WeatherProcessors.BetweenDates.DateCalculators;
+
 import com.example.FruitTrees.WeatherConroller.WeatherResponse.YearlyValuesResponse;
+import com.example.FruitTrees.WeatherProcessor.WeatherProcessors.BetweenDates.ProcessWeatherBetweenDates;
 import org.springframework.stereotype.Component;
+
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+
 /**
- *  A weather processor that calculates the first instance of some
- *  weather value below a certain value  and between dates
+ *  A weather processor that calculates the last instance  of some
+ *  weather value above a certain value  and between dates
  *
- */@Component("FirstDateBelowValue")
-public class FirstDateBelowValue extends ProcessWeatherBetweenDates {
+ */@Component("LastDateAboveValue")
+public class LastDateAboveValue extends DateValueProcessor {
     /**
      * the first value date
      */
@@ -15,37 +20,43 @@ public class FirstDateBelowValue extends ProcessWeatherBetweenDates {
     /**
      * the min value
      */
-    private double firstValue;
-    public FirstDateBelowValue() {
+    private double lastValue;
+
+
+    public LastDateAboveValue() {
     }
     @Override
     public void before() {
+        String mode="below";
         if(inputParameters.size()<1){
             throw new IllegalArgumentException("Missing parameter");
         }
-        this.firstValue = Double.parseDouble(inputParameters.get(0));
+        this.lastValue = Double.parseDouble(inputParameters.get(0));
         // set mode to above
-        this.processorName="First Date Below "+inputParameters.get(0);
+
+        this.processorName="Last Date With Value Above "+mode+" "+inputParameters.get(0);
         values.clear();
         yearlyDataValues.clear();
+
     }
+
     @Override
     protected void onEndDate(String date) {
         LocalDateTime localDateTime=LocalDateTime.parse(this.date);
         int year= localDateTime.getYear();
+        LocalDate localDate=localDateTime.toLocalDate();
+        super.yearlyDates.add(localDate);
         YearlyValuesResponse yearlyValuesResponse = locationWeatherResponse.getYearlyValues(String.valueOf(year));
-        String text="First instance of " +dataType+  " Below "+ firstValue;
-        yearlyValuesResponse.getValues().put(text, localDateTime.toLocalDate().toString());
+        String text="Last Date With " +dataType+  " Above "+ lastValue;
+        yearlyValuesResponse.getValues().put(text, localDate.toString());
         values.add(text+ year+" from: "+ startMonth +"/"+startDay+" to "+endMonth+"/" +endDay+ " was on  "+ localDateTime.toLocalDate().toString()+ " at "+localDateTime.getHour());
         this.date=null;
     }
     @Override
-    void processWeatherBetween(Number data, String date) {
+    protected void processWeatherBetween(Number data, String date) {
         double value=data.doubleValue();
-        if( value<=firstValue) {
+        if( value>= lastValue ) {
             this.date=date;
-           terminate();
-           onEndDate(date);
         }
     }
 }

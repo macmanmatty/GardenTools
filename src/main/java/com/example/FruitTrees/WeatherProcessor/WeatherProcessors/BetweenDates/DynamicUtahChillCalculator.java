@@ -60,7 +60,7 @@ public class DynamicUtahChillCalculator extends ProcessWeatherBetweenDates {
         chillHours =0;
     }
     @Override
-    void processWeatherBetween(Number data, String date) {
+    protected void processWeatherBetween(Number data, String date) {
         double value=data.doubleValue();
         int size=ragesBottom.size();
         for(int count=0; count<size; count++){

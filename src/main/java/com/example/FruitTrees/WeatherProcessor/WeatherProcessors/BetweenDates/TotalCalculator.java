@@ -22,7 +22,7 @@ public class TotalCalculator extends ProcessWeatherBetweenDates{
         total =0;
     }
     @Override
-    void processWeatherBetween(Number data, String date) {
+    protected void processWeatherBetween(Number data, String date) {
         double value=data.doubleValue();
         this.total = this.total + value;
     }

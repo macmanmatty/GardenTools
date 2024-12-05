@@ -36,12 +36,6 @@ public class HoursAboveMonthly extends MonthlyWeatherProcessor {
     @Override
     protected void onMonthEnd(Number value, String date) {
         String text="Monthly Hours Of " +dataType+  " Above "+minValue;
-        if(inputParameters.size()>1) {
-            String requestText = inputParameters.get(1);
-            if (requestText != null) {
-                text = requestText;
-            }
-        }
         monthlyValuesResponse.getValues().put(text, String.valueOf(hours));
            addProcessedValue(text + " For " + currentMonthName + "  " + currentYear + " : " + hours);
 

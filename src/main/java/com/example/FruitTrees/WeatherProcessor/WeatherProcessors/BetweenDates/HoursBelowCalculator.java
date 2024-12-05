@@ -46,7 +46,7 @@ public class HoursBelowCalculator extends ProcessWeatherBetweenDates {
         hours =0;
     }
     @Override
-    void processWeatherBetween(Number data, String date) {
+    protected void processWeatherBetween(Number data, String date) {
         double value=data.doubleValue();
         if( value<=maxValue) {
             hours++;

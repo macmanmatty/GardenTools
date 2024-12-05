@@ -56,7 +56,7 @@ public class HoursBetweenCalculator extends ProcessWeatherBetweenDates {
      * @param date  the current date and time of the weather  being processed
      */
     @Override
-    void processWeatherBetween(Number data, String date) {
+    protected void processWeatherBetween(Number data, String date) {
         double value=data.doubleValue();
         if( value>=minTemp && value<=maxTemp) {
             chillHours++;
