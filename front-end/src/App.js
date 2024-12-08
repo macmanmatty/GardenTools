@@ -6,17 +6,16 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import React from "react";
 
 function App() {
-  return (
-    <div className="App">
-        <OpenMap>
-        </OpenMap>
-        <WeatherSettings/>
-           
-        <LocationWeather>
-        </LocationWeather>
+    const weatherRequest = {};  // Initialize an empty object or set up the necessary data
 
-    </div>
-  );
+    return (
+        <div className="App">
+            <OpenMap weatherRequest={weatherRequest} />
+            <LocationWeather weatherRequest={weatherRequest} />
+            <WeatherSettings weatherRequest={weatherRequest} />
+        </div>
+    );
 }
+
 
 export default App;

@@ -1,5 +1,6 @@
 package com.example.FruitTrees.WeatherProcessor.WeatherProcessors.BetweenDates.DateCalculators;
 
+import com.example.FruitTrees.Utilities.DateUtilities;
 import com.example.FruitTrees.WeatherConroller.WeatherResponse.YearlyValuesResponse;
 import org.springframework.stereotype.Component;
 
@@ -36,15 +37,29 @@ public class FirstDateAboveValue extends DateValueProcessor {
     }
     @Override
     protected void onEndDate(String date) {
-        LocalDateTime localDateTime=LocalDateTime.parse(this.date);
-        int year= localDateTime.getYear();
-        LocalDate localDate=localDateTime.toLocalDate();
-        super.yearlyDates.add(localDate);
-        YearlyValuesResponse yearlyValuesResponse = locationWeatherResponse.getYearlyValues(String.valueOf(year));
-        String text="First instance of " +dataType+  " Above "+ firstValue;
-        yearlyValuesResponse.getValues().put(text, localDate.toString());
-        values.add(text+ year+" from: "+ startMonth +"/"+startDay+" to "+endMonth+"/" +endDay+ " was on  "+ localDateTime.toLocalDate().toString()+ " at "+localDateTime.getHour());
-        this.date=null;
+        if (this.date != null) {
+            LocalDateTime localDateTime = LocalDateTime.parse(this.date);
+            int year = localDateTime.getYear();
+            LocalDate localDate = localDateTime.toLocalDate();
+
+            super.yearlyDates.add(localDate);
+
+            YearlyValuesResponse yearlyValuesResponse = locationWeatherResponse.getYearlyValues(String.valueOf(year));
+            String text = "First instance of " + dataType + " Above " + firstValue;
+            yearlyValuesResponse.getValues().put(text, localDate.toString());
+            values.add(text + year + " from: " + startMonth + "/" + startDay + " to " + endMonth + "/" + endDay + " was on  " + localDateTime.toLocalDate().toString() + " at " + localDateTime.getHour());
+            this.date = null;
+        }
+        else{
+            int year= DateUtilities.getYear(date);
+            String text = "First instance of " + dataType + " Above " + firstValue;
+            YearlyValuesResponse yearlyValuesResponse = locationWeatherResponse.getYearlyValues(String.valueOf(year));
+            yearlyValuesResponse.getValues().put(text, "value never reached");
+            values.add(text + year + " from: " + startMonth + "/" + startDay + " to " + endMonth + "/" + endDay + " was never reached ");
+
+        }
+
+
     }
     @Override
     protected void processWeatherBetween(Number data, String date) {
