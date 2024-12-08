@@ -10,9 +10,10 @@ function App() {
 
     return (
         <div className="App">
-            <OpenMap weatherRequest={weatherRequest} />
-            <LocationWeather weatherRequest={weatherRequest} />
-            <WeatherSettings weatherRequest={weatherRequest} />
+            <div className="h1"> Weather App</div>
+            <OpenMap weatherRequest={weatherRequest}/>
+            <LocationWeather weatherRequest={weatherRequest}/>
+            <WeatherSettings weatherRequest={weatherRequest}/>
         </div>
     );
 }

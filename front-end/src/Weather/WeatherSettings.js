@@ -8,7 +8,7 @@ const LocationWeather = ({mapLatitude, mapLongitude}) => {
     // State to manage the selected value
     const [startDate, setStartDate] = useState('');
     const [endDate, setEndDate] = useState('');
-        const [tempUnits, setTempUnits]=useState('');
+    const [tempUnits, setTempUnits]=useState('');
     const [windSpeedUnits, setWindSpeedUnits]=useState('');
     const [precipitationUnits, setPrecipitationUnits]=useState('');
     const [weatherDataTypes, setWeatherDataTypes]=useState([]);
