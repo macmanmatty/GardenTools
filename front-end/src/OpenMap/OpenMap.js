@@ -13,10 +13,7 @@ const OpenMap = ({weatherRequest}) => {
  const MapClickHandler = () => {
      const map = useMapEvents({
        dblclick: (e) => {
-           console.log("marker added");
-
            const newMarker = {
-
      id: new Date().getTime(),
       position: [e.latlng.lat, e.latlng.lng],
      latitude: e.latlng.lat,
@@ -30,8 +27,6 @@ const OpenMap = ({weatherRequest}) => {
      });
      return null;
    };
-
-
 
   return (
   <div
