@@ -61,10 +61,6 @@ const LocationWeather = ({weatherRequest}) => {
     };
     return (
         <div>
-
-
-
-
             <div  class='inlineDropdowns'>
                 <ItemList
                     handleAddItem={createNewWeatherProcessor}

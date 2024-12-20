@@ -28,8 +28,9 @@ const MinMaxPopUp = ({  weatherProcessor, addWeatherProcessor,isModalVisible, se
             setMinValue(value);
         }
     };
-    const handleProcessorTypeChange = (item) => {
-        setInternalProcessor(item);
+    const handleProcessorTypeChange = (internalProcessor ) => {
+        console.log(internalProcessor)
+        setInternalProcessor(internalProcessor );
         setDisplayMax(internalProcessor.hasMax);
         setDisplayMin(internalProcessor.hasMin);
         setDisplayValue(internalProcessor.hasValue);
@@ -116,15 +117,15 @@ const MinMaxPopUp = ({  weatherProcessor, addWeatherProcessor,isModalVisible, se
                                 {/* Modal content */}
                                 <OptionDropdown
                                     optionsArray={WeatherOptions.weatherData}
-                                    displayParameter="name"
-                                    value="value"
+                                    displayParameter="key"
+                                    valueName="value"
                                     onSelected={setDataName}
                                     labelText="Select A Weather Data Type:"
                                 ></OptionDropdown>
                                 <OptionDropdown
-                                    optionsArray={WeatherOptions.weatherProcessorOptions}
+                                    optionsArray={WeatherOptions.weatherOptions}
                                     displayParameter='key'
-                                    value='value'
+                                    valueName='value'
                                     id={'key'}
                                     onSelected={handleProcessorTypeChange}
                                     labelText={'Select A Weather Calculation:'}

@@ -3,8 +3,8 @@
  * @type {[{input: string[], data: string, name: string}, the name of  the weather to get
  * {input: string[], data: string, name: string},{input: string[], data: string, name: string},{input: string[], data: string, name: string},{input: string[], data: string, name: string},null]}
  */
-export const  weatherProcessorOptions=  [
-    {
+export const  weatherOptions=  [
+    {key: "Hours Between",  value: {
         name: 'Hours Between',
         component: 'HoursBetween',
         monthly: true,
@@ -12,94 +12,115 @@ export const  weatherProcessorOptions=  [
         hasMax: true,
         hasValue: false
 
-        },
+        }},
 
-    {
+    {key: "Hours Above",  value: {
         name: 'Hours Above',
         component: 'HoursAbove',
         monthly: true,
-        hasMin: true,
-        hasMax: true,
-        hasValue: false
+        hasMin: false,
+        hasMax: false,
+        hasValue: true
 
 
 
-        },
-      {
+        }},
+      {key: "Hours Below",  value: {
          name: 'Hours Below',
         component: 'Hours Below',
         monthly: true,
-        hasMin: true,
-        hasMax: true,
-        hasValue: false
+              hasMin: false,
+              hasMax: false,
+              hasValue: true
 
 
-          },
-    {
+          }},
+    {key: "Max Value",  value: {
             name: 'Max Value',
         component: 'Max',
         monthly: true,
-        hasMin: true,
+        hasMin: false,
         hasMax: true,
         hasValue: false
-    },
-    {
+    }},
+    {key: "Min Value",  value: {
         name: 'Min Value',
         component: 'Min',
         monthly: true,
         hasMin: true,
-        hasMax: true,
+        hasMax: false,
         hasValue: false
 
-    },
-    {
+    }},
+    {key: "Total",  value: {
             name: 'Total',
         component: 'Total',
         monthly: true,
-        hasMin: true,
-        hasMax: true,
+        hasMin: false,
+        hasMax: false,
         hasValue: false
-        },
-    {
+        }},
+    {key: "Chilling Hours Utah Method",  value: {
         name: 'Chilling Hours Utah Method',
         component: 'UtahChill',
-        monthly: false
-    },
-    {
+        monthly: false,
+            hasMin: false,
+            hasMax: false,
+            hasValue: false
+    }},
+    {key: "Chilling Hours Utah Method Custom",  value: {
         name: 'Chilling Hours Utah Method Custom',
         component: 'UtahChill',
-         monthly: false
+         monthly: false,
+            hasMin: false,
+            hasMax: false,
+            hasValue: false
 
-        },
+        }},
 
-    {
+    {key: 'First Date Above Value',  value: {
         name: 'First Date Above Value',
         component: 'FirstDateAboveValue',
-        monthly: false
-    },
-    {
+        monthly: false,
+            hasMin: false,
+            hasMax: false,
+            hasValue: true
+    }},
+    {key: 'First Date Below Value',  value: {
         name: 'First Date Below Value',
         component: 'FirstDateBelowValue',
-        monthly: false
-    },
+        monthly: false,
+            hasMin: false,
+            hasMax: false,
+            hasValue: true
+    }},
 
-    {
+    {key: 'Last Date Below Value',  value: {
             name: 'Last Date Below Value',
         component: 'LastDateBelowValue',
-        monthly: false
-    },
-    {
+        monthly: false,
+            hasMin: false,
+            hasMax: false,
+            hasValue: true
+    }},
+    {key: 'Last Date Above Value',  value: {
 
             name: 'Last Date Above Value',
             component: 'LastDateAboveValue',
-            monthly: false
-        },
-    {
+            monthly: false,
+            hasMin: false,
+            hasMax: false,
+            hasValue: true
+        }},
+    {key: 'Approximate Frost Line',  value: {
 
             name: 'Approximate Frost Line ',
         component: 'FrostLine',
-        monthly: false
-    },
+        monthly: false,
+            hasMin: false,
+            hasMax: false,
+            hasValue: false
+    }},
 
 ]
 
