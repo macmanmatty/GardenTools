@@ -1,7 +1,6 @@
 import React, {useState} from 'react';
 import 'react-datepicker/dist/react-datepicker.css';
 import Dates from "../../CommonUI/Dates";
-import MinAndMax from "../../CommonUI/MinAndMax";
 
 const MinAndMaxChill = ({weatherRequest}) => {
   const [maxTemp, setMaxTemp]=useState("45");
@@ -40,10 +39,7 @@ const MinAndMaxChill = ({weatherRequest}) => {
         setEndDate={setEndDate}
         setStartDate={setStartDate}
       </Dates>
-      <MinAndMax>
-        setMin={setMinTemp}
-        setMax={setMaxTemp}
-      </MinAndMax>
+
         <button>
             onClick={addHourlyWeatherProcessRequest}
         </button>

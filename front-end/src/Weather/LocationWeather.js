@@ -1,10 +1,12 @@
 import React, {useState} from "react";
 import Dates from "../CommonUI/Dates";
 import OptionDropDown from "../CommonUI/OptionDropdown";
+import MinMaxPopUp from  "../Popups/MinMaxPopup";
 import * as WeatherOptions from "./WeatherOptions";
 import './Weather.css';
+import ItemList from "../CommonUI/ItemList";
 
-const LocationWeather = ({mapLatitude, mapLongitude}) => {
+const LocationWeather = ({weatherRequest}) => {
     // State to manage the selected value
     const [startDate, setStartDate] = useState('');
     const [endDate, setEndDate] = useState('');
@@ -15,8 +17,32 @@ const LocationWeather = ({mapLatitude, mapLongitude}) => {
     const [timeZone, setTimeZone]=useState([]);
     const [startChillDate, setStartChillDate]=useState([]);
     const [endChillDate, setEndChillDate]=useState([]);
-    const[SelectedCalculationComponent, setSelectedCalculationComponent]=useState(null);
+    const[SelectedCalculationComponent, setSelectedCalculationComponent]=useState('');
+    const [isModalVisible, setIsModalVisible] = useState(false);
+    const [weatherProcessors, setWeatherProcessors] = useState([]);
+    const[currentWeatherProcessor, setCurrentWeatherProcessor]=useState({});
 
+
+
+    const addWeatherProcessor = (weatherProcessor) => {
+        // Create a copy of the current array and add a new item to it
+        const updatedItems = [...weatherProcessors, weatherProcessor];
+        setWeatherProcessors(updatedItems);
+    };
+    const editWeatherProcessor = (weatherProcessor) => {
+        // Create a copy of the current array and add a new item to it
+        setCurrentWeatherProcessor(weatherProcessor);
+        setIsModalVisible(true)
+    };
+    const createNewWeatherProcessor = () => {
+        // Create a copy of the current array and add a new item to it
+        setCurrentWeatherProcessor({});
+        setIsModalVisible(true)
+    };
+    const deleteWeatherProcessor = (index) => {
+        const updatedItems = weatherProcessors.filter((item, i) => i !== index);
+        setWeatherProcessors(updatedItems);
+    };
     const addWeatherDataType = (item) => {
         // Create a copy of the current array and add a new item to it
         const updatedItems = [...weatherDataTypes, item];
@@ -24,38 +50,44 @@ const LocationWeather = ({mapLatitude, mapLongitude}) => {
         setWeatherDataTypes(updatedItems);
     };
 
+
+
+
+
+
     // Handler function to update the selected value
     const getWeather = (event) => {
-
+        setIsModalVisible(true);
     };
     return (
         <div>
-            <Dates
-                startText={"Select a date to start processing Weather on"}
-                endText={"Select a date to end processing Weather on"}
-                setStartDate={setStartDate}
-                setEndDate={setEndDate}
-            />
-            <div  class='inlineDropdowns'>
 
-            <OptionDropDown
-                optionsArray={WeatherOptions.weatherOptions}
-                displayParameter='name'
-                value='name'
-                id={'dataType'}
-                onSelected={setSelectedCalculationComponent}
-                labelText={'Select A Weather Calculation:'}
-            ></OptionDropDown>
+
+
+
+            <div  class='inlineDropdowns'>
+                <ItemList
+                    handleAddItem={createNewWeatherProcessor}
+                    items={weatherProcessors}
+                    handleDeleteItem={deleteWeatherProcessor}
+                    handleEditItem={editWeatherProcessor}
+                    title={"Weather Processors"}
+                />
+                <MinMaxPopUp
+                    weatherProcessor={currentWeatherProcessor}
+                    setIsModalVisible={setIsModalVisible}
+                    isModalVisible={isModalVisible}
+                    addWeatherProcessor={addWeatherProcessor}
+                    />
+            </div>
+            <div>
             </div>
 
-            {SelectedCalculationComponent ? <SelectedCalculationComponent
-                weatherRequest={weatherRequestForm}
-            /> : "Please select a  weather value to calculate"}
             <div>
             <button
                 onClick={getWeather}
             >
-                Get Weather
+                Add Weather
 
             </button>
             </div>

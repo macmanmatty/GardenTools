@@ -1,5 +1,6 @@
 package com.example.FruitTrees.WeatherConroller;
 
+import com.example.FruitTrees.File.FileSaver;
 import com.example.FruitTrees.OpenMeteo.OpenMeteoService;
 import com.example.FruitTrees.WeatherConroller.WeatherResponse.WeatherResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +23,9 @@ public class WeatherProcessorController {
     public ResponseEntity<Object> getWeather( @RequestBody  WeatherRequest weatherRequest) {
         try {
          WeatherResponse weatherResponse=   openMeteoService.getData(weatherRequest);
+         if(weatherRequest.isSaveToFile()){
+             FileSaver.saveFile(weatherRequest.getFilePath(), weatherRequest.getFileType(), weatherResponse);
+         }
             return  new ResponseEntity<>(weatherResponse, HttpStatus.OK);
 
         } catch (IOException e) {

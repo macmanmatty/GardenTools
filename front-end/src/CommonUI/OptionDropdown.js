@@ -1,30 +1,49 @@
-import  React, { useState } from 'react';
-import optionsArray from "leaflet";
+import React, { useState } from 'react';
+import PropTypes from 'prop-types';
+import './commonUI.css'
 
-const OptionDropDown = ({defaultText,  optionsArray, displayParameter, value,  onSelected, labelText}) => {
-  // State to manage the selected value
-  const [selectedOption, setSelectedOption] = useState('')
+const OptionDropDown = ({ defaultText, optionsArray, displayParameter, value, onSelected, labelText }) => {
+    // State to manage the selected value
+    const [selectedOption, setSelectedOption] = useState('');
 
     // Handler function to update the selected value
-  const handleSelectChange = (event) => {
-      onSelected(event.target.selected);
-  };
-  return (
-    <div>
-      <label
-          className={'labelText'}
-      >{labelText} </label>
-      {/* Dropdown/select element */}
-      <select value={selectedOption} onChange={handleSelectChange}>
-        {/* Default/empty option */}
-        <option value="">{defaultText}</option>
-               {optionsArray.map((option, index) => (
-                 <option key={option[displayParameter]} value={option[value]}>
-                   {option[displayParameter]}
-                 </option>)) }
-                   </select>
-    </div>
-  );
+    const handleSelectChange = (event) => {
+        setSelectedOption(event.target.value);
+        onSelected(event.target.value);
+    };
+
+    return (
+        <div className="form-group">
+            <label htmlFor="dropdownSelect" className="font-weight-bold">{labelText}</label>
+
+            {/* Dropdown/select element */}
+            <select
+                id="dropdownSelect"
+                className="form-control"
+                value={selectedOption}
+                onChange={handleSelectChange}
+            >
+                {/* Default/empty option */}
+                <option value="">{defaultText}</option>
+
+                {/* Dynamically populated options */}
+                {optionsArray.map((option, index) => (
+                    <option key={option[displayParameter]} value={option[value]}>
+                        {option[displayParameter]}
+                    </option>
+                ))}
+            </select>
+        </div>
+    );
+};
+
+// Prop types for better code validation
+OptionDropDown.propTypes = {
+    defaultText: PropTypes.string.isRequired,
+    optionsArray: PropTypes.array.isRequired,
+    displayParameter: PropTypes.string.isRequired,
+    onSelected: PropTypes.func.isRequired,
+    labelText: PropTypes.string.isRequired,
 };
 
 export default OptionDropDown;
