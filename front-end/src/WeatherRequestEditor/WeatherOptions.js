@@ -6,7 +6,7 @@
 export const  weatherOptions=  [
     {key: "Hours Between",  value: {
         name: 'Hours Between',
-        component: 'HoursBetween',
+        processorName: 'HoursBetween',
         monthly: true,
         hasMin: true,
         hasMax: true,
@@ -16,7 +16,7 @@ export const  weatherOptions=  [
 
     {key: "Hours Above",  value: {
         name: 'Hours Above',
-        component: 'HoursAbove',
+        processorName: 'HoursAbove',
         monthly: true,
         hasMin: false,
         hasMax: false,
@@ -27,7 +27,7 @@ export const  weatherOptions=  [
         }},
       {key: "Hours Below",  value: {
          name: 'Hours Below',
-        component: 'Hours Below',
+        processorName: 'Hours Below',
         monthly: true,
               hasMin: false,
               hasMax: false,
@@ -37,7 +37,7 @@ export const  weatherOptions=  [
           }},
     {key: "Max Value",  value: {
             name: 'Max Value',
-        component: 'Max',
+        processorName: 'Max',
         monthly: true,
         hasMin: false,
         hasMax: true,
@@ -45,7 +45,7 @@ export const  weatherOptions=  [
     }},
     {key: "Min Value",  value: {
         name: 'Min Value',
-        component: 'Min',
+        processorName: 'Min',
         monthly: true,
         hasMin: true,
         hasMax: false,
@@ -54,7 +54,7 @@ export const  weatherOptions=  [
     }},
     {key: "Total",  value: {
             name: 'Total',
-        component: 'Total',
+        processorName: 'Total',
         monthly: true,
         hasMin: false,
         hasMax: false,
@@ -62,7 +62,7 @@ export const  weatherOptions=  [
         }},
     {key: "Chilling Hours Utah Method",  value: {
         name: 'Chilling Hours Utah Method',
-        component: 'UtahChill',
+        processorName: 'UtahChill',
         monthly: false,
             hasMin: false,
             hasMax: false,
@@ -70,7 +70,7 @@ export const  weatherOptions=  [
     }},
     {key: "Chilling Hours Utah Method Custom",  value: {
         name: 'Chilling Hours Utah Method Custom',
-        component: 'UtahChill',
+        processorName: 'UtahChill',
          monthly: false,
             hasMin: false,
             hasMax: false,
@@ -80,7 +80,7 @@ export const  weatherOptions=  [
 
     {key: 'First Date Above Value',  value: {
         name: 'First Date Above Value',
-        component: 'FirstDateAboveValue',
+        processorName: 'FirstDateAboveValue',
         monthly: false,
             hasMin: false,
             hasMax: false,
@@ -88,7 +88,7 @@ export const  weatherOptions=  [
     }},
     {key: 'First Date Below Value',  value: {
         name: 'First Date Below Value',
-        component: 'FirstDateBelowValue',
+        processorName: 'FirstDateBelowValue',
         monthly: false,
             hasMin: false,
             hasMax: false,
@@ -97,7 +97,7 @@ export const  weatherOptions=  [
 
     {key: 'Last Date Below Value',  value: {
             name: 'Last Date Below Value',
-        component: 'LastDateBelowValue',
+        processorName: 'LastDateBelowValue',
         monthly: false,
             hasMin: false,
             hasMax: false,
@@ -105,7 +105,7 @@ export const  weatherOptions=  [
     }},
     {key: 'Last Date Above Value',  value: {
             name: 'Last Date Above Value',
-            component: 'LastDateAboveValue',
+            processorName: 'LastDateAboveValue',
             monthly: false,
             hasMin: false,
             hasMax: false,
@@ -114,7 +114,7 @@ export const  weatherOptions=  [
     {key: 'Approximate Frost Line',  value: {
 
             name: 'Approximate Frost Line ',
-        component: 'FrostLine',
+        processorName: 'FrostLine',
         monthly: false,
             hasMin: false,
             hasMax: false,

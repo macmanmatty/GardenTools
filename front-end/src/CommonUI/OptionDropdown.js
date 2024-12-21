@@ -2,15 +2,14 @@ import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import './commonUI.css'
 
-const OptionDropDown = ({ defaultText, optionsArray, displayParameter, valueName, onSelected, labelText }) => {
+const OptionDropDown = ({ initialSelectedOption, defaultText, optionsArray, displayParameter, valueName, onSelected, labelText }) => {
     // State to manage the selected value
-    const [selectedOption, setSelectedOption] = useState('');
-
-    // Handler function to update the selected value
+    const [selectedOption, setSelectedOption] = useState(initialSelectedOption || '');
     const handleSelectChange = (event) => {
         setSelectedOption(event.target.value);
         console.log( "event "+ event.target.value)
         const selectedObject = optionsArray.find(option => option[displayParameter] === event.target.value);
+        console.log("Selected Value "+selectedObject[valueName]);
         onSelected(selectedObject[valueName]);
     };
 

@@ -3,14 +3,15 @@ import PropTypes from 'prop-types';
 import OptionDropDown from '../CommonUI/OptionDropdown'
 import * as WeatherOptions from "../WeatherRequestEditor/WeatherOptions";
 import 'react-datepicker/dist/react-datepicker.css';
-const MinMaxPopUp = ({ updateWeatherRequest, isModalVisible, setIsModalVisible  }) => {
-    const [tempUnits, setTempUnits]=useState('');
-    const [windSpeedUnits, setWindSpeedUnits]=useState('');
-    const [precipitationUnits, setPrecipitationUnits]=useState('');
+const SettingsPopup = ({weatherRequest, updateWeatherRequest, isModalVisible, setIsModalVisible  }) => {
+    const [tempUnits, setTempUnits]=useState(weatherRequest?.temperatureUnit ||'');
+    const [windSpeedUnits, setWindSpeedUnits]=useState(weatherRequest?.windSpeedUnit ||'');
+    const [precipitationUnits, setPrecipitationUnits]=useState(weatherRequest?.precipitationUnit||'');
 
     // Handle saving data (update weatherProcessor object)
     const handleSave = () => {
-        updateWeatherRequest("temperatureUnit", tempUnits);
+        console.log("temp unit :", tempUnits)
+        updateWeatherRequest("temperatureUnit",  tempUnits);
         updateWeatherRequest("windSpeedUnit", windSpeedUnits);
         updateWeatherRequest("precipitationUnit", precipitationUnits);
         closeModal();
@@ -29,7 +30,7 @@ const MinMaxPopUp = ({ updateWeatherRequest, isModalVisible, setIsModalVisible  
                         <div className="modal-content">
                             <div className="modal-header">
                                 <h5 className="modal-title"> Min / Max Weather Data Processor</h5>
-                                <button type="button" className="close" onClick={closeModal} aria-label="Close">
+                                <button type="button" className="btn-close" onClick={closeModal} aria-label="Close">
                                     <span aria-hidden="true">&times;</span>
                                 </button>
                             </div>
@@ -37,26 +38,29 @@ const MinMaxPopUp = ({ updateWeatherRequest, isModalVisible, setIsModalVisible  
                             <div className="modal-body">
                                 {/* Modal content */}
                                 <OptionDropDown
+                                    initialSelectedOption={tempUnits}
                                     optionsArray={WeatherOptions.temperatureUnits}
                                     displayParameter='key'
-                                    value='key'
+                                    valueName='key'
                                     onSelected={setTempUnits}
                                     labelText={'Select A Temperature  Measure Unit:'}
                                     id={'tempUnits'}
                                 ></OptionDropDown>
 
                                 <OptionDropDown
+                                    initialSelectedOption={precipitationUnits}
                                     optionsArray={WeatherOptions.precipitationUnits}
                                     displayParameter='key'
-                                    value='key'
+                                    valueName='key'
                                     onSelected={setPrecipitationUnits}
                                     id={'precipitationUnits'}
                                     labelText={'Select A Precipitation Measurement  Unit:'}
                                 ></OptionDropDown>
                                 <OptionDropDown
+                                    initialSelectedOption={windSpeedUnits}
                                     optionsArray={WeatherOptions.windSpeedUnits}
                                     displayParameter='key'
-                                    value='key'
+                                    valueName='key'
                                     onSelected={setPrecipitationUnits}
                                     id={'windSpeedUnits'}
                                     labelText={'Select A Precipitation Measurement  Unit:'}
@@ -80,4 +84,4 @@ const MinMaxPopUp = ({ updateWeatherRequest, isModalVisible, setIsModalVisible  
 };
 
 
-export default MinMaxPopUp;
+export default SettingsPopup;

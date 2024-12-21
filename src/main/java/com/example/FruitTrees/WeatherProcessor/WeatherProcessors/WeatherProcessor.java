@@ -29,11 +29,11 @@ public abstract class WeatherProcessor {
      */
    protected int  endDay=31;
     /**
-     * the month to stat processing weather
+     * the month to stat processing weather int from jan=1 to dec=12
      */
    protected  int startMonth =1;
     /**
-     * the month to end processing weather
+     * the month to end processing weather int from jan=1 to dec=12
      */
    protected  int  endMonth=12;
 

@@ -3,10 +3,14 @@ import WeatherProcessors from "./WeatherProcessors";
 import WeatherSettings from "./WeatherSettings";
 import SettingsPopup from "../Popups/WeatherRequestSettingsPopup"
 import 'bootstrap/dist/css/bootstrap.min.css';
-import React, {useState} from "react";
+import React, {useState, useEffect} from "react";
 function WeatherRequestEditor() {
     const [weatherRequest, setWeatherRequest] = useState({});
     const [isSettingsVisible, setIsSettingsVisible] = useState(false);
+    useEffect(() => {
+        // Log the updated weatherRequest after it changes
+        console.log(weatherRequest);
+    }, [weatherRequest]);
 
     // Function to update specific fields in the weatherRequest
     const updateWeatherRequest = (field, value) => {

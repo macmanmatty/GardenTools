@@ -6,7 +6,7 @@ import OptionDropdown from '../CommonUI/OptionDropdown'
 import * as WeatherOptions from "../WeatherRequestEditor/WeatherOptions";
 import 'react-datepicker/dist/react-datepicker.css';
 import { v4 as uuidv4 } from 'uuid';
-const MinMaxPopUp = ({  weatherProcessor, addWeatherProcessor,isModalVisible, setIsModalVisible  }) => {
+const WeatherProcessorPopup = ({  weatherProcessor, addWeatherProcessor,isModalVisible, setIsModalVisible  }) => {
     const [minValue, setMinValue] = useState(weatherProcessor.minValue);
     const [maxValue, setMaxValue] = useState(weatherProcessor.maxValue);
     const [value, setValue] = useState(weatherProcessor.value);
@@ -63,9 +63,12 @@ const MinMaxPopUp = ({  weatherProcessor, addWeatherProcessor,isModalVisible, se
         weatherProcessor.minValue = minValue;
         weatherProcessor.maxValue = maxValue;
         weatherProcessor.startDate = startDate;
-        weatherProcessor.endDate = endDate;
-        weatherProcessor.dataName=dataName;
-        weatherProcessor.internalProcessor=internalProcessor;
+        weatherProcessor.startProcessMonth=startDate.getMonth() + 1;
+        weatherProcessor.startProcessDay=startDate.getDate();
+         weatherProcessor.endProcessMonth = endDate.getMonth()+1;
+        weatherProcessor.endProcessDay = endDate.getDate();
+        weatherProcessor.hourlyDataType=dataName;
+        weatherProcessor.processorName=internalProcessor.processorName;
         weatherProcessor.id=uuidv4();
         if ((name == null || name === '')) {
             alert('Name is required and cannot be null or empty.');
@@ -86,7 +89,14 @@ const MinMaxPopUp = ({  weatherProcessor, addWeatherProcessor,isModalVisible, se
             alert('Start date is required and cannot be null or empty.');
             return;
         }
-
+        if ((!internalProcessor.processorName)) {
+            alert('You Must Select a Weather Processor!');
+            return;
+        }
+        if ((!dataName)) {
+            alert('You Must Select a Data Type!');
+            return;
+        }
         if (endDate == null || endDate === '') {
             alert('End date is required and cannot be null or empty.');
             return;
@@ -215,4 +225,4 @@ const MinMaxPopUp = ({  weatherProcessor, addWeatherProcessor,isModalVisible, se
 };
 
 
-export default MinMaxPopUp;
+export default WeatherProcessorPopup;
