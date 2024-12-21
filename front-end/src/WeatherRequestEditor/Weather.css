@@ -1,0 +1,6 @@
+.inlineDropdowns{
+ display: flex;
+ font-weight: bold;
+ padding-right: 5px;
+ padding-bottom: 50px;
+}

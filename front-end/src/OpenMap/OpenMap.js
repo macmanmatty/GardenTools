@@ -2,10 +2,11 @@ import React,  { useState} from 'react';
 import { MapContainer, TileLayer, Marker, Popup, useMapEvents, CircleMarker} from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import MarkerPopupLabel from "./LocationPopup";
-const OpenMap = ({weatherRequest}) => {
+const OpenMap = ({weatherRequest, updateWeatherRequest}) => {
   const [markers, setMarkers] = useState([]);
-  const maxLocations=6;
-  weatherRequest["locations"]=[]
+    const [locations, setLocations] = useState(weatherRequest?.locations||[]);
+
+    const maxLocations=6;
     const onDelete=(id)=> {
       console.log("id "+id);
         setMarkers((prevMarkers) => prevMarkers.filter((marker) => marker.id !== id));
@@ -21,7 +22,7 @@ const OpenMap = ({weatherRequest}) => {
      name:"Marker "+markers.length,
      selected: false
     };
-           weatherRequest.locations.push(newMarker);
+           //weatherRequest.locations.push(newMarker);
            setMarkers((prevMarkers) => [...prevMarkers, newMarker]);
            },
      });

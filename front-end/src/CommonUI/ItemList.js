@@ -3,18 +3,14 @@ import React from 'react';
 const ItemList = ({title, items, handleDeleteItem, handleAddItem, handleEditItem }) => {
 
     // Handle input changes for adding a new item (could be a form or something else)
-    const handleAdd = () => {
-        // Example of adding a new item (you can customize this based on your form/input logic)
-        const newItem = { name: 'Orange', value: 4 }; // For example purposes
-        handleAddItem(newItem); // Call the parent's handler to add the item
-    };
+
 
     return (
         <div className="container mt-5">
             <h3>{title}</h3>
 
             {/* Button to add a new item */}
-            <button className="btn btn-primary mb-3" onClick={handleAdd}>
+            <button className="btn btn-primary mb-3" onClick={handleAddItem}>
                 Add New Item
             </button>
 
