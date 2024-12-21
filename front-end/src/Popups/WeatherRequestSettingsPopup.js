@@ -7,6 +7,7 @@ const SettingsPopup = ({weatherRequest, updateWeatherRequest, isModalVisible, se
     const [tempUnits, setTempUnits]=useState(weatherRequest?.temperatureUnit ||'');
     const [windSpeedUnits, setWindSpeedUnits]=useState(weatherRequest?.windSpeedUnit ||'');
     const [precipitationUnits, setPrecipitationUnits]=useState(weatherRequest?.precipitationUnit||'');
+    const [populateLocationData, setPopulateLocationData] = useState(weatherRequest?.populateLocationData || true);
 
     // Handle saving data (update weatherProcessor object)
     const handleSave = () => {
@@ -15,6 +16,10 @@ const SettingsPopup = ({weatherRequest, updateWeatherRequest, isModalVisible, se
         updateWeatherRequest("windSpeedUnit", windSpeedUnits);
         updateWeatherRequest("precipitationUnit", precipitationUnits);
         closeModal();
+    };
+
+    const handlePopulateLocationDataChange = (event) => {
+        setPopulateLocationData(event.target.checked);
     };
 
     // Close the modal (you can manage modal visibility through state here)
@@ -36,6 +41,19 @@ const SettingsPopup = ({weatherRequest, updateWeatherRequest, isModalVisible, se
                             </div>
 
                             <div className="modal-body">
+                                <div className="d-flex align-items-center ">
+                                    <label className="form-check-label  right-10"
+                                           htmlFor="populateLocationData"> Populate Location data
+                                    </label>
+                                    <input
+                                        className="form-check-input"
+                                        type="checkbox"
+                                        value="populateLocationData"
+                                        id="populateLocationData"
+                                        checked={populateLocationData}
+                                        onChange={handlePopulateLocationDataChange}
+                                    />
+                                </div>
                                 {/* Modal content */}
                                 <OptionDropDown
                                     initialSelectedOption={tempUnits}

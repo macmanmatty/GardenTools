@@ -9,17 +9,18 @@ const LocationPopup = ({marker, onDelete}) => {
         marker.selected=!marker.selected;
     }
   return (
-             <Popup>
-               Latitude: {marker.position[0]}, Longitude: {marker.position[1]}
-                 <p/>
-                 <EditableLabel
-                     object={marker}
-                     property='name'
-                     ></EditableLabel>
-                 <button onClick={() => onDelete(marker.id)}>
-                     Delete
-                 </button>
-             </Popup>
+      <Popup>
+          Latitude: {marker.position[0]}, Longitude: {marker.position[1]}
+          <p/>
+          <EditableLabel
+              object={marker}
+              property='name'
+          ></EditableLabel>
+          <button onClick={() => onDelete(marker.id)}>
+              Delete
+          </button>
+
+      </Popup>
   )
-   };
+};
 export default LocationPopup;

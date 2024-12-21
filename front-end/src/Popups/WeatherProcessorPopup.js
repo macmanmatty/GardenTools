@@ -5,6 +5,7 @@ import Dates from '../CommonUI/Dates'
 import OptionDropdown from '../CommonUI/OptionDropdown'
 import * as WeatherOptions from "../WeatherRequestEditor/WeatherOptions";
 import 'react-datepicker/dist/react-datepicker.css';
+import '../common.css'
 import { v4 as uuidv4 } from 'uuid';
 const WeatherProcessorPopup = ({  weatherProcessor, addWeatherProcessor,isModalVisible, setIsModalVisible  }) => {
     const [minValue, setMinValue] = useState(weatherProcessor.minValue);
@@ -18,6 +19,9 @@ const WeatherProcessorPopup = ({  weatherProcessor, addWeatherProcessor,isModalV
     const [displayMin, setDisplayMin] = useState(internalProcessor?.hasMin || false);
     const [displayMax, setDisplayMax] = useState(internalProcessor?.hasMax || false);
     const [displayValue, setDisplayValue] = useState(internalProcessor?.hasValue || false);
+    const [calculateAverage, setCalculateAverage] = useState(weatherProcessor?.calculateAverage || true);
+    const [onlyCalculateAverage, setOnlyCalculateAverage] = useState(weatherProcessor?.onlyCalulateAverage || false);
+
     const [id,setId]=useState(weatherProcessor.id);
 
 
@@ -28,6 +32,15 @@ const WeatherProcessorPopup = ({  weatherProcessor, addWeatherProcessor,isModalV
             setMinValue(value);
         }
     };
+    const handleCalculateAverageChange = (event) => {
+        setCalculateAverage(event.target.checked);
+    };
+
+    // Step 3: Handle checkbox change for onlyCalculateAverage
+    const handleOnlyCalculateAverageChange = (event) => {
+        setOnlyCalculateAverage(event.target.checked);
+    };
+
     const handleProcessorTypeChange = (internalProcessor ) => {
         console.log(internalProcessor)
         setInternalProcessor(internalProcessor );
@@ -54,34 +67,32 @@ const WeatherProcessorPopup = ({  weatherProcessor, addWeatherProcessor,isModalV
     const handleNameChange = (e) => {
         setName(e.target.value);
     };
+    const handleOnlyCalculateAverage = (e) => {
+        const checked=e.target.value;
+        setOnlyCalculateAverage(checked);
+        if(checked=true){
+
+        }
+    };
 
     // Handle saving data (update weatherProcessor object)
     const handleSave = () => {
-        let weatherProcessor= {}
-        // Update the weatherProcessor object directly
-        weatherProcessor.name = name;
-        weatherProcessor.minValue = minValue;
-        weatherProcessor.maxValue = maxValue;
-        weatherProcessor.startDate = startDate;
-        weatherProcessor.startProcessMonth=startDate.getMonth() + 1;
-        weatherProcessor.startProcessDay=startDate.getDate();
-         weatherProcessor.endProcessMonth = endDate.getMonth()+1;
-        weatherProcessor.endProcessDay = endDate.getDate();
-        weatherProcessor.hourlyDataType=dataName;
-        weatherProcessor.processorName=internalProcessor.processorName;
-        weatherProcessor.id=uuidv4();
         if ((name == null || name === '')) {
             alert('Name is required and cannot be null or empty.');
             return; // Early exit if validation fails
         }
 
         if ((minValue == null || minValue === '') && displayMin) {
-            alert('Min value is required and cannot be null or empty.');
+            alert('Min value is required  and must be a Real Number.');
             return;
         }
 
         if ((maxValue == null || maxValue === '') && displayMax) {
-            alert('Max value is required and cannot be null or empty.');
+            alert('Max value is required and  must be a Real  Number.');
+            return;
+        }
+        if ((value == null || value === '') && displayValue) {
+            alert('Value is required and  must be a Real  Number.');
             return;
         }
 
@@ -89,7 +100,7 @@ const WeatherProcessorPopup = ({  weatherProcessor, addWeatherProcessor,isModalV
             alert('Start date is required and cannot be null or empty.');
             return;
         }
-        if ((!internalProcessor.processorName)) {
+        if ((!internalProcessor || !internalProcessor.processorName)) {
             alert('You Must Select a Weather Processor!');
             return;
         }
@@ -97,9 +108,42 @@ const WeatherProcessorPopup = ({  weatherProcessor, addWeatherProcessor,isModalV
             alert('You Must Select a Data Type!');
             return;
         }
-        if (endDate == null || endDate === '') {
+        if (!endDate) {
             alert('End date is required and cannot be null or empty.');
             return;
+        }
+        if (!startDate) {
+            alert('Start date is required and cannot be null or empty.');
+            return;
+        }
+        let weatherProcessor= {}
+        // Update the weatherProcessor object directly
+        weatherProcessor.name = name;
+        weatherProcessor.minValue = minValue;
+        weatherProcessor.value=value;
+        weatherProcessor.maxValue = maxValue;
+        weatherProcessor.endDate=endDate;
+        weatherProcessor.startDate=startDate;
+        weatherProcessor.startProcessMonth=startDate.getMonth() + 1;
+        weatherProcessor.startProcessDay=startDate.getDate();
+        weatherProcessor.endProcessMonth = endDate.getMonth()+1;
+        weatherProcessor.endProcessDay = endDate.getDate();
+        weatherProcessor.hourlyDataType=dataName;
+        weatherProcessor.processorName=internalProcessor.processorName;
+        weatherProcessor.calculateAverage=calculateAverage;
+        weatherProcessor.onlyCalculateAverage=onlyCalculateAverage;
+        weatherProcessor.id=uuidv4();
+        if(displayValue){
+            weatherProcessor.inputValues=[value]
+        }
+        if(displayMax && !DisplayMin){
+            weatherProcessor.inputValues=[max]
+        }
+        if(displayMin && !DisplayMax){
+            weatherProcessor.inputValues=[min]
+        }
+        if(displayMin && DisplayMax){
+            weatherProcessor.inputValues=[min, max]
         }
         addWeatherProcessor(weatherProcessor);
         closeModal();
@@ -140,10 +184,37 @@ const WeatherProcessorPopup = ({  weatherProcessor, addWeatherProcessor,isModalV
                                     onSelected={handleProcessorTypeChange}
                                     labelText={'Select A Weather Calculation:'}
                                 ></OptionDropdown>
+                                <div className="d-flex align-items-center ">
+                                    <label className="form-check-label  right-10"
+                                           htmlFor="calculateAverage"> Calculate Average
+                                    </label>
+                                    <input
+                                        className="form-check-input"
+                                        type="checkbox"
+                                        value="calculateAverage"
+                                        id="calculateAverage"
+                                        checked={calculateAverage || onlyCalculateAverage}
+                                        onChange={handleCalculateAverageChange}
+                                        disabled={onlyCalculateAverage}
+                                    />
+                                    <label className="form-check-label left-10 right-10"
+                                           htmlFor="onlyCalculateAverage">Only Calculate Average
+                                    </label>
+                                    <input
+                                        className="form-check-input"
+                                        type="checkbox"
+                                        value="onlyCalculateAverage"
+                                        id="onlyCalculateAverage"
+                                        checked={onlyCalculateAverage}
+                                        onChange={handleOnlyCalculateAverageChange}
+                                    />
+
+                                </div>
 
                                 {/* Name input */}
                                 <div className="form-group col-auto d-flex align-items-center text-box-box">
-                                    <label htmlFor="startDate" className="date-picker-label flex-shrink-0">Name: </label>
+                                    <label htmlFor="startDate"
+                                           className="date-picker-label flex-shrink-0">Name: </label>
                                     <input
                                         type="text"
                                         className="form-control"
@@ -155,37 +226,40 @@ const WeatherProcessorPopup = ({  weatherProcessor, addWeatherProcessor,isModalV
                                 </div>
 
                                 {/* Min and Max inputs */}
-                                {displayMin&&(
-                                <div className="form-group col-auto d-flex align-items-center text-box-box">
-                                    <label
-                                    htmlFor="startDate" className="date-picker-label flex-shrink-0">Min Value:</label>
-                                    <input
-                                        type="number"
-                                        className="form-control"
-                                        id="minValue"
-                                        value={minValue}
-                                        onChange={handleMinChange}
-                                        placeholder="Min Value"
-                                    />
-                                </div>
-                                    )}
-                                {displayMax&&(
+                                {displayMin && (
                                     <div className="form-group col-auto d-flex align-items-center text-box-box">
-                                    <label htmlFor="startDate" className="date-picker-label flex-shrink-0">Max Value:</label>
-                                    <input
-                                        type="number"
-                                        className="form-control"
-                                        id="maxValue"
-                                        value={maxValue}
-                                        onChange={handleMaxChange}
-                                        placeholder="Max Value"
-                                    />
-                                </div>
+                                        <label
+                                            htmlFor="startDate" className="date-picker-label flex-shrink-0">Min
+                                            Value:</label>
+                                        <input
+                                            type="number"
+                                            className="form-control"
+                                            id="minValue"
+                                            value={minValue}
+                                            onChange={handleMinChange}
+                                            placeholder="Min Value"
+                                        />
+                                    </div>
+                                )}
+                                {displayMax && (
+                                    <div className="form-group col-auto d-flex align-items-center text-box-box">
+                                        <label htmlFor="startDate" className="date-picker-label flex-shrink-0">Max
+                                            Value:</label>
+                                        <input
+                                            type="number"
+                                            className="form-control"
+                                            id="maxValue"
+                                            value={maxValue}
+                                            onChange={handleMaxChange}
+                                            placeholder="Max Value"
+                                        />
+                                    </div>
                                 )}
 
-                                {displayValue&&(
+                                {displayValue && (
                                     <div className="form-group col-auto d-flex align-items-center text-box-box">
-                                        <label htmlFor="startDate" className="date-picker-label flex-shrink-0">Value:</label>
+                                        <label htmlFor="startDate"
+                                               className="date-picker-label flex-shrink-0">Value:</label>
                                         <input
                                             type="number"
                                             className="form-control"

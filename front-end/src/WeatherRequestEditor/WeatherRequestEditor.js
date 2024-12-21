@@ -3,10 +3,13 @@ import WeatherProcessors from "./WeatherProcessors";
 import WeatherSettings from "./WeatherSettings";
 import SettingsPopup from "../Popups/WeatherRequestSettingsPopup"
 import 'bootstrap/dist/css/bootstrap.min.css';
+import Dates from '../CommonUI/Dates'
 import React, {useState, useEffect} from "react";
 function WeatherRequestEditor() {
     const [weatherRequest, setWeatherRequest] = useState({});
     const [isSettingsVisible, setIsSettingsVisible] = useState(false);
+    const [startDate, setStartDate] = useState(weatherRequest.startDate);
+    const [endDate, setEndDate] = useState(weatherRequest.endDate);
     useEffect(() => {
         // Log the updated weatherRequest after it changes
         console.log(weatherRequest);
@@ -44,16 +47,25 @@ function WeatherRequestEditor() {
                 updateWeatherRequest={updateWeatherRequest}
             />
 
+
             {/* Main Content: Bootstrap Grid with two columns */}
             <div className="row">
                 {/* Left: Map */}
                 <div className="col-md-6 mb-4">
-                    <OpenMap weatherRequest={weatherRequest} updateWeatherRequest={updateWeatherRequest} />
+                    <OpenMap weatherRequest={weatherRequest} updateWeatherRequest={updateWeatherRequest}/>
                 </div>
 
                 {/* Right: Weather Processors */}
                 <div className="col-md-6 mb-4">
-                    <WeatherProcessors weatherRequest={weatherRequest} updateWeatherRequest={updateWeatherRequest} />
+                    <Dates
+                        startText="Start Date:"
+                        endText="End Date:"
+                        setStartDate={(date) => setStartDate(date)}
+                        setEndDate={(date) => setEndDate(date)}
+                        startStartDate={startDate}
+                        startEndDate={endDate}
+                    />
+                    <WeatherProcessors weatherRequest={weatherRequest} updateWeatherRequest={updateWeatherRequest}/>
                 </div>
             </div>
         </div>
