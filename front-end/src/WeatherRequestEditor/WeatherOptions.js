@@ -1,11 +1,11 @@
 /**
  * the array of options for the select box
- * @type {[{input: string[], data: string, name: string}, the name of  the weather to get
- * {input: string[], data: string, name: string},{input: string[], data: string, name: string},{input: string[], data: string, name: string},{input: string[], data: string, name: string},null]}
+ * @type {[{input: string[], data: string, displayName: string}, the name of  the weather to get
+ * {input: string[], data: string, displayName: string},{input: string[], data: string, displayName: string},{input: string[], data: string, displayName: string},{input: string[], data: string, displayName: string},null]}
  */
-export const  weatherOptions=  [
+export const  weatherProcessorOptions=  [
     {key: "Hours Between",  value: {
-        name: 'Hours Between',
+        displayName: 'Hours Between',
         processorName: 'HoursBetween',
         monthly: true,
         hasMin: true,
@@ -15,7 +15,7 @@ export const  weatherOptions=  [
         }},
 
     {key: "Hours Above",  value: {
-        name: 'Hours Above',
+        displayName: 'Hours Above',
         processorName: 'HoursAbove',
         monthly: true,
         hasMin: false,
@@ -26,7 +26,7 @@ export const  weatherOptions=  [
 
         }},
       {key: "Hours Below",  value: {
-         name: 'Hours Below',
+         displayName: 'Hours Below',
         processorName: 'Hours Below',
         monthly: true,
               hasMin: false,
@@ -36,7 +36,7 @@ export const  weatherOptions=  [
 
           }},
     {key: "Max Value",  value: {
-            name: 'Max Value',
+            displayName: 'Max Value',
         processorName: 'Max',
         monthly: true,
         hasMin: false,
@@ -44,7 +44,7 @@ export const  weatherOptions=  [
         hasValue: false
     }},
     {key: "Min Value",  value: {
-        name: 'Min Value',
+        displayName: 'Min Value',
         processorName: 'Min',
         monthly: true,
         hasMin: true,
@@ -53,7 +53,7 @@ export const  weatherOptions=  [
 
     }},
     {key: "Total",  value: {
-            name: 'Total',
+            displayName: 'Total',
         processorName: 'Total',
         monthly: true,
         hasMin: false,
@@ -61,7 +61,7 @@ export const  weatherOptions=  [
         hasValue: false
         }},
     {key: "Chilling Hours Utah Method",  value: {
-        name: 'Chilling Hours Utah Method',
+        displayName: 'Chilling Hours Utah Method',
         processorName: 'UtahChill',
         monthly: false,
             hasMin: false,
@@ -69,7 +69,7 @@ export const  weatherOptions=  [
             hasValue: false
     }},
     {key: "Chilling Hours Utah Method Custom",  value: {
-        name: 'Chilling Hours Utah Method Custom',
+        displayName: 'Chilling Hours Utah Method Custom',
         processorName: 'UtahChill',
          monthly: false,
             hasMin: false,
@@ -79,7 +79,7 @@ export const  weatherOptions=  [
         }},
 
     {key: 'First Date Above Value',  value: {
-        name: 'First Date Above Value',
+        displayName: 'First Date Above Value',
         processorName: 'FirstDateAboveValue',
         monthly: false,
             hasMin: false,
@@ -87,7 +87,7 @@ export const  weatherOptions=  [
             hasValue: true
     }},
     {key: 'First Date Below Value',  value: {
-        name: 'First Date Below Value',
+        displayName: 'First Date Below Value',
         processorName: 'FirstDateBelowValue',
         monthly: false,
             hasMin: false,
@@ -96,7 +96,7 @@ export const  weatherOptions=  [
     }},
 
     {key: 'Last Date Below Value',  value: {
-            name: 'Last Date Below Value',
+            displayName: 'Last Date Below Value',
         processorName: 'LastDateBelowValue',
         monthly: false,
             hasMin: false,
@@ -104,7 +104,7 @@ export const  weatherOptions=  [
             hasValue: true
     }},
     {key: 'Last Date Above Value',  value: {
-            name: 'Last Date Above Value',
+            displayName: 'Last Date Above Value',
             processorName: 'LastDateAboveValue',
             monthly: false,
             hasMin: false,
@@ -113,7 +113,7 @@ export const  weatherOptions=  [
         }},
     {key: 'Approximate Frost Line',  value: {
 
-            name: 'Approximate Frost Line ',
+            displayName: 'Approximate Frost Line ',
         processorName: 'FrostLine',
         monthly: false,
             hasMin: false,
@@ -139,7 +139,7 @@ export const simpleCalculations= [
     {key: "Total", value: "total"},
 ]
 
-export const weatherData = [
+export const weatherDataTypes = [
     { key: "Temperature 2m", value: "temperature_2m" },
     { key: "Relative Humidity 2m", value: "relative_humidity_2m" },
     { key: "Dew Point 2m", value: "dew_point_2m" },

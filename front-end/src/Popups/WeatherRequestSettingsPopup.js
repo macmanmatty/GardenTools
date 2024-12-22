@@ -39,11 +39,10 @@ const SettingsPopup = ({weatherRequest, updateWeatherRequest, isModalVisible, se
                                     <span aria-hidden="true">&times;</span>
                                 </button>
                             </div>
-
                             <div className="modal-body">
                                 <div className="d-flex align-items-center ">
                                     <label className="form-check-label  right-10"
-                                           htmlFor="populateLocationData"> Populate Location data
+                                           htmlFor="populateLocationData"> Populate Location Data
                                     </label>
                                     <input
                                         className="form-check-input"
@@ -58,7 +57,7 @@ const SettingsPopup = ({weatherRequest, updateWeatherRequest, isModalVisible, se
                                 <OptionDropDown
                                     initialSelectedOption={tempUnits}
                                     optionsArray={WeatherOptions.temperatureUnits}
-                                    displayParameter='key'
+                                    displayName='key'
                                     valueName='key'
                                     onSelected={setTempUnits}
                                     labelText={'Select A Temperature  Measure Unit:'}
@@ -68,7 +67,7 @@ const SettingsPopup = ({weatherRequest, updateWeatherRequest, isModalVisible, se
                                 <OptionDropDown
                                     initialSelectedOption={precipitationUnits}
                                     optionsArray={WeatherOptions.precipitationUnits}
-                                    displayParameter='key'
+                                    displayName='key'
                                     valueName='key'
                                     onSelected={setPrecipitationUnits}
                                     id={'precipitationUnits'}
@@ -77,7 +76,7 @@ const SettingsPopup = ({weatherRequest, updateWeatherRequest, isModalVisible, se
                                 <OptionDropDown
                                     initialSelectedOption={windSpeedUnits}
                                     optionsArray={WeatherOptions.windSpeedUnits}
-                                    displayParameter='key'
+                                    displayName='key'
                                     valueName='key'
                                     onSelected={setPrecipitationUnits}
                                     id={'windSpeedUnits'}

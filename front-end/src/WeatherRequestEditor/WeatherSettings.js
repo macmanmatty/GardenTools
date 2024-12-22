@@ -2,7 +2,6 @@ import React, {useState} from "react";
 import Dates from "../CommonUI/Dates";
 import OptionDropDown from "../CommonUI/OptionDropdown";
 import * as WeatherOptions from "./WeatherOptions";
-import './Weather.css';
 
 const LocationWeather = ({mapLatitude, mapLongitude}) => {
     // State to manage the selected value

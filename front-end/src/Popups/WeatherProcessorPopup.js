@@ -5,26 +5,70 @@ import Dates from '../CommonUI/Dates'
 import OptionDropdown from '../CommonUI/OptionDropdown'
 import * as WeatherOptions from "../WeatherRequestEditor/WeatherOptions";
 import 'react-datepicker/dist/react-datepicker.css';
-import '../common.css'
+import '../Common.css'
 import { v4 as uuidv4 } from 'uuid';
+
+/**
+ * Pop up to create a new weather processor or edit a weather processor @see WeatherProcessor Class in java
+ * @param weatherProcessor the current weather processor may be a  {}
+ * @param addWeatherProcessor the callBack Function that is called when add processor is clicked
+ * @param isModalVisible  is the popup visible?
+ * @param setIsModalVisible visible setter method
+ * @returns {Element} The WeatherPopup processor adder
+ * @constructor
+ */
 const WeatherProcessorPopup = ({  weatherProcessor, addWeatherProcessor,isModalVisible, setIsModalVisible  }) => {
+    /**
+     * min value to process if the weather processor requires a min value
+     * */
     const [minValue, setMinValue] = useState(weatherProcessor.minValue);
+    /**
+     * min value to process if the weather processor requires a min value
+     * */
     const [maxValue, setMaxValue] = useState(weatherProcessor.maxValue);
+    /**
+     * value to process if the weather processor requires a single value
+     * */
     const [value, setValue] = useState(weatherProcessor.value);
+    /**
+     * the processor display name on the front end
+     * */
     const [name, setName] = useState(weatherProcessor.name);  // State for the name
+    /**
+     * the start  date for processor is a JavaScipt Date() object only used on the front end
+     */
     const [startDate, setStartDate] = useState(weatherProcessor.startDate);
+    /**
+     * the end date for processor is a JavaScipt Date() object only used on the front end
+     */
     const [endDate, setEndDate] = useState(weatherProcessor.endDate);
-    const [dataName, setDataName] = useState(weatherProcessor.dataName);
+    /**
+     * the internal  weather processor data object  is a JavaScipt object only used on the front end
+     */
     const [internalProcessor, setInternalProcessor] = useState(weatherProcessor.internalProcessor);
+    /**
+     * the OpenMeteo weather data type to process
+     */
+    const [weatherDataType, setWeatherDataType] = useState(weatherProcessor.weatherDataType);
+    /**
+     * the name of the internal weather processor data object
+     */
+    const [internalProcessorDisplayName, setInternalProcessorDisplayName] = useState(weatherProcessor.internalProcessorDisplayName);
+    /**
+     * booleans for min, max and value to determine which input boxes to display
+     */
     const [displayMin, setDisplayMin] = useState(internalProcessor?.hasMin || false);
     const [displayMax, setDisplayMax] = useState(internalProcessor?.hasMax || false);
     const [displayValue, setDisplayValue] = useState(internalProcessor?.hasValue || false);
+    /**
+     * booleans to tell the if processor should calculate the average or only calculate the average
+     */
     const [calculateAverage, setCalculateAverage] = useState(weatherProcessor?.calculateAverage || true);
     const [onlyCalculateAverage, setOnlyCalculateAverage] = useState(weatherProcessor?.onlyCalulateAverage || false);
-
+    /**
+     * internal id of the weather processor  JavaScript Object
+     */
     const [id,setId]=useState(weatherProcessor.id);
-
-
     // Handle min value change
     const handleMinChange = (e) => {
         const value = e.target.value;
@@ -42,7 +86,6 @@ const WeatherProcessorPopup = ({  weatherProcessor, addWeatherProcessor,isModalV
     };
 
     const handleProcessorTypeChange = (internalProcessor ) => {
-        console.log(internalProcessor)
         setInternalProcessor(internalProcessor );
         setDisplayMax(internalProcessor.hasMax);
         setDisplayMin(internalProcessor.hasMin);
@@ -104,7 +147,7 @@ const WeatherProcessorPopup = ({  weatherProcessor, addWeatherProcessor,isModalV
             alert('You Must Select a Weather Processor!');
             return;
         }
-        if ((!dataName)) {
+        if ((!weatherDataType)) {
             alert('You Must Select a Data Type!');
             return;
         }
@@ -128,22 +171,23 @@ const WeatherProcessorPopup = ({  weatherProcessor, addWeatherProcessor,isModalV
         weatherProcessor.startProcessDay=startDate.getDate();
         weatherProcessor.endProcessMonth = endDate.getMonth()+1;
         weatherProcessor.endProcessDay = endDate.getDate();
-        weatherProcessor.hourlyDataType=dataName;
+        weatherProcessor.hourlyDataType=weatherDataType;
         weatherProcessor.processorName=internalProcessor.processorName;
+        weatherProcessor.internalProcessorDisplayName=internalProcessor.displayName;
         weatherProcessor.calculateAverage=calculateAverage;
         weatherProcessor.onlyCalculateAverage=onlyCalculateAverage;
         weatherProcessor.id=uuidv4();
         if(displayValue){
             weatherProcessor.inputValues=[value]
         }
-        if(displayMax && !DisplayMin){
-            weatherProcessor.inputValues=[max]
+        if(displayMax && !displayMin){
+            weatherProcessor.inputValues=[maxValue]
         }
-        if(displayMin && !DisplayMax){
-            weatherProcessor.inputValues=[min]
+        if(displayMin && !displayMax){
+            weatherProcessor.inputValues=[minValue]
         }
-        if(displayMin && DisplayMax){
-            weatherProcessor.inputValues=[min, max]
+        if(displayMin && displayMax){
+            weatherProcessor.inputValues=[minValue, maxValue]
         }
         addWeatherProcessor(weatherProcessor);
         closeModal();
@@ -161,7 +205,7 @@ const WeatherProcessorPopup = ({  weatherProcessor, addWeatherProcessor,isModalV
                     <div className="modal-dialog">
                         <div className="modal-content">
                             <div className="modal-header">
-                                <h5 className="modal-title"> Min / Max Weather Data Processor</h5>
+                                <h5 className="modal-title"> Create New Weather Data Processor</h5>
                                 <button type="button" className="close" onClick={closeModal} aria-label="Close">
                                     <span aria-hidden="true">&times;</span>
                                 </button>
@@ -170,22 +214,25 @@ const WeatherProcessorPopup = ({  weatherProcessor, addWeatherProcessor,isModalV
                             <div className="modal-body">
                                 {/* Modal content */}
                                 <OptionDropdown
-                                    optionsArray={WeatherOptions.weatherData}
-                                    displayParameter="key"
+                                    optionsArray={WeatherOptions.weatherDataTypes}
+                                    displayName="key"
                                     valueName="value"
-                                    onSelected={setDataName}
+                                    onSelected={setWeatherDataType}
                                     labelText="Select A Weather Data Type:"
+                                    initialSelectedOption={weatherDataType ?? WeatherOptions.weatherDataTypes[0]['key']}
                                 ></OptionDropdown>
                                 <OptionDropdown
-                                    optionsArray={WeatherOptions.weatherOptions}
-                                    displayParameter='key'
+                                    optionsArray={WeatherOptions.weatherProcessorOptions}
+                                    displayName='key'
                                     valueName='value'
                                     id={'key'}
                                     onSelected={handleProcessorTypeChange}
+                                    callOnSelectedOnInitialize={true}
                                     labelText={'Select A Weather Calculation:'}
+                                    initialSelectedOption={internalProcessorDisplayName ??  WeatherOptions.weatherProcessorOptions[0]['key']}
                                 ></OptionDropdown>
                                 <div className="d-flex align-items-center ">
-                                    <label className="form-check-label  right-10"
+                                    <label className="form-check-label  right-10 bold "
                                            htmlFor="calculateAverage"> Calculate Average
                                     </label>
                                     <input
@@ -195,9 +242,10 @@ const WeatherProcessorPopup = ({  weatherProcessor, addWeatherProcessor,isModalV
                                         id="calculateAverage"
                                         checked={calculateAverage || onlyCalculateAverage}
                                         onChange={handleCalculateAverageChange}
+                                        callOnSelectedOnInitialize={true}
                                         disabled={onlyCalculateAverage}
                                     />
-                                    <label className="form-check-label left-10 right-10"
+                                    <label className="form-check-label left-10 right-10 bold"
                                            htmlFor="onlyCalculateAverage">Only Calculate Average
                                     </label>
                                     <input

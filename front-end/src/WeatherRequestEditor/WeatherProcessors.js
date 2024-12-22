@@ -3,7 +3,6 @@ import Dates from "../CommonUI/Dates";
 import OptionDropDown from "../CommonUI/OptionDropdown";
 import WeatherProcessorPopup from  "../Popups/WeatherProcessorPopup";
 import * as WeatherOptions from "./WeatherOptions";
-import './Weather.css';
 import ItemList from "../CommonUI/ItemList";
 
 const LocationWeather = ({weatherRequest, updateWeatherRequest}) => {

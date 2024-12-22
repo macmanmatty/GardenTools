@@ -24,20 +24,11 @@ function WeatherRequestEditor() {
     };
 
     return (
-        <div className="App container">
-            {/* Header */}
+        <div className="App container  text-cente">
+            <h1>Weather App</h1>
             <div className="row mt-3 mb-4">
-                <div className="col-6">
-                    <h1>Weather App</h1>
-                </div>
-                <div className="col-6 text-end">
-                    <button
-                        className="btn btn-primary"
-                        onClick={() => setIsSettingsVisible(true)}
-                    >
-                        Settings
-                    </button>
-                </div>
+
+
             </div>
 
             {/* Settings Modal */}
@@ -57,6 +48,14 @@ function WeatherRequestEditor() {
 
                 {/* Right: Weather Processors */}
                 <div className="col-md-6 mb-4">
+                    <div className="col-6 text-end">
+                        <button
+                            className="btn btn-primary"
+                            onClick={() => setIsSettingsVisible(true)}
+                        >
+                           Weather Processing Settings
+                        </button>
+                    </div>
                     <Dates
                         startText="Start Date:"
                         endText="End Date:"

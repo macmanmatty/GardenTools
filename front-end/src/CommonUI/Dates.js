@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import 'bootstrap/dist/css/bootstrap.min.css';  // Make sure to include Bootstrap
-import './commonUI.css'
+import './CommonUI.css'
 
 
 const StartAndEndDates = ({ startText, endText, startStartDate, startEndDate, dateFormat, setStartDate, setEndDate }) => {
