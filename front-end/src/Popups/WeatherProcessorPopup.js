@@ -6,7 +6,6 @@ import OptionDropdown from '../CommonUI/OptionDropdown'
 import * as WeatherOptions from "../WeatherRequestEditor/WeatherOptions";
 import 'react-datepicker/dist/react-datepicker.css';
 import '../Common.css'
-import { v4 as uuidv4 } from 'uuid';
 
 /**
  * Pop up to create a new weather processor or edit a weather processor @see WeatherProcessor Class in java
@@ -18,6 +17,8 @@ import { v4 as uuidv4 } from 'uuid';
  * @constructor
  */
 const WeatherProcessorPopup = ({  weatherProcessor, addWeatherProcessor,isModalVisible, setIsModalVisible  }) => {
+
+
     /**
      * min value to process if the weather processor requires a min value
      * */
@@ -43,13 +44,19 @@ const WeatherProcessorPopup = ({  weatherProcessor, addWeatherProcessor,isModalV
      */
     const [endDate, setEndDate] = useState(weatherProcessor.endDate);
     /**
-     * the internal  weather processor data object  is a JavaScipt object only used on the front end
+     * the internal  weather processor data object  is a JavaScript object only used on the front end
      */
     const [internalProcessor, setInternalProcessor] = useState(weatherProcessor.internalProcessor);
     /**
      * the OpenMeteo weather data type to process
      */
-    const [weatherDataType, setWeatherDataType] = useState(weatherProcessor.weatherDataType);
+    const [weatherDataType, setWeatherDataType] = useState(weatherProcessor.hourlyDataType);
+    /**
+     * the OpenMeteo weather data type to process
+     */
+    const [weatherDataTypeDisplayName, setWeatherDataTypeDisplayName] = useState(weatherProcessor.hourlyDataType);
+
+
     /**
      * the name of the internal weather processor data object
      */
@@ -71,6 +78,8 @@ const WeatherProcessorPopup = ({  weatherProcessor, addWeatherProcessor,isModalV
     const [id,setId]=useState(weatherProcessor.id);
 
     useEffect(() => {
+        console.log("used weather processor "+weatherProcessor.id);
+        console.log(weatherProcessor);
         setMinValue(weatherProcessor.minValue);
         setMaxValue(weatherProcessor.maxValue);
         setValue(weatherProcessor.value);
@@ -78,7 +87,7 @@ const WeatherProcessorPopup = ({  weatherProcessor, addWeatherProcessor,isModalV
         setStartDate(weatherProcessor.startDate);
         setEndDate(weatherProcessor.endDate);
         setInternalProcessor(weatherProcessor.internalProcessor);
-        setWeatherDataType(weatherProcessor.weatherDataType);
+        setWeatherDataType(weatherProcessor.hourlyDataType);
         setInternalProcessorDisplayName(weatherProcessor.internalProcessorDisplayName);
         setDisplayMin(weatherProcessor.internalProcessor?.hasMin || false);
         setDisplayMax(weatherProcessor.internalProcessor?.hasMax || false);
@@ -111,6 +120,10 @@ const WeatherProcessorPopup = ({  weatherProcessor, addWeatherProcessor,isModalV
         setDisplayValue(internalProcessor.hasValue);
 
     };
+    const handleWeatherDataTypeChange = (weatherData,  weatherDataDisplayName) => {
+        setWeatherDataType(weatherData);
+        setWeatherDataTypeDisplayName(weatherDataDisplayName);
+    };
 
     // Handle max value change
     const handleMaxChange = (e) => {
@@ -132,9 +145,7 @@ const WeatherProcessorPopup = ({  weatherProcessor, addWeatherProcessor,isModalV
     const handleOnlyCalculateAverage = (e) => {
         const checked=e.target.value;
         setOnlyCalculateAverage(checked);
-        if(checked=true){
 
-        }
     };
 
     // Handle saving data (update weatherProcessor object)
@@ -179,7 +190,6 @@ const WeatherProcessorPopup = ({  weatherProcessor, addWeatherProcessor,isModalV
             return;
         }
         let weatherProcessor= {}
-        // Update the weatherProcessor object directly
         weatherProcessor.name = name;
         weatherProcessor.minValue = minValue;
         weatherProcessor.value=value;
@@ -195,7 +205,8 @@ const WeatherProcessorPopup = ({  weatherProcessor, addWeatherProcessor,isModalV
         weatherProcessor.internalProcessorDisplayName=internalProcessor.displayName;
         weatherProcessor.calculateAverage=calculateAverage;
         weatherProcessor.onlyCalculateAverage=onlyCalculateAverage;
-        weatherProcessor.id=uuidv4();
+        weatherProcessor.id=id;
+        weatherProcessor.weatherDataTypeDisplayName=weatherDataTypeDisplayName;
         if(displayValue){
             weatherProcessor.inputValues=[value]
         }
@@ -236,9 +247,9 @@ const WeatherProcessorPopup = ({  weatherProcessor, addWeatherProcessor,isModalV
                                     optionsArray={WeatherOptions.weatherDataTypes}
                                     displayName="key"
                                     valueName="value"
-                                    onSelected={setWeatherDataType}
+                                    onSelected={handleWeatherDataTypeChange}
                                     labelText="Select A Weather Data Type:"
-                                    initialSelectedOption={weatherDataType ?? WeatherOptions.weatherDataTypes[0]['key']}
+                                    initialSelectedOption={weatherDataTypeDisplayName ?? WeatherOptions.weatherDataTypes[0]['key']}
                                 ></OptionDropdown>
                                 <OptionDropdown
                                     optionsArray={WeatherOptions.weatherProcessorOptions}
@@ -363,6 +374,10 @@ const WeatherProcessorPopup = ({  weatherProcessor, addWeatherProcessor,isModalV
             )}
         </>
     );
+};
+WeatherProcessorPopup.propTypes = {
+    weatherProcessor: PropTypes.object.isRequired,
+
 };
 
 

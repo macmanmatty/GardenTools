@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
 import PropTypes from 'prop-types';
 import OptionDropDown from '../CommonUI/OptionDropdown'
 import * as WeatherOptions from "../WeatherRequestEditor/WeatherOptions";
@@ -17,6 +17,15 @@ const SettingsPopup = ({weatherRequest, updateWeatherRequest, isModalVisible, se
         updateWeatherRequest("precipitationUnit", precipitationUnits);
         closeModal();
     };
+    useEffect(() => {
+        // Check if weatherRequest exists and update state accordingly
+        if (weatherRequest) {
+            setTempUnits(weatherRequest.temperatureUnit || '');
+            setWindSpeedUnits(weatherRequest.windSpeedUnit || '');
+            setPrecipitationUnits(weatherRequest.precipitationUnit || '');
+            setPopulateLocationData(weatherRequest.populateLocationData ?? true); // `??` ensures default when null or undefined
+        }
+    }, [weatherRequest]);
 
     const handlePopulateLocationDataChange = (event) => {
         setPopulateLocationData(event.target.checked);

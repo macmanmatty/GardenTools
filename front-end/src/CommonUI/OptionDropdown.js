@@ -17,7 +17,7 @@ import './CommonUI.css'
  * @returns {Element} the OptionDropDown  element made of a simple HTML select
  * @constructor
  */
-const OptionDropDown = ({callOnSelectedOnInitialize, initialSelectedOption, defaultText, optionsArray, displayName, valueName, onSelected, labelText }) => {
+const OptionDropDown = ({callOnSelectedOnInitialize, initialSelectedOption, defaultText, optionsArray, displayName, valueName, onSelected, labelText, }) => {
     // State to manage the selected value
     const [selectedOption, setSelectedOption] = useState(initialSelectedOption);
     const [isSelected, setIsSelected] = useState(false);
@@ -34,21 +34,26 @@ const OptionDropDown = ({callOnSelectedOnInitialize, initialSelectedOption, defa
                 setSelectedOption(optionsArray[0][displayName]);  // Default to the first option
             }
         }
+        if(!isSelected){
+            setSelectedOption(initialSelectedOption);
+
+        }
         // If callOnSelectedOnInitialize is true, call the onSelected callback
         if (callOnSelectedOnInitialize && selectedOption !== null) {
             const selectedObject = optionsArray.find(option => option[displayName] === selectedOption);
             if (selectedObject) {
-                onSelected(selectedObject[valueName]);
+                onSelected(selectedObject[valueName], selectedObject[displayName]);
             }
         }
     }, [selectedOption, optionsArray, callOnSelectedOnInitialize, onSelected, displayName, valueName]);
 
     useEffect(() => {
-        if (initialSelectedOption !== selectedOption  && !isSelected) {
-            // Update selectedOption only if initialSelectedOption is different
-            setSelectedOption(initialSelectedOption);
-        }
-    }, [initialSelectedOption, selectedOption, isSelected]);
+        // When component unmounts, reset `isSelected` to false
+        return () => {
+            setIsSelected(false);
+        };
+    }, []);  // Empty dependency array ensures this effect only runs on unmount
+
 
 
     /**
@@ -59,7 +64,7 @@ const OptionDropDown = ({callOnSelectedOnInitialize, initialSelectedOption, defa
         setSelectedOption(event.target.value);
         setIsSelected(true);
         const selectedObject = optionsArray.find(option => option[displayName] === event.target.value);
-        onSelected(selectedObject[valueName]);
+        onSelected(selectedObject[valueName], selectedObject[displayName]);
     };
 
     return (
