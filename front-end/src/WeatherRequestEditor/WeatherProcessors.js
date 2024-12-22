@@ -18,7 +18,9 @@ const LocationWeather = ({weatherRequest, updateWeatherRequest}) => {
         setWeatherProcessors(updatedItems);
         updateWeatherRequest("weatherProcessors",updatedItems)
     };
+
     const editWeatherProcessor = (weatherProcessor) => {
+        console.log('Editing item:', weatherProcessor);  // Log the item to verify it's correct
         setCurrentWeatherProcessor(weatherProcessor);
         setIsModalVisible(true)
     };

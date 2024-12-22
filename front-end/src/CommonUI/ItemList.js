@@ -3,8 +3,6 @@ import React from 'react';
 const ItemList = ({title, items, handleDeleteItem, handleAddItem, handleEditItem }) => {
 
     // Handle input changes for adding a new item (could be a form or something else)
-
-
     return (
         <div className="container mt-5">
             <h3>{title}</h3>
@@ -17,7 +15,7 @@ const ItemList = ({title, items, handleDeleteItem, handleAddItem, handleEditItem
             <ul className="list-group">
                 {items.map((item, index) => (
                     <li key={index} className="list-group-item d-flex justify-content-between ">
-                        <span>{item.name}: {item.value}</span>
+                        <span>{item.name} </span>
                         <button
                             className="btn btn-danger"
                             onClick={() => handleDeleteItem(index)}
@@ -26,7 +24,7 @@ const ItemList = ({title, items, handleDeleteItem, handleAddItem, handleEditItem
                         </button>
                         <button
                             className="btn btn-danger"
-                            onClick={() => handleEditItem(index)}
+                            onClick={() => handleEditItem(item)}
                         >
                             Edit
                         </button>

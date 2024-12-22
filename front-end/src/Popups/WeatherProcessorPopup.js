@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import DatePicker from 'react-datepicker';
 import Dates from '../CommonUI/Dates'
@@ -69,6 +69,25 @@ const WeatherProcessorPopup = ({  weatherProcessor, addWeatherProcessor,isModalV
      * internal id of the weather processor  JavaScript Object
      */
     const [id,setId]=useState(weatherProcessor.id);
+
+    useEffect(() => {
+        setMinValue(weatherProcessor.minValue);
+        setMaxValue(weatherProcessor.maxValue);
+        setValue(weatherProcessor.value);
+        setName(weatherProcessor.name);
+        setStartDate(weatherProcessor.startDate);
+        setEndDate(weatherProcessor.endDate);
+        setInternalProcessor(weatherProcessor.internalProcessor);
+        setWeatherDataType(weatherProcessor.weatherDataType);
+        setInternalProcessorDisplayName(weatherProcessor.internalProcessorDisplayName);
+        setDisplayMin(weatherProcessor.internalProcessor?.hasMin || false);
+        setDisplayMax(weatherProcessor.internalProcessor?.hasMax || false);
+        setDisplayValue(weatherProcessor.internalProcessor?.hasValue || false);
+        setCalculateAverage(weatherProcessor.calculateAverage);
+        setOnlyCalculateAverage(weatherProcessor.onlyCalulateAverage);
+        setId(weatherProcessor.id);
+    }, [weatherProcessor]);
+
     // Handle min value change
     const handleMinChange = (e) => {
         const value = e.target.value;

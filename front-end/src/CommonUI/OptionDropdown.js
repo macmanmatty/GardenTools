@@ -20,6 +20,7 @@ import './CommonUI.css'
 const OptionDropDown = ({callOnSelectedOnInitialize, initialSelectedOption, defaultText, optionsArray, displayName, valueName, onSelected, labelText }) => {
     // State to manage the selected value
     const [selectedOption, setSelectedOption] = useState(initialSelectedOption);
+    const [isSelected, setIsSelected] = useState(false);
 
     /**
      * used to initialize the selected option
@@ -27,9 +28,8 @@ const OptionDropDown = ({callOnSelectedOnInitialize, initialSelectedOption, defa
      */
     // Effect to initialize selectedOption and handle calling onSelected
     useEffect(() => {
-        console.log("Intital Option: "+initialSelectedOption);
         // If the selectedOption is null or undefined, set it to the first item in optionsArray
-        if (selectedOption === undefined || selectedOption === null) {
+        if (initialSelectedOption === undefined || initialSelectedOption=== null) {
             if (optionsArray.length > 0) {
                 setSelectedOption(optionsArray[0][displayName]);  // Default to the first option
             }
@@ -42,12 +42,22 @@ const OptionDropDown = ({callOnSelectedOnInitialize, initialSelectedOption, defa
             }
         }
     }, [selectedOption, optionsArray, callOnSelectedOnInitialize, onSelected, displayName, valueName]);
+
+    useEffect(() => {
+        if (initialSelectedOption !== selectedOption  && !isSelected) {
+            // Update selectedOption only if initialSelectedOption is different
+            setSelectedOption(initialSelectedOption);
+        }
+    }, [initialSelectedOption, selectedOption, isSelected]);
+
+
     /**
      * called when the selected option changes
      * @param event
      */
     const handleSelectChange = (event) => {
         setSelectedOption(event.target.value);
+        setIsSelected(true);
         const selectedObject = optionsArray.find(option => option[displayName] === event.target.value);
         onSelected(selectedObject[valueName]);
     };

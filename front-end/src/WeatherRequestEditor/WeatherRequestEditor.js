@@ -27,8 +27,6 @@ function WeatherRequestEditor() {
         <div className="App container  text-cente">
             <h1>Weather App</h1>
             <div className="row mt-3 mb-4">
-
-
             </div>
 
             {/* Settings Modal */}
