@@ -8,8 +8,11 @@ const SettingsPopup = ({weatherRequest, updateWeatherRequest, isModalVisible, se
     const [windSpeedUnits, setWindSpeedUnits]=useState(weatherRequest?.windSpeedUnit ||'');
     const [precipitationUnits, setPrecipitationUnits]=useState(weatherRequest?.precipitationUnit||'');
     const [populateLocationData, setPopulateLocationData] = useState(weatherRequest?.populateLocationData || true);
+    const [windSpeedUnitsDisplayName, setWindSpeedUnitsDisplayName]=useState(weatherRequest?.windSpeedUnit ||'');
+    const [precipitationUnitsDisplayName, setPrecipitationUnitsDisplayName]=useState(weatherRequest?.precipitationUnit||'');
+    const [tempUnitsDisplayName, setTempUnitsDisplayName]=useState(weatherRequest?.temperatureUnit ||'');
 
-    // Handle saving data (update weatherProcessor object)
+    // Handle saving DataDisplayName (update weatherProcessor object)
     const handleSave = () => {
         console.log("temp unit :", tempUnits)
         updateWeatherRequest("temperatureUnit",  tempUnits);
@@ -30,11 +33,27 @@ const SettingsPopup = ({weatherRequest, updateWeatherRequest, isModalVisible, se
     const handlePopulateLocationDataChange = (event) => {
         setPopulateLocationData(event.target.checked);
     };
+    const handleTempUnitsChange = (value, name) => {
+        setTempUnits(value);
+        setTempUnitsDisplayName(name);
+
+    };
+    const handlePrecipitationUnitsChange = (value, name) => {
+        setPrecipitationUnits(value);
+        setPrecipitationUnitsDisplayName(name);
+
+    };
+    const handleWindSpeedUnitsChange = (value, name) => {
+        setWindSpeedUnits(value);
+        setWindSpeedUnitsDisplayName(name);
+
+    };
 
     // Close the modal (you can manage modal visibility through state here)
     const closeModal = () => {
         setIsModalVisible(false);  // Hide the modal by setting the state to false    };
     }
+    
     return (
         <>
             {/* Modal container visibility controlled by isModalVisible */}
@@ -68,7 +87,7 @@ const SettingsPopup = ({weatherRequest, updateWeatherRequest, isModalVisible, se
                                     optionsArray={WeatherOptions.temperatureUnits}
                                     displayName='key'
                                     valueName='key'
-                                    onSelected={setTempUnits}
+                                    onSelected={handleTempUnitsChange}
                                     labelText={'Select A Temperature  Measure Unit:'}
                                     id={'tempUnits'}
                                 ></OptionDropDown>
@@ -78,7 +97,7 @@ const SettingsPopup = ({weatherRequest, updateWeatherRequest, isModalVisible, se
                                     optionsArray={WeatherOptions.precipitationUnits}
                                     displayName='key'
                                     valueName='key'
-                                    onSelected={setPrecipitationUnits}
+                                    onSelected={handlePrecipitationUnitsChange}
                                     id={'precipitationUnits'}
                                     labelText={'Select A Precipitation Measurement  Unit:'}
                                 ></OptionDropDown>
@@ -87,7 +106,7 @@ const SettingsPopup = ({weatherRequest, updateWeatherRequest, isModalVisible, se
                                     optionsArray={WeatherOptions.windSpeedUnits}
                                     displayName='key'
                                     valueName='key'
-                                    onSelected={setPrecipitationUnits}
+                                    onSelected={handleWindSpeedUnitsChange}
                                     id={'windSpeedUnits'}
                                     labelText={'Select A Precipitation Measurement  Unit:'}
                                 ></OptionDropDown>
