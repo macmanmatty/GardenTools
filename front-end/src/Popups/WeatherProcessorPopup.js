@@ -80,6 +80,8 @@ const WeatherProcessorPopup = ({  weatherProcessor, addWeatherProcessor,isModalV
     useEffect(() => {
         console.log("used weather processor "+weatherProcessor.id);
         console.log(weatherProcessor);
+        console.log(weatherProcessor.endDate);
+        console.log(weatherProcessor.startDate);
         setMinValue(weatherProcessor.minValue);
         setMaxValue(weatherProcessor.maxValue);
         setValue(weatherProcessor.value);
@@ -88,6 +90,7 @@ const WeatherProcessorPopup = ({  weatherProcessor, addWeatherProcessor,isModalV
         setEndDate(weatherProcessor.endDate);
         setInternalProcessor(weatherProcessor.internalProcessor);
         setWeatherDataType(weatherProcessor.hourlyDataType);
+        setWeatherDataTypeDisplayName(weatherProcessor.weatherDataTypeDisplayName);
         setInternalProcessorDisplayName(weatherProcessor.internalProcessorDisplayName);
         setDisplayMin(weatherProcessor.internalProcessor?.hasMin || false);
         setDisplayMax(weatherProcessor.internalProcessor?.hasMax || false);

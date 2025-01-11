@@ -24,7 +24,7 @@ public class WeatherProcessorController {
         try {
          WeatherResponse weatherResponse=   openMeteoService.getData(weatherRequest);
          if(weatherRequest.isSaveToFile()){
-             FileSaver.saveFile(weatherRequest.getFilePath(), weatherRequest.getFileType(), weatherResponse);
+             FileSaver.saveFile(weatherRequest.getFilePath(), weatherRequest.getOutputFileType(), weatherResponse);
          }
             return  new ResponseEntity<>(weatherResponse, HttpStatus.OK);
 

@@ -73,7 +73,7 @@ public class WeatherRequest {
      * JSON, CSV, or XLS
      *
      */
-    private String fileType;
+    private String outputFileType;
 
 
 
@@ -195,12 +195,12 @@ public class WeatherRequest {
         this.saveToFile = saveToFile;
     }
 
-    public String getFileType() {
-        return fileType;
+    public String getOutputFileType() {
+        return outputFileType;
     }
 
-    public void setFileType(String fileType) {
-        this.fileType = fileType;
+    public void setOutputFileType(String outputFileType) {
+        this.outputFileType = outputFileType;
     }
 }
 

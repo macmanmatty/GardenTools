@@ -9,7 +9,6 @@ import { v4 as uuidv4 } from 'uuid';
 
 const LocationWeather = ({weatherRequest, updateWeatherRequest}) => {
     // State to manage the selected value
-    const[selectedCalculationComponent, setSelectedCalculationComponent]=useState('');
     const [isModalVisible, setIsModalVisible] = useState(false);
     const [weatherProcessors, setWeatherProcessors] = useState(weatherRequest?.weatherProcessors||[]);
     const[currentWeatherProcessor, setCurrentWeatherProcessor]=useState({});

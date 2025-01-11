@@ -4,6 +4,7 @@
  * {input: string[], data: string, displayName: string},{input: string[], data: string, displayName: string},{input: string[], data: string, displayName: string},{input: string[], data: string, displayName: string},null]}
  */
 export const  weatherProcessorOptions=  [
+
     {key: "Hours Between",  value: {
         displayName: 'Hours Between',
         processorName: 'HoursBetween',
@@ -11,7 +12,6 @@ export const  weatherProcessorOptions=  [
         hasMin: true,
         hasMax: true,
         hasValue: false
-
         }},
 
     {key: "Hours Above",  value: {
@@ -21,9 +21,6 @@ export const  weatherProcessorOptions=  [
         hasMin: false,
         hasMax: false,
         hasValue: true
-
-
-
         }},
       {key: "Hours Below",  value: {
          displayName: 'Hours Below',
@@ -137,6 +134,13 @@ export const simpleCalculations= [
     {key:"Average Mean", value:  "mean"},
     {key: "Average Median", value: "median"},
     {key: "Total", value: "total"},
+]
+
+export const fileTypes= [
+    {key: "JSON", value:"JSON"},
+    {key: "CSV",  value:"CSV"},
+    {key:"XLS", value:  "XLS"},
+    {key: "TXT", value: "TXT"},
 ]
 
 export const weatherDataTypes = [

@@ -21,7 +21,6 @@ const OptionDropDown = ({callOnSelectedOnInitialize, initialSelectedOption, defa
     // State to manage the selected value
     const [selectedOption, setSelectedOption] = useState(initialSelectedOption);
     const [isSelected, setIsSelected] = useState(false);
-
     /**
      * used to initialize the selected option
      * and if applicable call onSelected()

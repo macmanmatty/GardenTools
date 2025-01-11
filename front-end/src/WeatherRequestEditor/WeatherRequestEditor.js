@@ -2,12 +2,16 @@ import OpenMap from '../OpenMap/OpenMap.js';
 import WeatherProcessors from "./WeatherProcessors";
 import WeatherSettings from "./WeatherSettings";
 import SettingsPopup from "../Popups/WeatherRequestSettingsPopup"
+import FileSettingsPopup from "../Popups/WeatherFileOutputSettingsPopup"
+import "../Common.css"
+
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Dates from '../CommonUI/Dates'
 import React, {useState, useEffect} from "react";
 function WeatherRequestEditor() {
     const [weatherRequest, setWeatherRequest] = useState({});
     const [isSettingsVisible, setIsSettingsVisible] = useState(false);
+    const [isFileSettingsVisible, setIsFileSettingsVisible] = useState(false);
     const [startDate, setStartDate] = useState(weatherRequest.startDate);
     const [endDate, setEndDate] = useState(weatherRequest.endDate);
     useEffect(() => {
@@ -35,7 +39,11 @@ function WeatherRequestEditor() {
                 setIsModalVisible={setIsSettingsVisible}
                 updateWeatherRequest={updateWeatherRequest}
             />
-
+            <FileSettingsPopup
+                isModalVisible={isFileSettingsVisible}
+                setIsModalVisible={setIsFileSettingsVisible}
+                updateWeatherRequest={updateWeatherRequest}
+            />
 
             {/* Main Content: Bootstrap Grid with two columns */}
             <div className="row">
@@ -46,12 +54,18 @@ function WeatherRequestEditor() {
 
                 {/* Right: Weather Processors */}
                 <div className="col-md-6 mb-4">
-                    <div className="col-6 text-end">
+                    <div className="col-6 d-flex justify-content-between  gap-2  text-nowrap">
                         <button
                             className="btn btn-primary"
                             onClick={() => setIsSettingsVisible(true)}
                         >
-                           Weather Processing Settings
+                            Weather Processing Settings
+                        </button>
+                        <button
+                            className="btn btn-primary"
+                            onClick={() => setIsFileSettingsVisible(true)}
+                        >
+                            File Output Settings
                         </button>
                     </div>
                     <Dates
