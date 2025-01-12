@@ -358,8 +358,8 @@ const WeatherProcessorPopup = ({  weatherProcessor, addWeatherProcessor,isModalV
                                     endText="End Date:"
                                     setStartDate={(date) => setStartDate(date)}
                                     setEndDate={(date) => setEndDate(date)}
-                                    startStartDate={startDate}
-                                    startEndDate={endDate}
+                                    initialStartDate={startDate}
+                                    initialEndDate={endDate}
                                 />
                             </div>
 

@@ -1,13 +1,17 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import 'bootstrap/dist/css/bootstrap.min.css';  // Make sure to include Bootstrap
 import './CommonUI.css'
 
 
-const StartAndEndDates = ({ startText, endText, startStartDate, startEndDate, dateFormat, setStartDate, setEndDate }) => {
-  const [endDateText, setEndDateText] = useState(startEndDate);
-  const [startDateText, setStartDateText] = useState(startStartDate);
+const StartAndEndDates = ({ startText, endText, initialStartDate,initialEndDate, dateFormat, setStartDate, setEndDate }) => {
+  const [endDateText, setEndDateText] = useState(initialEndDate);
+  const [startDateText, setStartDateText] = useState(initialStartDate);
+  useEffect(() => {
+    setStartDateText(initialStartDate);
+    setEndDateText(initialEndDate);
+  }, [initialStartDate, initialEndDate]);
 
   const setPickerStartDate = (date) => {
     const start = new Date(date);
@@ -43,7 +47,9 @@ const StartAndEndDates = ({ startText, endText, startStartDate, startEndDate, da
               dateFormat={dateFormat}
               className="form-control"
               isClearable
-              placeholderText={startStartDate}
+              placeholderText={initialStartDate}
+              value={initialStartDate}
+
           />
         </div>
 
@@ -57,7 +63,8 @@ const StartAndEndDates = ({ startText, endText, startStartDate, startEndDate, da
               dateFormat={dateFormat}
               className="form-control"
               isClearable
-              placeholderText={startEndDate}
+              placeholderText={initialEndDate}
+              value={initialEndDate}
           />
         </div>
       </div>
