@@ -6,33 +6,57 @@ import './CommonUI.css'
 
 
 const StartAndEndDates = ({ startText, endText, initialStartDate,initialEndDate, dateFormat, setStartDate, setEndDate }) => {
-  const [endDateText, setEndDateText] = useState(initialEndDate);
-  const [startDateText, setStartDateText] = useState(initialStartDate);
+  const [endDate, setendDate] = useState(initialEndDate);
+  const [startDate, setstartDate] = useState(initialStartDate);
   useEffect(() => {
-    setStartDateText(initialStartDate);
-    setEndDateText(initialEndDate);
+    setstartDate(initialStartDate);
+    setendDate(initialEndDate);
   }, [initialStartDate, initialEndDate]);
 
   const setPickerStartDate = (date) => {
     const start = new Date(date);
-    const end = new Date(endDateText);
+    const end = new Date(endDate);
+    const today =new Date();
+    if(start>today){
+      alert("We can't predict the future buddy! Please pick a date on or before today");
+      if(!end){
+        setstartDate(end);
+      }
+      else{
+      setstartDate(new Date());
+      }
+      return;
+
+    }
     if (start > end && end != null) {
       alert('Start date cannot be greater than End date.');
       return;
     }
     setStartDate(date);
-    setStartDateText(date);
+    setstartDate(date);
   };
 
   const setPickerEndDate = (date) => {
-    const start = new Date(startDateText);
+    const start = new Date(startDate);
     const end = new Date(date);
+    const today =new Date();
+    if(end>today){
+      alert("We can't predict the future buddy! Please pick a date on or before today");
+      if(!start) {
+        setendDate(new Date());
+      }
+      else{
+        setendDate(start);
+      }
+      return;
+
+    }
     if (start > end && start != null) {
       alert('Start date cannot be greater than End date.');
       return;
     }
     setEndDate(date);
-    setEndDateText(date);
+    setendDate(date);
   };
 
   return (
@@ -42,7 +66,7 @@ const StartAndEndDates = ({ startText, endText, initialStartDate,initialEndDate,
           <label htmlFor="startDate" className="date-picker-label">{startText}</label>
           <DatePicker
               id="startDate"
-              selected={startDateText}
+              selected={startDate}
               onChange={(date) => setPickerStartDate(date)}
               dateFormat={dateFormat}
               className="form-control"
@@ -58,7 +82,7 @@ const StartAndEndDates = ({ startText, endText, initialStartDate,initialEndDate,
           <label htmlFor="endDate" className="date-picker-label">{endText}</label>
           <DatePicker
               id="endDate"
-              selected={endDateText}
+              selected={endDate}
               onChange={(date) => setPickerEndDate(date)}
               dateFormat={dateFormat}
               className="form-control"
