@@ -1,0 +1,17 @@
+.inlineDropdowns{
+ display: flex;
+ font-weight: bold;
+ padding-right: 5px;
+ padding-bottom: 50px;
+}
+.date-picker-label {
+ margin-right: 10px; /* Adjust the padding/margin value to your needs */
+ font-weight: bold;
+}
+.text-box-label {
+ margin-right: 10px; /* Adjust the padding/margin value to your needs */
+ font-weight: bold;
+}
+.text-box-box {
+margin-top: 10px; /* Adjust the padding/margin value to your needs */
+}

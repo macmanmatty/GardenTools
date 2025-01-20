@@ -14,23 +14,23 @@ public class HourlyWeatherProcessRequest {
      */
     private String processorName;
     /**
-     * the day to start processing weather data on if calculating chill
+     * the day to start processing weather data on
      * CANNOT be FEB 29 2-29 FEB 29 will  be converted to MAR 1
      */
 
     private int startProcessDay;
     /**
-     * the month to start processing weather  on if calculating chill
+     * the month to start processing weather  on
      * CANNOT be FEB 29 2-29 FEB 29 will  be converted to MAR 1
      */
     private int startProcessMonth;
     /**
-     * the day  stop processing weather on if calculating chill
+     * the day  stop processing weather on
      * CANNOT be FEB 29 2-29 FEB 29 will  be converted to MAR 1
      */
     private int endProcessDay;
     /**
-     * the month  stop processing weather  on if calculating chill
+     * the month  stop processing weather  on
      * CANNOT be FEB 29 2-29 FEB 29 will  be converted to MAR 1
      */
     private int endProcessMonth;

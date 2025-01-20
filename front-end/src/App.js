@@ -1,22 +1,15 @@
 import './App.css';
-import OpenMap from './OpenMap/OpenMap.js';
-import LocationWeather from "./Weather/LocationWeather";
-import WeatherSettings from "./Weather/WeatherSettings";
+import WeatherRequestEditor from './WeatherRequestEditor/WeatherRequestEditor.js';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import React from "react";
 
 function App() {
-  return (
-    <div className="App">
-        <OpenMap>
-        </OpenMap>
-        <WeatherSettings/>
-           
-        <LocationWeather>
-        </LocationWeather>
-
-    </div>
-  );
+    return (
+        <div className="App">
+            <WeatherRequestEditor/>
+        </div>
+    );
 }
+
 
 export default App;

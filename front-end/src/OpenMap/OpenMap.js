@@ -1,28 +1,33 @@
 import React,  { useState} from 'react';
 import { MapContainer, TileLayer, Marker, Popup, useMapEvents, CircleMarker} from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
-import MarkerPopupLabel from "./MarkerPopup";
-const OpenMap = ({weatherRequestForm}) => {
+import MarkerPopupLabel from "./LocationPopup";
+const OpenMap = ({weatherRequest, updateWeatherRequest}) => {
   const [markers, setMarkers] = useState([]);
-  const maxLocations=6;
+    const [locations, setLocations] = useState(weatherRequest?.locations||[]);
+
+    const maxLocations=6;
+    const onDelete=(id)=> {
+      console.log("id "+id);
+        setMarkers((prevMarkers) => prevMarkers.filter((marker) => marker.id !== id));
+    };
  const MapClickHandler = () => {
      const map = useMapEvents({
-       click: (e) => {
- const newMarker = {
-      id: new Date().getTime(),
+       dblclick: (e) => {
+           const newMarker = {
+     id: new Date().getTime(),
       position: [e.latlng.lat, e.latlng.lng],
      latitude: e.latlng.lat,
      longitude: e.latlng.lng,
      name:"Marker "+markers.length,
      selected: false
     };
-           weatherRequestForm.locations.add(newMarker);
+           //weatherRequest.locations.push(newMarker);
            setMarkers((prevMarkers) => [...prevMarkers, newMarker]);
            },
      });
      return null;
    };
-
 
   return (
   <div
@@ -44,6 +49,7 @@ const OpenMap = ({weatherRequestForm}) => {
                center={marker.position}>
                <MarkerPopupLabel
                    marker={marker}
+                   onDelete={onDelete}
                />
 
            </CircleMarker>

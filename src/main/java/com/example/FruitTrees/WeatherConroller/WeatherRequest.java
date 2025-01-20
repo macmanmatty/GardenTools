@@ -53,10 +53,29 @@ public class WeatherRequest {
     public boolean showStringText;
 
     /**
-     * whether or not to retrieve the unpopulated location data
+     * whether to retrieve the unpopulated location data
      *
      */
     private boolean populateLocationData;
+    /**
+     * if saving to a file the path to save to
+     *
+     */
+    private String filePath;
+
+    /**
+     * whether to save the response to a file
+     *
+     */
+    private boolean saveToFile;
+    /**
+     * The file format to save to
+     * JSON, CSV, or XLS
+     *
+     */
+    private String outputFileType;
+
+
 
 
     public List<Location> locations= new ArrayList<>();
@@ -158,6 +177,30 @@ public class WeatherRequest {
 
     public void setPopulateLocationData(boolean populateLocationData) {
         this.populateLocationData = populateLocationData;
+    }
+
+    public String getFilePath() {
+        return filePath;
+    }
+
+    public void setFilePath(String filePath) {
+        this.filePath = filePath;
+    }
+
+    public boolean isSaveToFile() {
+        return saveToFile;
+    }
+
+    public void setSaveToFile(boolean saveToFile) {
+        this.saveToFile = saveToFile;
+    }
+
+    public String getOutputFileType() {
+        return outputFileType;
+    }
+
+    public void setOutputFileType(String outputFileType) {
+        this.outputFileType = outputFileType;
     }
 }
 

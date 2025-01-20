@@ -29,11 +29,11 @@ public abstract class WeatherProcessor {
      */
    protected int  endDay=31;
     /**
-     * the month to stat processing weather
+     * the month to stat processing weather int from jan=1 to dec=12
      */
    protected  int startMonth =1;
     /**
-     * the month to end processing weather
+     * the month to end processing weather int from jan=1 to dec=12
      */
    protected  int  endMonth=12;
 
@@ -41,6 +41,10 @@ public abstract class WeatherProcessor {
      * the year weather was started processing on
      */
     protected int startYear;
+    /**
+     * boolean to stop weather processing
+     */
+    boolean stopProcessing=false;
 
     /**
      * the year weather was ended processing on
@@ -106,12 +110,25 @@ public abstract class WeatherProcessor {
     public  void  after(){}
     /**
      *
-     * called for each double in the data set to process weather value
+     * internally called for each double in the data set to process weather value
+     * implemented by each sub class that processes weather
      * @param value the number value of the weather parameter
      * @param date the date and time the value happened
      */
-    public abstract void processWeather(Number value, String date);
+    protected abstract void processWeather(Number value, String date);
+    /**
+     *
+     * the externally called method for processing weather
+     * @param value the number value of the weather parameter
+     * @param date the date and time the value happened
+     */
+    public void processWeatherExternal(Number value, String date){
+        if(stopProcessing){
+            return;
+        }
+        processWeather(value, date);
 
+    };
 
 
 
@@ -221,5 +238,9 @@ public abstract class WeatherProcessor {
 
     public void setOnlyCalculateAverage(boolean onlyCalculateAverage) {
         this.onlyCalculateAverage = onlyCalculateAverage;
+    }
+
+    public void stopProcessing(){
+        stopProcessing=true;
     }
 }

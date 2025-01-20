@@ -1,5 +1,6 @@
 package com.example.FruitTrees.WeatherProcessor.WeatherProcessors.BetweenDates;
 
+import com.example.FruitTrees.Utilities.DateUtilities;
 import com.example.FruitTrees.WeatherConroller.WeatherResponse.YearlyValuesResponse;
 import org.springframework.stereotype.Component;
 
@@ -20,12 +21,9 @@ public class UtahChillCalculator extends ProcessWeatherBetweenDates {
     public UtahChillCalculator() {
         super("  Utah Chill Hours");
     }
-
-
     @Override
     protected void onEndDate(String date) {
-        LocalDateTime localDateTime=LocalDateTime.parse(date);
-        int year= localDateTime.getYear();
+        int year= DateUtilities.getYear(date);
         super.yearlyDataValues.add(chillHours);
         YearlyValuesResponse yearlyValuesResponse = locationWeatherResponse.getYearlyValues(String.valueOf(year));
         String text="Chilling Hours";
@@ -35,7 +33,7 @@ public class UtahChillCalculator extends ProcessWeatherBetweenDates {
         chillHours =0;
     }
     @Override
-    void processWeatherBetween(Number data, String date) {
+    protected void processWeatherBetween(Number data, String date) {
         double value=data.doubleValue();
         if( value>=34 && value<=45) {
             chillHours++;

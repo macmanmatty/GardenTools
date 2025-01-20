@@ -88,7 +88,7 @@ public void processHourlyWeather( List<String> openMeteoDateAndTime,  WeatherPro
      int size = data.size();
      weatherProcessor.before();
      for (int count = 0; count < size; count++) {
-         weatherProcessor.processWeather(data.get(count), openMeteoDateAndTime.get(count));
+         weatherProcessor.processWeatherExternal(data.get(count), openMeteoDateAndTime.get(count));
      }
      weatherProcessor.after();
      if(hourlyWeatherProcessRequest.isCalculateAverage()){
