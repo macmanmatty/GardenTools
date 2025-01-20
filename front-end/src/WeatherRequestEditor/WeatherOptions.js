@@ -176,3 +176,8 @@ export const weatherDataTypes = [
     { key: "Soil Temperature 100 to 255cm", value: "soil_temperature_100_to_255cm" }
 ];
 
+export const months = [
+    "January", "February", "March", "April", "May", "June",
+    "July", "August", "September", "October", "November", "December"
+];
+

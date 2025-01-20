@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState,  useEffect } from 'react';
 import PropTypes from 'prop-types';
-import DatePicker from 'react-datepicker';
 import Dates from '../CommonUI/Dates'
 import OptionDropdown from '../CommonUI/OptionDropdown'
 import * as WeatherOptions from "../WeatherRequestEditor/WeatherOptions";
+import MonthDayDropdown from '../CommonUI/MonthDayDropdown'
 import 'react-datepicker/dist/react-datepicker.css';
 import '../Common.css'
 
@@ -18,6 +18,7 @@ import '../Common.css'
  */
 const WeatherProcessorPopup = ({  weatherProcessor, addWeatherProcessor,isModalVisible, setIsModalVisible  }) => {
 
+    const [changed, setChanged] = useState(false);
 
     /**
      * min value to process if the weather processor requires a min value
@@ -35,18 +36,15 @@ const WeatherProcessorPopup = ({  weatherProcessor, addWeatherProcessor,isModalV
      * the processor display name on the front end
      * */
     const [name, setName] = useState(weatherProcessor.name);  // State for the name
+    const [startMonth, setStartMonth] = useState(weatherProcessor.startMonth || 1); // Default to current month
+    const [endMonth, setEndMonth] = useState(weatherProcessor.endMonth || 1);
+    const [startDay, setStartDay] = useState(weatherProcessor.startDay || 12);
+    const [endDay, setEndDay] = useState(weatherProcessor.endDay || 31);
     /**
-     * the start  date for processor is a JavaScipt Date() object only used on the front end
-     */
-    const [startDate, setStartDate] = useState(weatherProcessor.startDate);
-    /**
-     * the end date for processor is a JavaScipt Date() object only used on the front end
-     */
-    const [endDate, setEndDate] = useState(weatherProcessor.endDate);
     /**
      * the internal  weather processor data object  is a JavaScript object only used on the front end
      */
-    const [internalProcessor, setInternalProcessor] = useState(weatherProcessor.internalProcessor);
+    const [internalProcessor, setInternalProcessor] = useState(weatherProcessor.internalProcessor || {});
     /**
      * the OpenMeteo weather data type to process
      */
@@ -86,19 +84,23 @@ const WeatherProcessorPopup = ({  weatherProcessor, addWeatherProcessor,isModalV
         setMaxValue(weatherProcessor.maxValue);
         setValue(weatherProcessor.value);
         setName(weatherProcessor.name);
-        setStartDate(weatherProcessor.startDate);
-        setEndDate(weatherProcessor.endDate);
-        setInternalProcessor(weatherProcessor.internalProcessor);
+        setStartDay(weatherProcessor.startProcessDay);
+        setEndDay(weatherProcessor.endProcessDay);
+        setStartMonth(weatherProcessor.startProcessMonth);
+        setEndMonth(weatherProcessor.endProcessMonth);
+        setInternalProcessor(weatherProcessor.internalProcessor ||{});
         setWeatherDataType(weatherProcessor.hourlyDataType);
         setWeatherDataTypeDisplayName(weatherProcessor.weatherDataTypeDisplayName);
-        setInternalProcessorDisplayName(weatherProcessor.internalProcessorDisplayName);
+        setInternalProcessorDisplayName(weatherProcessor.internalProcessorDisplayName || '');
         setDisplayMin(weatherProcessor.internalProcessor?.hasMin || false);
         setDisplayMax(weatherProcessor.internalProcessor?.hasMax || false);
         setDisplayValue(weatherProcessor.internalProcessor?.hasValue || false);
         setCalculateAverage(weatherProcessor.calculateAverage);
         setOnlyCalculateAverage(weatherProcessor.onlyCalulateAverage);
         setId(weatherProcessor.id);
-    }, [weatherProcessor]);
+
+
+    }, [ weatherProcessor]);
 
     // Handle min value change
     const handleMinChange = (e) => {
@@ -150,7 +152,14 @@ const WeatherProcessorPopup = ({  weatherProcessor, addWeatherProcessor,isModalV
         setOnlyCalculateAverage(checked);
 
     };
+    const setEndDate = (date) => {
+        endDate.current=date;
 
+    };
+    const setStartDate = (date) => {
+        startDate.current=date;
+
+    };
     // Handle saving data (update weatherProcessor object)
     const handleSave = () => {
         if ((name == null || name === '')) {
@@ -184,25 +193,34 @@ const WeatherProcessorPopup = ({  weatherProcessor, addWeatherProcessor,isModalV
             alert('You Must Select a Data Type!');
             return;
         }
-        if (!endDate) {
-            alert('End date is required and cannot be null or empty.');
+        if (!endDay) {
+            alert('End day is required and cannot be null or empty.');
             return;
         }
-        if (!startDate) {
-            alert('Start date is required and cannot be null or empty.');
+        if (!startDay) {
+            alert('Start day  is required and cannot be null or empty.');
             return;
         }
+        if (!endMonth) {
+            alert('End month is required and cannot be null or empty.');
+            return;
+        }
+        if (!startMonth) {
+            alert('Start month  is required and cannot be null or empty.');
+            return;
+        }
+
         let weatherProcessor= {}
         weatherProcessor.name = name;
         weatherProcessor.minValue = minValue;
         weatherProcessor.value=value;
         weatherProcessor.maxValue = maxValue;
-        weatherProcessor.endDate=endDate;
-        weatherProcessor.startDate=startDate;
-        weatherProcessor.startProcessMonth=startDate.getMonth() + 1;
-        weatherProcessor.startProcessDay=startDate.getDate();
-        weatherProcessor.endProcessMonth = endDate.getMonth()+1;
-        weatherProcessor.endProcessDay = endDate.getDate();
+        weatherProcessor.endDate=endDate.current;
+        weatherProcessor.startDate=startDate.current;
+        weatherProcessor.startProcessMonth=startMonth;
+        weatherProcessor.startProcessDay=startDay;
+        weatherProcessor.endProcessMonth = endMonth;
+        weatherProcessor.endProcessDay = endDay;
         weatherProcessor.hourlyDataType=weatherDataType;
         weatherProcessor.processorName=internalProcessor.processorName;
         weatherProcessor.internalProcessorDisplayName=internalProcessor.displayName;
@@ -228,7 +246,8 @@ const WeatherProcessorPopup = ({  weatherProcessor, addWeatherProcessor,isModalV
 
     // Close the modal (you can manage modal visibility through state here)
     const closeModal = () => {
-        setIsModalVisible(false);  // Hide the modal by setting the state to false    };
+        setIsModalVisible(false);
+        setChanged(false);
     }
     return (
         <>
@@ -353,13 +372,15 @@ const WeatherProcessorPopup = ({  weatherProcessor, addWeatherProcessor,isModalV
                                 )}
 
                                 {/* Date picker for start and end dates */}
-                                <Dates
-                                    startText="Start Date:"
-                                    endText="End Date:"
-                                    setStartDate={(date) => setStartDate(date)}
-                                    setEndDate={(date) => setEndDate(date)}
-                                    initialStartDate={startDate}
-                                    initialEndDate={endDate}
+                                <MonthDayDropdown
+                                  startMonth={startMonth}
+                                  endMonth={endMonth}
+                                  startDay={startDay}
+                                  endDay={endDay}
+                                  setEndDay={setEndDay}
+                                  setStartDay={setStartDay}
+                                  setEndMonth={setEndMonth}
+                                  setStartMonth={setStartMonth}
                                 />
                             </div>
 

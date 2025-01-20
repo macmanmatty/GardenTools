@@ -14,18 +14,35 @@ function WeatherRequestEditor() {
     const [isFileSettingsVisible, setIsFileSettingsVisible] = useState(false);
     const [startDate, setStartDate] = useState(weatherRequest.startDate);
     const [endDate, setEndDate] = useState(weatherRequest.endDate);
+    const [weatherProcessors, setWeatherProcessors] = useState(weatherRequest.weatherProcessors ||[]);
+    const [weatherLocations, setWeatherLocations] = useState(weatherRequest.weatherLocations||[]);
+    const [isWeatherRequestLoaded, setIsWeatherRequestLoaded] = useState(false);  // Flag to track loading
+
     useEffect(() => {
         // Log the updated weatherRequest after it changes
         console.log(weatherRequest);
-    }, [weatherRequest]);
+        if(weatherRequest !== null && weatherRequest !== undefined && Object.keys(weatherRequest).length > 0) {
+           localStorage.setItem("weatherRequest", JSON.stringify(weatherRequest));
+        }
 
+
+    }, [weatherRequest]);
+    useEffect(() => {
+        const storedWeatherRequest = JSON.parse(localStorage.getItem("weatherRequest"));
+           setWeatherRequest(storedWeatherRequest);
+           setIsWeatherRequestLoaded(true);
+
+
+    },[]);
     // Function to update specific fields in the weatherRequest
     const updateWeatherRequest = (field, value) => {
+        console.log("Upated Weather request");
         setWeatherRequest((prevRequest) => ({
             ...prevRequest,
             [field]: value,
         }));
     };
+
 
     return (
         <div className="App container  text-cente">
@@ -77,6 +94,7 @@ function WeatherRequestEditor() {
                         startEndDate={endDate}
                     />
                     <WeatherProcessors weatherRequest={weatherRequest} updateWeatherRequest={updateWeatherRequest}/>
+
                 </div>
             </div>
         </div>

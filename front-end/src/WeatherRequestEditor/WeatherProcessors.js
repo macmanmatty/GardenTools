@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useState, useEffect} from "react";
 import Dates from "../CommonUI/Dates";
 import OptionDropDown from "../CommonUI/OptionDropdown";
 import WeatherProcessorPopup from  "../Popups/WeatherProcessorPopup";
@@ -7,11 +7,18 @@ import ItemList from "../CommonUI/ItemList";
 import { v4 as uuidv4 } from 'uuid';
 
 
-const LocationWeather = ({weatherRequest, updateWeatherRequest}) => {
+const WeatherProcessors = ({weatherRequest, updateWeatherRequest}) => {
     // State to manage the selected value
     const [isModalVisible, setIsModalVisible] = useState(false);
     const [weatherProcessors, setWeatherProcessors] = useState(weatherRequest?.weatherProcessors||[]);
     const[currentWeatherProcessor, setCurrentWeatherProcessor]=useState({});
+    useEffect(() => {
+        if( weatherRequest.weatherProcessors ) {
+            setWeatherProcessors(weatherRequest.weatherProcessors);
+        }
+
+    }, [weatherRequest]);
+
     const createNewWeatherProcessor = () => {
         let weatherProcessor={};
         weatherProcessor.id=uuidv4();
@@ -39,7 +46,9 @@ const LocationWeather = ({weatherRequest, updateWeatherRequest}) => {
         updateWeatherRequest("weatherProcessors", updatedItems);
     };
     const editWeatherProcessor = (weatherProcessor) => {
-        setCurrentWeatherProcessor(weatherProcessor);
+        console.log("edit this");
+        console.log(weatherProcessor);
+       setCurrentWeatherProcessor(weatherProcessor);
         setIsModalVisible(true)
     };
 
@@ -84,4 +93,4 @@ const LocationWeather = ({weatherRequest, updateWeatherRequest}) => {
     );
 };
 
-export default LocationWeather
+export default WeatherProcessors

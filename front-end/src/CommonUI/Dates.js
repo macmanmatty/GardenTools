@@ -1,62 +1,80 @@
 import React, { useState, useEffect } from 'react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
-import 'bootstrap/dist/css/bootstrap.min.css';  // Make sure to include Bootstrap
-import './CommonUI.css'
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 
-const StartAndEndDates = ({ startText, endText, initialStartDate,initialEndDate, dateFormat, setStartDate, setEndDate }) => {
-  const [endDate, setendDate] = useState(initialEndDate);
-  const [startDate, setstartDate] = useState(initialStartDate);
+const StartAndEndDates = ({ startText, endText, initialStartDate,initialEndDate,
+                            dateFormat, setStartDate, setEndDate, showMonthAndDayOnly }) => {
+  const [endDateInternal, setEndDateInternal] = useState(initialEndDate ? new Date(initialEndDate) : new Date());
+  const [startDateInternal, setStartDateInternal] = useState(initialStartDate ? new Date(initialStartDate) : new Date());
   useEffect(() => {
-    setstartDate(initialStartDate);
-    setendDate(initialEndDate);
-  }, [initialStartDate, initialEndDate]);
+    console.log("set dates");
+    console.log(initialStartDate)
+      if (initialStartDate != null) {
+        setStartDateInternal(initialStartDate ? new Date(initialStartDate) : new Date());
+        setStartDate(initialStartDate ? new Date(initialStartDate) : new Date());
+      }
+      if (initialEndDate != null) {
+        setEndDateInternal(initialEndDate ? new Date(initialEndDate) : new Date());
+        setEndDate(initialEndDate ? new Date(initialEndDate) : new Date());
+      }
+
+  }, [initialEndDate, initialStartDate]);
+
 
   const setPickerStartDate = (date) => {
     const start = new Date(date);
-    const end = new Date(endDate);
+    const end = new Date(endDateInternal);
     const today =new Date();
+    if(!date){
+      setStartDateInternal(null);
+      setStartDate(null);
+      return;
+    }
     if(start>today){
       alert("We can't predict the future buddy! Please pick a date on or before today");
       if(!end){
-        setstartDate(end);
+        setStartDateInternal(end);
+        setStartDate(end);
       }
       else{
-      setstartDate(new Date());
+      setStartDateInternal(new Date());
+      setStartDate(new Date());
       }
       return;
 
     }
-    if (start > end && end != null) {
+    if (start > end && !end) {
       alert('Start date cannot be greater than End date.');
       return;
     }
     setStartDate(date);
-    setstartDate(date);
+    setStartDateInternal(date);
   };
 
   const setPickerEndDate = (date) => {
-    const start = new Date(startDate);
+    const start = new Date(startDateInternal);
     const end = new Date(date);
     const today =new Date();
+    if(!date){
+      setEndDateInternal(null);
+      setEndDate(null);
+
+      return;
+    }
     if(end>today){
       alert("We can't predict the future buddy! Please pick a date on or before today");
-      if(!start) {
-        setendDate(new Date());
-      }
-      else{
-        setendDate(start);
-      }
+        setEndDateInternal(new Date());
+        setEndDate(new Date());
       return;
-
     }
     if (start > end && start != null) {
       alert('Start date cannot be greater than End date.');
       return;
     }
     setEndDate(date);
-    setendDate(date);
+    setEndDateInternal(date);
   };
 
   return (
@@ -66,13 +84,13 @@ const StartAndEndDates = ({ startText, endText, initialStartDate,initialEndDate,
           <label htmlFor="startDate" className="date-picker-label">{startText}</label>
           <DatePicker
               id="startDate"
-              selected={startDate}
+          //   selected={startDateInternal}
               onChange={(date) => setPickerStartDate(date)}
               dateFormat={dateFormat}
               className="form-control"
               isClearable
               placeholderText={initialStartDate}
-              value={initialStartDate}
+              {...(showMonthAndDayOnly ? { showDayPicker: true } : {})}
 
           />
         </div>
@@ -82,13 +100,13 @@ const StartAndEndDates = ({ startText, endText, initialStartDate,initialEndDate,
           <label htmlFor="endDate" className="date-picker-label">{endText}</label>
           <DatePicker
               id="endDate"
-              selected={endDate}
+         //    selected={endDateInternal}
               onChange={(date) => setPickerEndDate(date)}
               dateFormat={dateFormat}
               className="form-control"
               isClearable
               placeholderText={initialEndDate}
-              value={initialEndDate}
+              {...(showMonthAndDayOnly ? { showDayPicker: true } : {})}
           />
         </div>
       </div>

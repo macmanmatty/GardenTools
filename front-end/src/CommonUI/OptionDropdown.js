@@ -17,9 +17,10 @@ import './CommonUI.css'
  * @returns {Element} the OptionDropDown  element made of a simple HTML select
  * @constructor
  */
-const OptionDropDown = ({callOnSelectedOnInitialize, initialSelectedOption, defaultText, optionsArray, displayName, valueName, onSelected, labelText, }) => {
+const OptionDropDown = ({callOnSelectedOnInitialize, initialSelectedOption, selectIndex,  defaultText, optionsArray, displayName, valueName, onSelected, labelText, }) => {
     // State to manage the selected value
     const [selectedOption, setSelectedOption] = useState(initialSelectedOption);
+    const [selectedIndex, setSelectedIndex] = useState(1);
     const [isSelected, setIsSelected] = useState(false);
     /**
      * used to initialize the selected option
@@ -27,24 +28,39 @@ const OptionDropDown = ({callOnSelectedOnInitialize, initialSelectedOption, defa
      */
     // Effect to initialize selectedOption and handle calling onSelected
     useEffect(() => {
+
         // If the selectedOption is null or undefined, set it to the first item in optionsArray
         if (initialSelectedOption === undefined || initialSelectedOption=== null) {
-            if (optionsArray.length > 0) {
+            if (optionsArray.length >0  && displayName && !selectIndex) {
                 setSelectedOption(optionsArray[0][displayName]);  // Default to the first option
             }
-        }
-        if(!isSelected){
-            setSelectedOption(initialSelectedOption);
+            else{
+                setSelectedOption(optionsArray[0]);  // Default to the first option
+            }
 
         }
+        if(selectIndex && !isSelected ){
+            console.log("selected index");
+            console.log(initialSelectedOption);
+            console.log(optionsArray[initialSelectedOption]);
+            setSelectedOption(optionsArray[initialSelectedOption]);
+        }
+        else if(!isSelected){
+            setSelectedOption(initialSelectedOption);
+        }
+
         // If callOnSelectedOnInitialize is true, call the onSelected callback
         if (callOnSelectedOnInitialize && selectedOption !== null) {
             const selectedObject = optionsArray.find(option => option[displayName] === selectedOption);
-            if (selectedObject) {
+            if (selectedObject && displayName && valueName) {
                 onSelected(selectedObject[valueName], selectedObject[displayName]);
+            }
+            else if(selectedObject){
+                onSelected(selectedObject, selectedObject);
             }
         }
     }, [selectedOption, optionsArray, callOnSelectedOnInitialize, onSelected, displayName, valueName]);
+
 
     useEffect(() => {
         // When component unmounts, reset `isSelected` to false
@@ -53,8 +69,6 @@ const OptionDropDown = ({callOnSelectedOnInitialize, initialSelectedOption, defa
         };
     }, []);  // Empty dependency array ensures this effect only runs on unmount
 
-
-
     /**
      * called when the selected option changes
      * @param event
@@ -62,8 +76,22 @@ const OptionDropDown = ({callOnSelectedOnInitialize, initialSelectedOption, defa
     const handleSelectChange = (event) => {
         setSelectedOption(event.target.value);
         setIsSelected(true);
-        const selectedObject = optionsArray.find(option => option[displayName] === event.target.value);
-        onSelected(selectedObject[valueName], selectedObject[displayName]);
+        const index=event.target.selectedIndex;
+        let selectedObject;
+        if(displayName) {
+             selectedObject = optionsArray.find(option => option[displayName] === event.target.value);
+        }
+        else{
+           selectedObject=optionsArray[index];
+        }
+        console.log("selected Object")
+        console.log(selectedObject);
+        if(displayName) {
+            onSelected(selectedObject[valueName], selectedObject[displayName], index);
+        }
+        else{
+            onSelected(selectedObject, index);
+        }
     };
 
     return (
@@ -77,13 +105,11 @@ const OptionDropDown = ({callOnSelectedOnInitialize, initialSelectedOption, defa
                 value={selectedOption}
                 onChange={handleSelectChange}
             >
-                {/* Default/empty option */}
-                <option value="">{defaultText}</option>
 
                 {/* Dynamically populated options */}
                 {optionsArray.map((option, index) => (
-                    <option key={option[displayName]} value={option[displayName]}>
-                        {option[displayName]}
+                    <option key={option[displayName] || index} value={option[displayName] || index}>
+                        {option[displayName] || option}
                     </option>
                 ))}
             </select>
