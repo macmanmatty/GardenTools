@@ -84,10 +84,10 @@ const WeatherProcessorPopup = ({  weatherProcessor, addWeatherProcessor,isModalV
         setMaxValue(weatherProcessor.maxValue);
         setValue(weatherProcessor.value);
         setName(weatherProcessor.name);
-        setStartDay(weatherProcessor.startProcessDay);
-        setEndDay(weatherProcessor.endProcessDay);
-        setStartMonth(weatherProcessor.startProcessMonth);
-        setEndMonth(weatherProcessor.endProcessMonth);
+        setStartDay(weatherProcessor.startProcessDay-1);
+        setEndDay(weatherProcessor.endProcessDay-1);
+        setStartMonth(weatherProcessor.startProcessMonth-1);
+        setEndMonth(weatherProcessor.endProcessMonth-1);
         setInternalProcessor(weatherProcessor.internalProcessor ||{});
         setWeatherDataType(weatherProcessor.hourlyDataType);
         setWeatherDataTypeDisplayName(weatherProcessor.weatherDataTypeDisplayName);
@@ -162,6 +162,8 @@ const WeatherProcessorPopup = ({  weatherProcessor, addWeatherProcessor,isModalV
     };
     // Handle saving data (update weatherProcessor object)
     const handleSave = () => {
+
+
         if ((name == null || name === '')) {
             alert('Name is required and cannot be null or empty.');
             return; // Early exit if validation fails
@@ -181,10 +183,6 @@ const WeatherProcessorPopup = ({  weatherProcessor, addWeatherProcessor,isModalV
             return;
         }
 
-        if ((startDate == null || startDate === '') && displayValue) {
-            alert('Start date is required and cannot be null or empty.');
-            return;
-        }
         if ((!internalProcessor || !internalProcessor.processorName)) {
             alert('You Must Select a Weather Processor!');
             return;
@@ -193,19 +191,19 @@ const WeatherProcessorPopup = ({  weatherProcessor, addWeatherProcessor,isModalV
             alert('You Must Select a Data Type!');
             return;
         }
-        if (!endDay) {
+        if (endDay==null) {
             alert('End day is required and cannot be null or empty.');
             return;
         }
-        if (!startDay) {
+        if (startDay==null) {
             alert('Start day  is required and cannot be null or empty.');
             return;
         }
-        if (!endMonth) {
+        if (endMonth==null) {
             alert('End month is required and cannot be null or empty.');
             return;
         }
-        if (!startMonth) {
+        if (startMonth==null) {
             alert('Start month  is required and cannot be null or empty.');
             return;
         }
@@ -215,12 +213,10 @@ const WeatherProcessorPopup = ({  weatherProcessor, addWeatherProcessor,isModalV
         weatherProcessor.minValue = minValue;
         weatherProcessor.value=value;
         weatherProcessor.maxValue = maxValue;
-        weatherProcessor.endDate=endDate.current;
-        weatherProcessor.startDate=startDate.current;
-        weatherProcessor.startProcessMonth=startMonth;
-        weatherProcessor.startProcessDay=startDay;
-        weatherProcessor.endProcessMonth = endMonth;
-        weatherProcessor.endProcessDay = endDay;
+        weatherProcessor.startProcessMonth=startMonth+1;
+        weatherProcessor.startProcessDay=startDay+1;
+        weatherProcessor.endProcessMonth = endMonth+1;
+        weatherProcessor.endProcessDay = endDay+1;
         weatherProcessor.hourlyDataType=weatherDataType;
         weatherProcessor.processorName=internalProcessor.processorName;
         weatherProcessor.internalProcessorDisplayName=internalProcessor.displayName;
