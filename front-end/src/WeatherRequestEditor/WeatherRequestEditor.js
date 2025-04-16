@@ -28,7 +28,10 @@ function WeatherRequestEditor() {
 
     }, [weatherRequest]);
     useEffect(() => {
-        const storedWeatherRequest = JSON.parse(localStorage.getItem("weatherRequest"));
+        let storedWeatherRequest = JSON.parse(localStorage.getItem("weatherRequest"));
+        if(!storedWeatherRequest){
+            storedWeatherRequest={};
+        }
            setWeatherRequest(storedWeatherRequest);
            setIsWeatherRequestLoaded(true);
 

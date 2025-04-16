@@ -7,6 +7,7 @@ import './CommonUI.css'
  * @param callOnSelectedOnInitialize if true this will called the onSelected() method on first component render
  * using the initialSelectedOption if no option is passed in the first element in the array of options will be used
  * @param initialSelectedOption the initial selected option
+ * @param selectIndex wether or ot the initial selected option is an index
  * @param defaultText the default Displayed text if no option is selected
  * @param optionsArray the array  of selectable options
  * @param displayName the name of the field  to display for each option
@@ -28,47 +29,31 @@ const OptionDropDown = ({callOnSelectedOnInitialize, initialSelectedOption, sele
      */
     // Effect to initialize selectedOption and handle calling onSelected
     useEffect(() => {
-
-        // If the selectedOption is null or undefined, set it to the first item in optionsArray
-        if (initialSelectedOption === undefined || initialSelectedOption=== null) {
-            if (optionsArray.length >0  && displayName && !selectIndex) {
-                setSelectedOption(optionsArray[0][displayName]);  // Default to the first option
+        // Initialize selectedOption when the modal loads or when optionsArray changes
+        if (initialSelectedOption === undefined || initialSelectedOption === null) {
+            // Set default to the first item in optionsArray if no initialSelectedOption
+            if (optionsArray.length > 0) {
+                const defaultOption = optionsArray[0][displayName];
+                setSelectedOption(defaultOption);
             }
-            else{
-                setSelectedOption(optionsArray[0]);  // Default to the first option
-            }
-
-        }
-        if(selectIndex && !isSelected ){
-            console.log("selected index");
-            console.log(initialSelectedOption);
-            console.log(optionsArray[initialSelectedOption]);
-            setSelectedOption(optionsArray[initialSelectedOption]);
-        }
-        else if(!isSelected){
-            setSelectedOption(initialSelectedOption);
-        }
-
-        // If callOnSelectedOnInitialize is true, call the onSelected callback
-        if (callOnSelectedOnInitialize && selectedOption !== null) {
-            const selectedObject = optionsArray.find(option => option[displayName] === selectedOption);
-            if (selectedObject && displayName && valueName) {
-                onSelected(selectedObject[valueName], selectedObject[displayName]);
-            }
-            else if(selectedObject){
-                onSelected(selectedObject, selectedObject);
+        } else {
+            // Set selectedOption based on initialSelectedOption
+            const selectedOptionFromIndex = optionsArray[initialSelectedOption];
+            if (selectedOptionFromIndex) {
+                setSelectedOption(selectedOptionFromIndex[displayName]);
             }
         }
-    }, [selectedOption, optionsArray, callOnSelectedOnInitialize, onSelected, displayName, valueName]);
-
+    }, [initialSelectedOption, optionsArray, displayName]);
 
     useEffect(() => {
-        // When component unmounts, reset `isSelected` to false
-        return () => {
-            setIsSelected(false);
-        };
-    }, []);  // Empty dependency array ensures this effect only runs on unmount
-
+        // If callOnSelectedOnInitialize is true, call the onSelected callback
+        if (callOnSelectedOnInitialize && selectedOption !== null && !isSelected) {
+            const selectedObject = optionsArray.find(option => option[displayName] === selectedOption);
+            if (selectedObject) {
+                onSelected(selectedObject[valueName], selectedObject[displayName]);
+            }
+        }
+    }, [selectedOption, callOnSelectedOnInitialize, optionsArray, displayName, valueName, isSelected, onSelected]);
     /**
      * called when the selected option changes
      * @param event
