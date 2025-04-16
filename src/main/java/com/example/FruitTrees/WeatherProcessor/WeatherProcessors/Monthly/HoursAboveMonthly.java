@@ -28,7 +28,7 @@ public class HoursAboveMonthly extends MonthlyWeatherProcessor {
             throw new IllegalArgumentException(" Params Array Size<1 You Must Include  The Minimum Value In The Array Of Parameters ");
         }
 
-        super.processorName="Hours Above "+inputParameters.get(0)+"Monthly";
+        super.processorName="Hours Above "+inputParameters.get(0)+" Monthly";
         this.minValue = Double.parseDouble(inputParameters.get(0));
         values.clear();
     }

@@ -80,6 +80,7 @@ const WeatherProcessors = ({weatherRequest, updateWeatherRequest}) => {
                     title={"Weather Processors"}
                 />
                 <WeatherProcessorPopup
+                    key={currentWeatherProcessor.id}
                     weatherProcessor={currentWeatherProcessor}
                     setIsModalVisible={setIsModalVisible}
                     isModalVisible={isModalVisible}
