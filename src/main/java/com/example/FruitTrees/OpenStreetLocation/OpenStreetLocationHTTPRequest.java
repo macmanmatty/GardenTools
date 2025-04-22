@@ -12,6 +12,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -70,6 +72,44 @@ public class OpenStreetLocationHTTPRequest {
             return names[0] + "+" + names[1];
         }
         return names[0]+"+County";
+    }
+    /**
+     calls the open street map service to get the data for  a specified laddress
+     *  with given latitude and longitude
+     * @return The LocationResponse containing the  OpenMeteoResponse and the Location Object
+     * @throws IOException
+     */
+    @Cacheable(value = "locationCache",
+            key = "#location.getStreetName() + ':' + #location.getStreetNumber()+':' + #location.getCity()+':' + #location.getStateAbbreviation() ")
+    public Location forwardGeocodeAddress(Location location){
+        String fullUrl=buildGeocodeUrl(location);
+        Logger.getLogger("").info("open street url " + fullUrl);
+        ResponseEntity< OpenStreetLocationResponse []> response = restTemplate.getForEntity(fullUrl, OpenStreetLocationResponse[].class);
+        if(response.getBody().length>0){
+            OpenStreetLocationResponse  res = response.getBody()[0];
+            location.setLatitude(res.getLat());
+            location.setLongitude(res.getLon());
+        }
+
+        return location;
+    }
+
+    /**
+     * builds a open street map geocode url based off of an address location object
+     * @param location the location object
+     * @return the open street map  geocode url
+     */
+    public String buildGeocodeUrl(Location location) {
+        String openStreetUrl = "https://nominatim.openstreetmap.org/";
+
+        String fullAddress = String.format("%s %s, %s, %s %s",
+                location.getStreetNumber(),
+                location.getStreetName(),
+                location.getCity(),
+                location.getStateAbbreviation(),
+                location.getZipCode());
+        String encodedAddress = URLEncoder.encode(fullAddress, StandardCharsets.UTF_8);
+        return String.format("%ssearch?q=%s&format=json", openStreetUrl, encodedAddress);
     }
 
 

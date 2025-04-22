@@ -1,4 +1,8 @@
 package com.example.FruitTrees.Location;
+
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * class the represents a location
  */
@@ -39,6 +43,7 @@ public class Location {
      * the US FIPS Code For the county
      */
     private String countyFips;
+   private LocationArea locationArea= new LocationArea();
     public String getName() {
         return name;
     }
@@ -132,5 +137,13 @@ public class Location {
 
     public void setCountyFips(String countyFips) {
         this.countyFips = countyFips;
+    }
+
+    public LocationArea getLocationArea() {
+        return locationArea;
+    }
+
+    public void setLocationArea(LocationArea locationArea) {
+        this.locationArea = locationArea;
     }
 }

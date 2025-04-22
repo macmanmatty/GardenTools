@@ -48,6 +48,20 @@ public class OpenStreetLocationService {
         return openStreetLocationResponse;
     }
     /**
+     * returns a OpenStreetLocationResponse object for a location object wih a given county and state
+     * @param location the location object
+     * @return OpenStreetLocationResponse object
+     * @throws IOException
+     */
+    public Location forwardGeocodeAddress(Location location) throws IOException {
+        try {
+            location = openStreetLocationHTTPRequest.forwardGeocodeAddress(location);
+        } catch (RestClientException e) {
+            throw new IOException(e);
+        }
+        return location;
+    }
+    /**
      * populates data for  location  object for a location object wih a given latitude and longitude
      * if location does not have a name gives it one based on the state and county or city
      * @param location the location object

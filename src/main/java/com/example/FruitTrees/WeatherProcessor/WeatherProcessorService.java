@@ -57,13 +57,11 @@ public class WeatherProcessorService {
      List<HourlyWeatherProcessRequest> hourlyWeatherProcessRequests = weatherRequest.getHourlyWeatherProcessRequests();
      List<String> time = openMeteoResponse.hourly.time;
      for (HourlyWeatherProcessRequest hourlyWeatherProcessRequest : hourlyWeatherProcessRequests) {
-         try {
+
              WeatherProcessor weatherProcessor = applicationContext.getBean(hourlyWeatherProcessRequest.getProcessorName(), WeatherProcessor.class);
              processHourlyWeather( time, weatherProcessor,hourlyWeatherProcessRequest,  openMeteoResponse, locationWeatherResponse);
-         }
-         catch( BeanCreationException e){
 
-         }
+
      }
         return weatherResponse;
  }
@@ -97,5 +95,6 @@ public void processHourlyWeather( List<String> openMeteoDateAndTime,  WeatherPro
      List<String> values = weatherProcessor.getValues();
      locationWeatherResponse.getLocationResponses().addAll(values);
  }
+
 
 }

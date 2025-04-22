@@ -1,19 +1,32 @@
 package com.example.FruitTrees.Location;
-import org.springframework.scheduling.annotation.Async;
+import com.example.FruitTrees.OpenStreetLocation.OpenStreetLocationService;
+import com.example.FruitTrees.Regrid.RegridService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.io.IOException;
 
 @Service
 
 public class LocationService {
 
     private  LocationRepository locationRepository;
+    private OpenStreetLocationService openStreetLocationService;
+    private RegridService regridService;
 
-    public LocationService() {
+    @Autowired
+    public LocationService(OpenStreetLocationService openStreetLocationService,  RegridService regridService) {
 
     }
 
+
+    public Location getPropertyBounds(Location location) throws IOException {
+        location = openStreetLocationService.forwardGeocodeAddress(location);
+        location=regridService.populateLocationCoordinatesAsPropertyBounds(location);
+        return location;
+    }
+
     // Create a new location
-    @Async
     public LocationDTO createLocation(LocationDTO locationDTO) {
         // Convert LocationDTO to entity if needed
         Location locationEntity = mapDTOToEntity(locationDTO);
