@@ -78,7 +78,7 @@ public class WeatherRequest {
 
 
 
-    public List<Location> locations= new ArrayList<>();
+    public List<Location> locations = new ArrayList<>();
 
     public Set<String> getHourlyDataTypes() {
         return hourlyDataTypes;

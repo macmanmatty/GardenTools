@@ -2,7 +2,6 @@ package com.example.FruitTrees.Regrid;
 
 import com.example.FruitTrees.Location.Coordinate;
 import com.example.FruitTrees.Location.Location;
-import com.example.FruitTrees.OpenStreetLocation.OpenStreetLocationResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.CacheManager;
@@ -52,12 +51,10 @@ public class RegridHTTPRequest {
         try {
             ResponseEntity<RegridResponse> response = restTemplate.getForEntity(fullUrl, RegridResponse.class);
             RegridResponse regridData = response.getBody();
-
             if (regridData != null && regridData.getFeatures() != null && !regridData.getFeatures().isEmpty()) {
                 // Extract coordinates
                 List<List<Double>> coordinatesList = regridData.getFeatures().get(0).getGeometry().getCoordinates().get(0);
                 List<Coordinate> coords = new ArrayList<>();
-
                 for (List<Double> coordPair : coordinatesList) {
                     if (coordPair.size() == 2) {
                         Coordinate coord = new Coordinate(coordPair.get(1), coordPair.get(0)); // lat, lon

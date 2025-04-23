@@ -1,6 +1,5 @@
 package com.example.FruitTrees.SoilProcessor;
 
-import com.example.FruitTrees.Location.Coordinate;
 import com.example.FruitTrees.Location.Location;
 import com.example.FruitTrees.WeatherConroller.HourlyWeatherProcessRequest;
 
@@ -63,7 +62,7 @@ public class SoilRequest {
      */
     private String outputFileType;
 
-    public List<Location> locations= new ArrayList<>();
+    public List<Location> locations = new ArrayList<>();
 
     public Set<String> getSoilDataTypes() {
         return soilDataTypes;

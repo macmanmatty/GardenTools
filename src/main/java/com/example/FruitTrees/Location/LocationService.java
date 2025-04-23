@@ -1,5 +1,6 @@
 package com.example.FruitTrees.Location;
-import com.example.FruitTrees.OpenStreetLocation.OpenStreetLocationService;
+import com.example.FruitTrees.OpenStreetMap.Model.OpenStreetLocationResponse;
+import com.example.FruitTrees.OpenStreetMap.OpenStreetLocationService;
 import com.example.FruitTrees.Regrid.RegridService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -16,20 +17,39 @@ public class LocationService {
 
     @Autowired
     public LocationService(OpenStreetLocationService openStreetLocationService,  RegridService regridService) {
+        this.openStreetLocationService = openStreetLocationService;
+        this.regridService = regridService;
+    }
 
+    public Location getFullLocation(String address) throws IOException {
+        Location location = new Location();
+        OpenStreetLocationResponse openStreetLocationResponse=openStreetLocationService.forwardGeocodeAddress(address);
+        if(openStreetLocationResponse!=null) {
+            location.setLongitude(openStreetLocationResponse.getLon());
+            location.setLatitude(openStreetLocationResponse.getLat());
+            location.setCity(openStreetLocationResponse.getAddress().getCity());
+            location.setState(openStreetLocationResponse.getAddress().getState());
+            location.setStreetNumber(openStreetLocationResponse.getAddress().getHouse_number());
+            location.setStreetName(openStreetLocationResponse.getAddress().getRoad());
+            location.setBorough(openStreetLocationResponse.getAddress().getBorough());
+            location.setSuburb(openStreetLocationResponse.getAddress().getSuburb());
+            location.setPropertyType(openStreetLocationResponse.getType());
+            location.setPropertyClass(openStreetLocationResponse.getOsmClass());
+            location.setPopulated(true);
+        }
+        return location;
     }
 
 
     public Location getPropertyBounds(Location location) throws IOException {
-        location = openStreetLocationService.forwardGeocodeAddress(location);
-        location=regridService.populateLocationCoordinatesAsPropertyBounds(location);
+        location =regridService.populateLocationCoordinatesAsPropertyBounds(location);
         return location;
     }
 
     // Create a new location
-    public LocationDTO createLocation(LocationDTO locationDTO) {
+    public Location createLocation(Location location) {
         // Convert LocationDTO to entity if needed
-        Location locationEntity = mapDTOToEntity(locationDTO);
+        Location locationEntity = mapDTOToEntity(location);
 
 
         // Perform any additional business logic if necessary
@@ -43,7 +63,7 @@ public class LocationService {
     }
 
     // Retrieve a location by ID
-    public LocationDTO getLocationById(Long id) throws EntityNotFoundException {
+    public Location getLocationById(Long id) throws EntityNotFoundException {
         // Retrieve the entity from the repository
         Location locationEntity = locationRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Location not found with id: " + id));
@@ -53,15 +73,15 @@ public class LocationService {
     }
 
     // Update a location by ID
-    public LocationDTO updateLocation(Long id, LocationDTO locationDTO) throws EntityNotFoundException {
+    public Location updateLocation(Long id, Location location) throws EntityNotFoundException {
         // Check if the location with the given ID exists
         Location existingEntity = locationRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Location not found with id: " + id));
 
         // Update the entity with the new data from the DTO
-        existingEntity.setName(locationDTO.getName());
-        existingEntity.setLatitude(locationDTO.getLatitude());
-        existingEntity.setLongitude(locationDTO.getLongitude());
+        existingEntity.setName(location.getName());
+        existingEntity.setLatitude(location.getLatitude());
+        existingEntity.setLongitude(location.getLongitude());
 
         // Perform any additional business logic if necessary
         // ...
@@ -87,22 +107,22 @@ public class LocationService {
     }
 
     // Helper method to convert LocationDTO to LocationEntity
-    private Location mapDTOToEntity(LocationDTO locationDTO) {
-       Location locationEntity=new Location();
-       locationEntity.setLatitude(locationDTO.getLatitude());
-        locationEntity.setLongitude(locationDTO.getLongitude());
-        locationEntity.setName(locationDTO.getName());
-        locationEntity.setStationId(locationDTO.getStationId());
-        return  locationEntity;
+    private Location mapDTOToEntity(Location location) {
+       Location locationEntity =new Location();
+       locationEntity.setLatitude(location.getLatitude());
+        locationEntity.setLongitude(location.getLongitude());
+        locationEntity.setName(location.getName());
+        locationEntity.setStationId(location.getStationId());
+        return locationEntity;
     }
 
     // Helper method to convert LocationEntity to LocationDTO
-    private LocationDTO mapEntityToDTO(Location locationEntity) {
-        LocationDTO locationDTO=new LocationDTO();
-        locationDTO.setLatitude(locationEntity.getLatitude());
-        locationDTO.setLongitude(locationEntity.getLongitude());
-        locationDTO.setName(locationEntity.getName());
-        locationDTO.setStationId(locationEntity.getStationId());
-        return  locationDTO;
+    private Location mapEntityToDTO(Location locationEntity) {
+        Location location =new Location();
+        location.setLatitude(locationEntity.getLatitude());
+        location.setLongitude(locationEntity.getLongitude());
+        location.setName(locationEntity.getName());
+        location.setStationId(locationEntity.getStationId());
+        return location;
     }
 }

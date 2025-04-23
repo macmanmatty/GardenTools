@@ -1,5 +1,7 @@
-package com.example.FruitTrees.OpenStreetLocation;
+package com.example.FruitTrees.OpenStreetMap.Model;
 
+
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.List;
 
@@ -14,8 +16,12 @@ public class OpenStreetLocationResponse {
     private String display_name;
     private Address address;
     private List<String> boundingbox;
+    
+    @JsonProperty("class")
+    private String osmClass; // or name it something else
 
-    // Getters and Setters
+    @JsonProperty("type")
+    private String type;    // Getters and Setters
 
     public String getPlace_id() {
         return place_id;
@@ -89,66 +95,27 @@ public class OpenStreetLocationResponse {
         this.boundingbox = boundingbox;
     }
 
+
+
+    public String getOsmClass() {
+        return osmClass;
+    }
+
+    public void setOsmClass(String osmClass) {
+        this.osmClass = osmClass;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
     // Address inner class
-    public static class Address {
-        private String city;
-        private String county;
-        private String state;
-        private String postcode;
-        private String country;
-        private String country_code;
-
-        // Getters and Setters
-
-        public String getCity() {
-            return city;
-        }
-
-        public void setCity(String city) {
-            this.city = city;
-        }
-
-        public String getCounty() {
-            return county;
-        }
-
-        public void setCounty(String county) {
-            this.county = county;
-        }
-
-        public String getState() {
-            return state;
-        }
-
-        public void setState(String state) {
-            this.state = state;
-        }
-
-        public String getPostcode() {
-            return postcode;
-        }
-
-        public void setPostcode(String postcode) {
-            this.postcode = postcode;
-        }
-
-        public String getCountry() {
-            return country;
-        }
-
-        public void setCountry(String country) {
-            this.country = country;
-        }
-
-        public String getCountry_code() {
-            return country_code;
-        }
-
-        public void setCountry_code(String country_code) {
-            this.country_code = country_code;
-        }
 
     }
-}
+
 
 
