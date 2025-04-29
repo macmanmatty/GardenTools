@@ -30,7 +30,7 @@ public class HoursBetweenMonthly extends MonthlyWeatherProcessor {
         super.processorName="Hours Between "+inputParameters.get(0)+ "And "+inputParameters.get(1)+ " Monthly";
         this.maxValue = Double.parseDouble(inputParameters.get(1));
         this.minValue=Double.parseDouble(inputParameters.get(0));
-        values.clear();
+        clearProcessedTextValues();
     }
 
     @Override

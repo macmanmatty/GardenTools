@@ -34,7 +34,7 @@ public class DataUtilities {
             case "et0_fao_evapotranspiration" -> data.et0_fao_evapotranspiration;
             case "vapour_pressure_deficit" -> data.vapour_pressure_deficit;
             case "wind_speed_10m" -> data.wind_speed_10m;
-            case "wind_speed1_00m" -> data.wind_speed_100m;
+            case "wind_speed_100m" -> data.wind_speed_100m;
             case "wind_direction_10m" -> data.wind_direction_10m;
             case "wind_direction_100m" -> data.wind_direction_100m;
             case "wind_gusts_10m" -> data.wind_gusts_10m;

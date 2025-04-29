@@ -2,7 +2,7 @@ package com.example.FruitTrees.WeatherProcessor.WeatherProcessors.BetweenDates;
 import com.example.FruitTrees.Utilities.DateUtilities;
 import com.example.FruitTrees.WeatherConroller.WeatherResponse.YearlyValuesResponse;
 import org.springframework.stereotype.Component;
-import java.time.LocalDateTime;
+
 /**
  *  A weather processor that calculates the total amount of some
  *  weather value between two  values  and between dates usually used  for counting chilling hours (temperature ) for deciduous fruit trees
@@ -34,7 +34,7 @@ public class HoursBetweenCalculator extends ProcessWeatherBetweenDates {
 
         this.minTemp= Double.parseDouble(inputParameters.get(0));
         this.maxTemp= Double.parseDouble(inputParameters.get(1));
-        values.clear();
+        clearProcessedTextValues();
         yearlyDataValues.clear();
 
     }

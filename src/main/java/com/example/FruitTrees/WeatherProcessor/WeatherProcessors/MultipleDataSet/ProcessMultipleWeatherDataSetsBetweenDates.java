@@ -24,7 +24,7 @@ public abstract  class ProcessMultipleWeatherDataSetsBetweenDates extends Multip
 
     @Override
     public void before() {
-        values.clear();
+        clearProcessedTextValues();
         yearlyDataValues.clear();
     }
     /**
@@ -82,7 +82,7 @@ public abstract  class ProcessMultipleWeatherDataSetsBetweenDates extends Multip
           total= doubleNum+total;
         }
        double average=Math.round(total/yearlyDataValues.size());
-       values.add("Average "+ processorName +" "+average);
+       addProcessedValue("Average "+ processorName +" "+average);
        //currentYearlyValuesResponse.getValues().put("Average "+dataType+ " for ", String.valueOf(average));
     }
 

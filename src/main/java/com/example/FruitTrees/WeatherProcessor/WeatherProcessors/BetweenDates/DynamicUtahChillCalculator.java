@@ -4,7 +4,6 @@ import com.example.FruitTrees.Utilities.DateUtilities;
 import com.example.FruitTrees.WeatherConroller.WeatherResponse.YearlyValuesResponse;
 import org.springframework.stereotype.Component;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -39,13 +38,13 @@ public class DynamicUtahChillCalculator extends ProcessWeatherBetweenDates {
         if(inputParameters.size()%3!=0){
             throw new IllegalArgumentException("Incorrect Number of Parameters");
         }
-        int size=values.size();
+        int size= inputParameters.size();
         for(int count=0; count<size; count=count+3){
             ragesBottom.add(Double.valueOf(inputParameters.get(count)));
             ragesTop.add(Double.valueOf(inputParameters.get(count+1)));
             chillAmounts.add(Double.valueOf(inputParameters.get(count+2)));
         }
-        values.clear();
+        clearProcessedTextValues();
     }
 
     @Override

@@ -1,7 +1,7 @@
 package com.example.FruitTrees.OpenMeteo;
-import com.example.FruitTrees.OpenStreetLocation.OpenStreetLocationService;
-import com.example.FruitTrees.WeatherProcessor.WeatherProcessorService;
 import com.example.FruitTrees.Location.Location;
+import com.example.FruitTrees.OpenStreetMap.OpenStreetLocationService;
+import com.example.FruitTrees.WeatherProcessor.WeatherProcessorService;
 import com.example.FruitTrees.WeatherConroller.BadRequestException;
 import com.example.FruitTrees.WeatherConroller.HourlyWeatherProcessRequest;
 import com.example.FruitTrees.WeatherConroller.WeatherRequest;
@@ -54,10 +54,10 @@ public class OpenMeteoService {
      */
     private OpenMeteoLocationResponses makeRequest(WeatherRequest weatherRequest) throws IOException {
         OpenMeteoLocationResponses openMeteoResponses=  new OpenMeteoLocationResponses();
-        List<Location> locations=weatherRequest.getLocations();
+        List<Location> locations =weatherRequest.getLocations();
         locationCheck(locations);
         boolean populateLocationData= weatherRequest.isPopulateLocationData();
-        for (Location location: locations) {
+        for (Location location : locations) {
             try {
                 LocationResponse locationResponse= openMeteoHTTPRequest.makeLocationRequest(location, weatherRequest);
                 openMeteoResponses.getLocationResponses().add(locationResponse);
@@ -76,7 +76,7 @@ public class OpenMeteoService {
      * @param locations the list of locations
      */
     private void locationCheck(List<Location> locations) {
-        int size=locations.size();
+        int size= locations.size();
         if (size==0){
             throw new BadRequestException("No Locations Specified");
         }

@@ -1,5 +1,4 @@
 import React, {useState} from "react";
-import Dates from "../CommonUI/Dates";
 import OptionDropDown from "../CommonUI/OptionDropdown";
 import * as WeatherOptions from "./WeatherOptions";
 

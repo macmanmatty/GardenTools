@@ -1,21 +1,25 @@
-package com.example.FruitTrees.OpenStreetLocation;
+package com.example.FruitTrees.OpenStreetMap;
 import com.example.FruitTrees.Location.Location;
+import com.example.FruitTrees.OpenStreetMap.Model.OpenStreetLocationResponse;
 import com.example.FruitTrees.Utilities.LocationUtilities;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
 import java.io.IOException;
 @Service
 public class OpenStreetLocationService {
+    private static final Logger log = LoggerFactory.getLogger(OpenStreetLocationService.class);
     private final OpenStreetLocationHTTPRequest openStreetLocationHTTPRequest;
    @Autowired
     public OpenStreetLocationService(OpenStreetLocationHTTPRequest openStreetLocationHTTPRequest) {
        this.openStreetLocationHTTPRequest = openStreetLocationHTTPRequest;
     }
-        public Location populateLocationData(Location location ) throws IOException {
+        public Location populateLocationData(Location location) throws IOException {
        OpenStreetLocationResponse openStreetLocationResponse = getLocationData(location);
        populateLocationData(location, openStreetLocationResponse);
-        return  location;
+        return location;
     }
     /**
      * calls the open-meteo service to get the data for  each of specified location(s)
@@ -48,6 +52,20 @@ public class OpenStreetLocationService {
         return openStreetLocationResponse;
     }
     /**
+     * returns a OpenStreetLocationResponse object for a location object wih a given county and state
+     * @return OpenStreetLocationResponse object
+     * @throws IOException
+     */
+    public OpenStreetLocationResponse forwardGeocodeAddress(String address) throws IOException {
+        OpenStreetLocationResponse openStreetLocationResponse = new OpenStreetLocationResponse();
+        try {
+           openStreetLocationResponse= openStreetLocationHTTPRequest.forwardGeocodeAddress(address);
+        } catch (RestClientException e) {
+            throw new IOException(e);
+        }
+        return openStreetLocationResponse;
+    }
+    /**
      * populates data for  location  object for a location object wih a given latitude and longitude
      * if location does not have a name gives it one based on the state and county or city
      * @param location the location object
@@ -66,7 +84,7 @@ public class OpenStreetLocationService {
         if(location.getName()==null){
             String text="";
             if(location.getCity()!=null && !location.getCity().isEmpty()) {
-                text=location.getCity()+", "+location.getState();
+                text= location.getCity()+", "+ location.getState();
             }
             else {
                 text = location.getCounty() + ", " + location.getState();

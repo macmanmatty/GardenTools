@@ -18,22 +18,22 @@ public class HourlyWeatherProcessRequest {
      * CANNOT be FEB 29 2-29 FEB 29 will  be converted to MAR 1
      */
 
-    private int startProcessDay;
+    private int startProcessDay=1;
     /**
      * the month to start processing weather  on
      * CANNOT be FEB 29 2-29 FEB 29 will  be converted to MAR 1
      */
-    private int startProcessMonth;
+    private int startProcessMonth=1;
     /**
      * the day  stop processing weather on
      * CANNOT be FEB 29 2-29 FEB 29 will  be converted to MAR 1
      */
-    private int endProcessDay;
+    private int endProcessDay=31;
     /**
      * the month  stop processing weather  on
      * CANNOT be FEB 29 2-29 FEB 29 will  be converted to MAR 1
      */
-    private int endProcessMonth;
+    private int endProcessMonth=12;
 
     /**
      * the input parameters for the weather processor

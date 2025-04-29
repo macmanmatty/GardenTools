@@ -29,7 +29,7 @@ public abstract  class ProcessWeatherBetweenDates  extends WeatherProcessor {
 
     @Override
     public void before() {
-        values.clear();
+        clearProcessedTextValues();
         yearlyDataValues.clear();
     }
     /**
@@ -87,7 +87,7 @@ public abstract  class ProcessWeatherBetweenDates  extends WeatherProcessor {
           total= doubleNum+total;
         }
        double average=Math.round(total/yearlyDataValues.size());
-       values.add("Average "+ processorName +" "+average);
+       addProcessedValue("Average "+ processorName +" "+average);
     }
 
 

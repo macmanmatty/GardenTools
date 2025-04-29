@@ -14,14 +14,14 @@ endMonth, startDay, endDay, setStartMonth, setEndMonth, setStartDay, setEndDay})
   // Function to calculate days in a given month (Feb always 28)
   const calculateDaysInMonth = (month) => {
     let daysInMonth;
-    if (month === 1) { // February (index 1)
+    if (month === 2) { // February (index 1)
       daysInMonth = 28; // February has 28 days (ignoring leap years)
-    } else if ([3, 5, 8, 10].includes(month)) { // April, June, September, November (30 days)
+    } else if ([4, 6, 9, 11].includes(month)) { // April, June, September, November (30 days)
       daysInMonth = 30;
     } else { // Other months have 31 days
       daysInMonth = 31;
     }
-    return Array.from({ length: daysInMonth }, (_, i) => i + 1);
+    return Array.from({ length: daysInMonth }, (_, i) => i+1 );
   };
 
   useEffect(() => {
@@ -30,11 +30,11 @@ endMonth, startDay, endDay, setStartMonth, setEndMonth, setStartDay, setEndDay})
   }, [startMonth, endMonth]);
 
   const handleStartMonthChange =(month, index) => {
-    setStartMonth(index);
+    setStartMonth(index+1);
   };
 
   const handleEndMonthChange = (month, index) => {
-    setEndMonth(index);
+    setEndMonth(index+1);
   };
 
   const handleStartDayChange = (day, index) => {

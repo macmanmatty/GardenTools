@@ -5,7 +5,6 @@ import com.example.FruitTrees.WeatherProcessor.WeatherProcessors.BetweenDates.Pr
 
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 public abstract class DateValueProcessor extends ProcessWeatherBetweenDates {
@@ -15,7 +14,7 @@ public abstract class DateValueProcessor extends ProcessWeatherBetweenDates {
     @Override
     public void calculateAverage() {
        LocalDate date= DateUtilities.calculateAverageDate(yearlyDates);
-        values.add("Average "+ processorName +" "+date);
+        addProcessedValue("Average "+ processorName +" "+date);
     }
 
 

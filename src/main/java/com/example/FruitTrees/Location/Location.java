@@ -1,4 +1,5 @@
 package com.example.FruitTrees.Location;
+
 /**
  * class the represents a location
  */
@@ -30,6 +31,8 @@ public class Location {
    private  String zipCode;
    private  String city;
    private String state;
+    public String suburb;
+    public String borough;
     /**
      * the US FIPS Code For the state
      */
@@ -39,6 +42,10 @@ public class Location {
      * the US FIPS Code For the county
      */
     private String countyFips;
+    private String propertyType;
+    private String propertyClass;
+    private boolean populated=false;
+   private LocationArea locationArea= new LocationArea();
     public String getName() {
         return name;
     }
@@ -132,5 +139,53 @@ public class Location {
 
     public void setCountyFips(String countyFips) {
         this.countyFips = countyFips;
+    }
+
+    public LocationArea getLocationArea() {
+        return locationArea;
+    }
+
+    public void setLocationArea(LocationArea locationArea) {
+        this.locationArea = locationArea;
+    }
+
+    public boolean isPopulated() {
+        return populated;
+    }
+
+    public void setPopulated(boolean populated) {
+        this.populated = populated;
+    }
+
+    public String getSuburb() {
+        return suburb;
+    }
+
+    public void setSuburb(String suburb) {
+        this.suburb = suburb;
+    }
+
+    public String getBorough() {
+        return borough;
+    }
+
+    public void setBorough(String borough) {
+        this.borough = borough;
+    }
+
+    public String getPropertyType() {
+        return propertyType;
+    }
+
+    public void setPropertyType(String propertyType) {
+        this.propertyType = propertyType;
+    }
+
+    public String getPropertyClass() {
+        return propertyClass;
+    }
+
+    public void setPropertyClass(String propertyClass) {
+        this.propertyClass = propertyClass;
     }
 }

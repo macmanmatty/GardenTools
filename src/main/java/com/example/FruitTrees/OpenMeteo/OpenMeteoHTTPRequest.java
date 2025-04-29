@@ -34,7 +34,7 @@ public class OpenMeteoHTTPRequest {
      */
     @Cacheable(value = "openMeteoDataCache",
       key = "#location.getLatitude() + ':' + #location.getLongitude() + ':' + #weatherRequest.getHourlyDataTypes.hashCode() + ':' + #weatherRequest.getStartDate() + ':' + #weatherRequest.getEndDate()")
-    public LocationResponse makeLocationRequest( Location location, WeatherRequest weatherRequest){
+    public LocationResponse makeLocationRequest(Location location, WeatherRequest weatherRequest){
         String fullUrl = openMeteoUrl + "?latitude=" + location.getLatitude() +
                 "&longitude=" + location.getLongitude() +
                 "&start_date=" + weatherRequest.getStartDate() +

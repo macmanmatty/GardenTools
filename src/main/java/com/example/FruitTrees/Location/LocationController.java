@@ -1,6 +1,6 @@
 package com.example.FruitTrees.Location;
-import com.example.FruitTrees.OpenStreetLocation.OpenStreetLocationResponse;
-import com.example.FruitTrees.OpenStreetLocation.OpenStreetLocationService;
+import com.example.FruitTrees.OpenStreetMap.Model.OpenStreetLocationResponse;
+import com.example.FruitTrees.OpenStreetMap.OpenStreetLocationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -32,26 +32,48 @@ public class LocationController {
         }
 
     }
+    @PostMapping(value = "/locationAddress")
+    public ResponseEntity<Object> getLocationInfo( @RequestBody String address) {
+        try {
+            Location locationResponse =   locationService.getFullLocation(address);
+            return  new ResponseEntity<>(locationResponse, HttpStatus.OK);
+
+        } catch (IOException e) {
+            return  new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+
+    }
+    @PostMapping(value = "/propertyBounds", consumes = {"application/json"})
+    public ResponseEntity<Object> getPropertyBounds( @RequestBody Location location) {
+        try {
+            location =locationService.getPropertyBounds(location);
+            return  new ResponseEntity<>(location, HttpStatus.OK);
+
+        } catch (IOException e) {
+            return  new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+
+    }
 
 
     // Create a new location
     @PostMapping
-    public ResponseEntity<LocationDTO> createLocation(@RequestBody LocationDTO locationDTO) {
-        LocationDTO createdLocation = locationService.createLocation(locationDTO);
+    public ResponseEntity<Location> createLocation(@RequestBody Location location) {
+        Location createdLocation = locationService.createLocation(location);
         return new ResponseEntity<>(createdLocation, HttpStatus.CREATED);
     }
 
     // Retrieve a location by ID
     @GetMapping("/{id}")
-    public ResponseEntity<LocationDTO> getLocation(@PathVariable Long id) throws EntityNotFoundException {
-        LocationDTO locationDTO = locationService.getLocationById(id);
-        return new ResponseEntity<>(locationDTO, HttpStatus.OK);
+    public ResponseEntity<Location> getLocation(@PathVariable Long id) throws EntityNotFoundException {
+        Location location = locationService.getLocationById(id);
+        return new ResponseEntity<>(location, HttpStatus.OK);
     }
 
     // Update a location by ID
     @PutMapping("/{id}")
-    public ResponseEntity<LocationDTO> updateLocation(@PathVariable Long id, @RequestBody LocationDTO locationDTO) throws EntityNotFoundException {
-        LocationDTO updatedLocation = locationService.updateLocation(id, locationDTO);
+    public ResponseEntity<Location> updateLocation(@PathVariable Long id, @RequestBody Location location) throws EntityNotFoundException {
+        Location updatedLocation = locationService.updateLocation(id, location);
         return new ResponseEntity<>(updatedLocation, HttpStatus.OK);
     }
 

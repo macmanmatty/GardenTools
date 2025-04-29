@@ -36,6 +36,10 @@ const WeatherProcessorPopup = ({  weatherProcessor, addWeatherProcessor,isModalV
      * the processor display name on the front end
      * */
     const [name, setName] = useState(weatherProcessor.name);  // State for the name
+    /**
+     * the indexes of the state dates and months for the weather processor  index = month / day number -1
+     * to match the indexes of the drop down array
+     */
     const [startMonth, setStartMonth] = useState(weatherProcessor.startMonth || 1); // Default to current month
     const [endMonth, setEndMonth] = useState(weatherProcessor.endMonth || 1);
     const [startDay, setStartDay] = useState(weatherProcessor.startDay || 12);
@@ -74,33 +78,6 @@ const WeatherProcessorPopup = ({  weatherProcessor, addWeatherProcessor,isModalV
      * internal id of the weather processor  JavaScript Object
      */
     const [id,setId]=useState(weatherProcessor.id);
-
-    useEffect(() => {
-        console.log("used weather processor "+weatherProcessor.id);
-        console.log(weatherProcessor);
-        console.log(weatherProcessor.endDate);
-        console.log(weatherProcessor.startDate);
-        setMinValue(weatherProcessor.minValue);
-        setMaxValue(weatherProcessor.maxValue);
-        setValue(weatherProcessor.value);
-        setName(weatherProcessor.name);
-        setStartDay(weatherProcessor.startProcessDay-1);
-        setEndDay(weatherProcessor.endProcessDay-1);
-        setStartMonth(weatherProcessor.startProcessMonth-1);
-        setEndMonth(weatherProcessor.endProcessMonth-1);
-        setInternalProcessor(weatherProcessor.internalProcessor ||{});
-        setWeatherDataType(weatherProcessor.hourlyDataType);
-        setWeatherDataTypeDisplayName(weatherProcessor.weatherDataTypeDisplayName);
-        setInternalProcessorDisplayName(weatherProcessor.internalProcessorDisplayName || '');
-        setDisplayMin(weatherProcessor.internalProcessor?.hasMin || false);
-        setDisplayMax(weatherProcessor.internalProcessor?.hasMax || false);
-        setDisplayValue(weatherProcessor.internalProcessor?.hasValue || false);
-        setCalculateAverage(weatherProcessor.calculateAverage);
-        setOnlyCalculateAverage(weatherProcessor.onlyCalulateAverage);
-        setId(weatherProcessor.id);
-
-
-    }, [ weatherProcessor]);
 
     // Handle min value change
     const handleMinChange = (e) => {
@@ -366,6 +343,7 @@ const WeatherProcessorPopup = ({  weatherProcessor, addWeatherProcessor,isModalV
                                         />
                                     </div>
                                 )}
+
 
                                 {/* Date picker for start and end dates */}
                                 <MonthDayDropdown
