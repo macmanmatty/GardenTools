@@ -14,7 +14,7 @@ public abstract class DateValueProcessor extends ProcessWeatherBetweenDates {
     @Override
     public void calculateAverage() {
        LocalDate date= DateUtilities.calculateAverageDate(yearlyDates);
-        addProcessedValue("Average "+ processorName +" "+date);
+        addAverageValue("Average "+ processorName +" "+date);
     }
 
 
