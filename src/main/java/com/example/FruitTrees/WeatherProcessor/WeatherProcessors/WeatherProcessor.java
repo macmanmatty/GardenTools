@@ -148,8 +148,11 @@ public abstract class WeatherProcessor {
      */
     public void addProcessedValue(String text){
         if(!onlyCalculateAverage) {
-            addProcessedValue(text);
+            this.processedTextValues.add(text);
         }
+    }
+    public void addAverageValue(String text){
+        this.processedTextValues.add(text);
     }
 
     /**

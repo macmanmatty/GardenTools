@@ -87,7 +87,7 @@ public abstract  class ProcessWeatherBetweenDates  extends WeatherProcessor {
           total= doubleNum+total;
         }
        double average=Math.round(total/yearlyDataValues.size());
-       addProcessedValue("Average "+ processorName +" "+average);
+       addAverageValue("Average "+ processorName +" "+average);
     }
 
 

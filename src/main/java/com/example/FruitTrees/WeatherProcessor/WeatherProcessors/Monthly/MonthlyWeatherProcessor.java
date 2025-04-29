@@ -96,7 +96,7 @@ public abstract  class MonthlyWeatherProcessor extends WeatherProcessor {
               total=total+doubleNum;
           }
           double average=Math.round(total/monthlyValues.size());
-          this.addProcessedValue("Average "+processorName+" For Month "+month+" "+average);
+          this.addAverageValue("Average "+processorName+" For Month "+month+" "+average);
       }
     }
     public void addValue(double value, int year, String month){
