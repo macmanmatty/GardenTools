@@ -245,6 +245,6 @@ public abstract class WeatherProcessor {
         stopProcessing=true;
     }
     public void clearProcessedTextValues() {
-        clearProcessedTextValues();
+        processedTextValues.clear();
     }
 }
