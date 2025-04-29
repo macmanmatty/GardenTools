@@ -4,8 +4,6 @@ import com.example.FruitTrees.Utilities.DateUtilities;
 import com.example.FruitTrees.WeatherConroller.WeatherResponse.YearlyValuesResponse;
 import org.springframework.stereotype.Component;
 
-import java.time.LocalDateTime;
-
 /**
  *  A weather processor that calculates the total amount of some
  *  weather value above a certain value  and between dates
@@ -31,7 +29,7 @@ public class HoursAboveCalculator extends ProcessWeatherBetweenDates {
         this.processorName="Hours Above "+inputParameters.get(0);
 
         this.minValue = Double.parseDouble(inputParameters.get(0));
-        values.clear();
+        clearProcessedTextValues();
         yearlyDataValues.clear();
     }
 
@@ -43,7 +41,7 @@ public class HoursAboveCalculator extends ProcessWeatherBetweenDates {
         String text="Hours Of " +dataType+  " Above "+minValue;
         yearlyValuesResponse.getValues().put(text, String.valueOf(hours));
         if(!isOnlyCalculateAverage()) {
-            values.add(text + year + " from: " + startMonth + "/" + startDay + " to " + endMonth + "/" + endDay + ": " + hours);
+            addProcessedValue(text + year + " from: " + startMonth + "/" + startDay + " to " + endMonth + "/" + endDay + ": " + hours);
         }
         hours =0;
     }

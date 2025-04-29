@@ -9,6 +9,8 @@ import com.example.FruitTrees.WeatherConroller.HourlyWeatherProcessRequest;
 import com.example.FruitTrees.WeatherConroller.WeatherResponse.LocationWeatherResponse;
 import com.example.FruitTrees.WeatherConroller.WeatherRequest;
 import com.example.FruitTrees.WeatherConroller.WeatherResponse.WeatherResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
@@ -17,7 +19,8 @@ import java.util.*;
 
 @Service
 public class WeatherProcessorService {
-   private  ApplicationContext applicationContext;
+    private static final Logger log = LoggerFactory.getLogger(WeatherProcessorService.class);
+    private  ApplicationContext applicationContext;
     public WeatherProcessorService(@Autowired  ApplicationContext applicationContext) {
         this.applicationContext = applicationContext;
     }
@@ -85,13 +88,14 @@ public void processHourlyWeather( List<String> openMeteoDateAndTime,  WeatherPro
      int size = data.size();
      weatherProcessor.before();
      for (int count = 0; count < size; count++) {
+         log.info(" started processing of {}", weatherProcessor.getProcessorName());
          weatherProcessor.processWeatherExternal(data.get(count), openMeteoDateAndTime.get(count));
      }
      weatherProcessor.after();
      if(hourlyWeatherProcessRequest.isCalculateAverage()){
          weatherProcessor.calculateAverage();
      }
-     List<String> values = weatherProcessor.getValues();
+     List<String> values = weatherProcessor.getProcessedTextValues();
      locationWeatherResponse.getLocationResponses().addAll(values);
  }
 

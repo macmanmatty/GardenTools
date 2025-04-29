@@ -28,7 +28,7 @@ public class HoursBelowMonthly extends MonthlyWeatherProcessor {
         }
         super.processorName="Hours Below "+inputParameters.get(0)+" Monthly";
         this.maxValue = Double.parseDouble(inputParameters.get(0));
-        values.clear();
+        clearProcessedTextValues();
     }
 
     @Override

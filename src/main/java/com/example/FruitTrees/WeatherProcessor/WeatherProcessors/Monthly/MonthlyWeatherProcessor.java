@@ -43,7 +43,7 @@ public abstract  class MonthlyWeatherProcessor extends WeatherProcessor {
 
     @Override
     public void before() {
-        values.clear();
+        clearProcessedTextValues();
         currentYearlyValuesResponse =locationWeatherResponse.getYearlyValues(String.valueOf(currentYear));
         monthlyValuesResponse = currentYearlyValuesResponse.getMonthlyValues(currentMonthName);
         monthlyValues.put("JANUARY", new ArrayList<>());
@@ -96,11 +96,11 @@ public abstract  class MonthlyWeatherProcessor extends WeatherProcessor {
               total=total+doubleNum;
           }
           double average=Math.round(total/monthlyValues.size());
-          this.values.add("Average "+processorName+" For Month "+month+" "+average);
+          this.addProcessedValue("Average "+processorName+" For Month "+month+" "+average);
       }
     }
     public void addValue(double value, int year, String month){
-        values.add(processorName +" for "+dataType+" " +month+" "+year+  " : "+ value);
+        addProcessedValue(processorName +" for "+dataType+" " +month+" "+year+  " : "+ value);
     }
     /**
      * subclass implemented method  for

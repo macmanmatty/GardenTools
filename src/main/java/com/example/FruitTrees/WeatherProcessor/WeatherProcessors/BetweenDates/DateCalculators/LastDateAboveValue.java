@@ -2,7 +2,6 @@ package com.example.FruitTrees.WeatherProcessor.WeatherProcessors.BetweenDates.D
 
 import com.example.FruitTrees.Utilities.DateUtilities;
 import com.example.FruitTrees.WeatherConroller.WeatherResponse.YearlyValuesResponse;
-import com.example.FruitTrees.WeatherProcessor.WeatherProcessors.BetweenDates.ProcessWeatherBetweenDates;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
@@ -36,7 +35,7 @@ public class LastDateAboveValue extends DateValueProcessor {
         // set mode to above
 
         this.processorName="Last Date With Value Above "+mode+" "+inputParameters.get(0);
-        values.clear();
+        clearProcessedTextValues();
         yearlyDataValues.clear();
 
     }
@@ -53,7 +52,7 @@ public class LastDateAboveValue extends DateValueProcessor {
             YearlyValuesResponse yearlyValuesResponse = locationWeatherResponse.getYearlyValues(String.valueOf(year));
             String text = "Last instance of " + dataType + " Above " + lastValue;
             yearlyValuesResponse.getValues().put(text, localDate.toString());
-            values.add(text + year + " from: " + startMonth + "/" + startDay + " to " + endMonth + "/" + endDay + " was on  " + localDateTime.toLocalDate().toString() + " at " + localDateTime.getHour());
+            addProcessedValue(text + year + " from: " + startMonth + "/" + startDay + " to " + endMonth + "/" + endDay + " was on  " + localDateTime.toLocalDate().toString() + " at " + localDateTime.getHour());
             this.date = null;
         }
         else{
@@ -61,7 +60,7 @@ public class LastDateAboveValue extends DateValueProcessor {
             String text = "Last instance of " + dataType + " Above " + lastValue;
             YearlyValuesResponse yearlyValuesResponse = locationWeatherResponse.getYearlyValues(String.valueOf(year));
             yearlyValuesResponse.getValues().put(text, "value never reached");
-            values.add(text + year + " from: " + startMonth + "/" + startDay + " to " + endMonth + "/" + endDay + " was never reached ");
+            addProcessedValue(text + year + " from: " + startMonth + "/" + startDay + " to " + endMonth + "/" + endDay + " was never reached ");
 
         }
     }

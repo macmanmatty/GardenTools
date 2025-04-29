@@ -20,7 +20,7 @@ public abstract  class DailyWeatherProcessor extends MonthlyWeatherProcessor {
     }
     @Override
     public void before() {
-        values.clear();
+        clearProcessedTextValues();
         currentYearlyValuesResponse =locationWeatherResponse.getYearlyValues(String.valueOf(currentYear));
         monthlyValuesResponse = currentYearlyValuesResponse.getMonthlyValues(currentMonthName);
     }

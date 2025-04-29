@@ -26,7 +26,7 @@ public class FrostLineCalculator extends ProcessMultipleWeatherDataSetsBetweenDa
             throw new IllegalArgumentException("Parameter");
         }
         this.processorName="Hours Above "+inputParameters.get(0);
-        values.clear();
+        clearProcessedTextValues();
         yearlyDataValues.clear();
     }
 

@@ -19,7 +19,7 @@ public abstract class WeatherProcessor {
     /**
      *  the processed string values for the weather
      */
-    protected ArrayList<String> values=new ArrayList<>();
+    private ArrayList<String> processedTextValues =new ArrayList<>();
     /**
      * the day to start processing weather
      */
@@ -123,6 +123,7 @@ public abstract class WeatherProcessor {
      * @param date the date and time the value happened
      */
     public void processWeatherExternal(Number value, String date){
+
         if(stopProcessing){
             return;
         }
@@ -147,7 +148,7 @@ public abstract class WeatherProcessor {
      */
     public void addProcessedValue(String text){
         if(!onlyCalculateAverage) {
-            values.add(text);
+            addProcessedValue(text);
         }
     }
 
@@ -179,8 +180,8 @@ public abstract class WeatherProcessor {
      * of the processed weather values
      */
     public void calculateAverage(){}
-        public ArrayList<String> getValues() {
-        return values;
+        public ArrayList<String> getProcessedTextValues() {
+        return processedTextValues;
     }
     public int getStartDay() {
         return startDay;
@@ -242,5 +243,8 @@ public abstract class WeatherProcessor {
 
     public void stopProcessing(){
         stopProcessing=true;
+    }
+    public void clearProcessedTextValues() {
+        clearProcessedTextValues();
     }
 }
