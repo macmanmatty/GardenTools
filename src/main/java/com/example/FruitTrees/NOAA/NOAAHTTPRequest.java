@@ -1,7 +1,6 @@
 package com.example.FruitTrees.NOAA;
 
 import com.example.FruitTrees.Location.Location;
-import com.example.FruitTrees.OpenMeteo.OpenMeteoLocationResponse;
 import com.example.FruitTrees.WeatherConroller.WeatherRequest;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,7 +33,6 @@ public class NOAAHTTPRequest {
     @Value("${noaa.api.rate-limit}")
     private  int rateLimit;
     private final  RestTemplate restTemplate = new RestTemplate();
-    private  final ObjectMapper mapper = new ObjectMapper();
     private final  CacheManager cacheManager;
     private NoaaStationFinder noaaStationFinder= new NoaaStationFinder();
     @Autowired

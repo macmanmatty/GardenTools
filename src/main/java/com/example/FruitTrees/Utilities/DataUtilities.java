@@ -2,11 +2,7 @@ package com.example.FruitTrees.Utilities;
 
 import com.example.FruitTrees.NOAA.NOAAHourlyObservation;
 import com.example.FruitTrees.OpenMeteo.OpenMeteoResponse;
-
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-
 public class DataUtilities {
 
     private  DataUtilities() {

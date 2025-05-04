@@ -1,10 +1,7 @@
 package com.example.FruitTrees.WeatherProcessor;
 import com.example.FruitTrees.Location.Location;
 import com.example.FruitTrees.OpenMeteo.LocationResponse;
-import com.example.FruitTrees.Utilities.DataUtilities;
 import com.example.FruitTrees.WeatherProcessor.WeatherProcessors.WeatherProcessor;
-import com.example.FruitTrees.OpenMeteo.OpenMeteoLocationResponse;
-import com.example.FruitTrees.OpenMeteo.OpenMeteoResponse;
 import com.example.FruitTrees.OpenMeteo.LocationResponses;
 import com.example.FruitTrees.WeatherConroller.HourlyWeatherProcessRequest;
 import com.example.FruitTrees.WeatherConroller.WeatherResponse.LocationWeatherResponse;

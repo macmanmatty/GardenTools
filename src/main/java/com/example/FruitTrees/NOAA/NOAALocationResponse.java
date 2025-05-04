@@ -31,9 +31,9 @@ public class NOAALocationResponse implements LocationResponse {
     }
 
     /**
-     * get the data from he map of noaa data as a list of numbers
-     * @param type
-     * @return
+     * get the data from the map of noaa data as a list of numbers
+     * @param type the data of weather to get
+     * @return The list of numerical data
      */
     public List<? extends Number> getData(String type){
     List<NOAAWeatherRecord> records= noaaHourlyDataMap.getNoaaHourlyObservationsMap().get(type);

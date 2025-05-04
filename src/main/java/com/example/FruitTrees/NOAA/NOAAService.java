@@ -2,17 +2,14 @@ package com.example.FruitTrees.NOAA;
 
 import com.example.FruitTrees.Location.Location;
 import com.example.FruitTrees.OpenMeteo.LocationResponse;
-import com.example.FruitTrees.OpenMeteo.OpenMeteoLocationResponse;
 import com.example.FruitTrees.OpenMeteo.LocationResponses;
 import com.example.FruitTrees.OpenStreetMap.OpenStreetLocationService;
-import com.example.FruitTrees.WeatherConroller.BadRequestException;
 import com.example.FruitTrees.WeatherConroller.HourlyWeatherProcessRequest;
 import com.example.FruitTrees.WeatherConroller.RequestValidation;
 import com.example.FruitTrees.WeatherConroller.WeatherRequest;
 import com.example.FruitTrees.WeatherConroller.WeatherResponse.WeatherResponse;
 import com.example.FruitTrees.WeatherProcessor.WeatherProcessorService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
 

@@ -28,7 +28,7 @@ public class LastDateAboveValue extends DateValueProcessor {
     @Override
     public void before() {
         String mode="below";
-        if(inputParameters.size()<1){
+        if(inputParameters.isEmpty()){
             throw new IllegalArgumentException("Missing parameter");
         }
         this.lastValue = Double.parseDouble(inputParameters.get(0));

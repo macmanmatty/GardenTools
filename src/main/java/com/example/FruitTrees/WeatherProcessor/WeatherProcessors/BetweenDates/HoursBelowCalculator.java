@@ -23,7 +23,7 @@ public class HoursBelowCalculator extends ProcessWeatherBetweenDates {
     }
     @Override
     public void before() {
-        if(inputParameters.size()<1){
+        if(inputParameters.isEmpty()){
             throw new IllegalArgumentException("Missing parameter");
         }
         this.maxValue = Double.parseDouble(inputParameters.get(0));

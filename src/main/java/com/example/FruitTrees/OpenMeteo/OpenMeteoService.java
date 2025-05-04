@@ -3,7 +3,6 @@ import com.example.FruitTrees.Location.Location;
 import com.example.FruitTrees.OpenStreetMap.OpenStreetLocationService;
 import com.example.FruitTrees.WeatherConroller.RequestValidation;
 import com.example.FruitTrees.WeatherProcessor.WeatherProcessorService;
-import com.example.FruitTrees.WeatherConroller.BadRequestException;
 import com.example.FruitTrees.WeatherConroller.HourlyWeatherProcessRequest;
 import com.example.FruitTrees.WeatherConroller.WeatherRequest;
 import com.example.FruitTrees.WeatherConroller.WeatherResponse.WeatherResponse;
@@ -50,18 +49,18 @@ public class OpenMeteoService {
      * calls the open-meteo service to get the data for  each of specified location(s)
      * in the weather request one open-meteo request is required per location
      * @param weatherRequest the weather request objcet
-     * @return
+     * @return Location Response
      * @throws IOException
      */
     private LocationResponses makeRequest( LocationResponses locationResponses, WeatherRequest weatherRequest) throws IOException {
-        LocationResponses openMeteoResponses=  new LocationResponses();
+
         List<Location> locations =weatherRequest.getLocations();
         RequestValidation.locationCheck(locations);
         boolean populateLocationData= weatherRequest.isPopulateLocationData();
         for (Location location : locations) {
             try {
                 OpenMeteoLocationResponse locationResponse= openMeteoHTTPRequest.makeLocationRequest(location, weatherRequest);
-                openMeteoResponses.getLocationResponses().add(locationResponse);
+                locationResponses.getLocationResponses().add(locationResponse);
                 if(populateLocationData){
                     openStreetLocationService.populateLocationData(location);
                 }
@@ -69,7 +68,7 @@ public class OpenMeteoService {
                 throw new IOException(e);
             }
         }
-        return  openMeteoResponses;
+        return  locationResponses;
     }
 
 }
