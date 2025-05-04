@@ -34,7 +34,7 @@ public class OpenMeteoHTTPRequest {
      */
     @Cacheable(value = "openMeteoDataCache",
       key = "#location.getLatitude() + ':' + #location.getLongitude() + ':' + #weatherRequest.getHourlyDataTypes.hashCode() + ':' + #weatherRequest.getStartDate() + ':' + #weatherRequest.getEndDate()")
-    public LocationResponse makeLocationRequest(Location location, WeatherRequest weatherRequest){
+    public OpenMeteoLocationResponse makeLocationRequest(Location location, WeatherRequest weatherRequest){
         String fullUrl = openMeteoUrl + "?latitude=" + location.getLatitude() +
                 "&longitude=" + location.getLongitude() +
                 "&start_date=" + weatherRequest.getStartDate() +
@@ -46,7 +46,7 @@ public class OpenMeteoHTTPRequest {
         fullUrl = addConversionUnits(fullUrl, weatherRequest);
         Logger.getLogger("").info("full url " + fullUrl);
         ResponseEntity<OpenMeteoResponse> response = restTemplate.getForEntity(fullUrl, OpenMeteoResponse.class);
-        LocationResponse locationResponse=new LocationResponse();
+        OpenMeteoLocationResponse locationResponse=new OpenMeteoLocationResponse();
         locationResponse.setOpenMeteoResponse(response.getBody());
         locationResponse.setLocation(location);
             return locationResponse;

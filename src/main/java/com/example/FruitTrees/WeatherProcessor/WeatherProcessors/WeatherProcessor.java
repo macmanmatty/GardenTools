@@ -139,14 +139,14 @@ public abstract class WeatherProcessor {
      * @param year
      */
 
-    public void addProcessedValue(double value, int year){
-        addProcessedValue(processorName +" for "+dataType+" "+year+" from: "+ startMonth +"/"+startDay+" to "+endMonth+"/" +endDay+ ": "+ value);
+    public void addProcessedTextValue(double value, int year){
+        addProcessedTextValue(processorName +" for "+dataType+" "+year+" from: "+ startMonth +"/"+startDay+" to "+endMonth+"/" +endDay+ ": "+ value);
     }
     /**
      *
      * @param text
      */
-    public void addProcessedValue(String text){
+    public void addProcessedTextValue(String text){
         if(!onlyCalculateAverage) {
             this.processedTextValues.add(text);
         }

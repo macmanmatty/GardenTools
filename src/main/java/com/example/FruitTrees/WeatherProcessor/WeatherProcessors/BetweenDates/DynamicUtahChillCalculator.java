@@ -55,7 +55,7 @@ public class DynamicUtahChillCalculator extends ProcessWeatherBetweenDates {
         String text="Chilling Hours";
         String years= text+ "  Dynamic Utah Calculation Method ";
         yearlyValuesResponse.getValues().put(years, String.valueOf(chillHours));
-        addProcessedValue(years+" For " +year+" from: "+ startMonth +"/"+startDay+" to "+endMonth+"/" +endDay+ ": "+ chillHours);
+        addProcessedTextValue(years+" For " +year+" from: "+ startMonth +"/"+startDay+" to "+endMonth+"/" +endDay+ ": "+ chillHours);
         chillHours =0;
     }
     @Override

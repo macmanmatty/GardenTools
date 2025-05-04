@@ -37,7 +37,7 @@ public class HoursAboveMonthly extends MonthlyWeatherProcessor {
     protected void onMonthEnd(Number value, String date) {
         String text="Monthly Hours Of " +dataType+  " Above "+minValue;
         monthlyValuesResponse.getValues().put(text, String.valueOf(hours));
-           addProcessedValue(text + " For " + currentMonthName + "  " + currentYear + " : " + hours);
+           addProcessedTextValue(text + " For " + currentMonthName + "  " + currentYear + " : " + hours);
 
         monthlyValues.get(currentMonthName).add(hours);
         hours =0;

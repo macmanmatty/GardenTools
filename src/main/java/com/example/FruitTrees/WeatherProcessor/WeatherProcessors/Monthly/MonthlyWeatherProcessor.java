@@ -99,8 +99,8 @@ public abstract  class MonthlyWeatherProcessor extends WeatherProcessor {
           this.addAverageValue("Average "+processorName+" For Month "+month+" "+average);
       }
     }
-    public void addValue(double value, int year, String month){
-        addProcessedValue(processorName +" for "+dataType+" " +month+" "+year+  " : "+ value);
+    public void addProcessedTextValue(double value, int year, String month){
+        addProcessedTextValue(processorName +" for "+dataType+" " +month+" "+year+  " : "+ value);
     }
     /**
      * subclass implemented method  for

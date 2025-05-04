@@ -2,23 +2,11 @@ package com.example.FruitTrees.OpenMeteo;
 
 import com.example.FruitTrees.Location.Location;
 
-public class LocationResponse {
-  private   OpenMeteoResponse openMeteoResponse= new OpenMeteoResponse();
-  private Location location;
+import java.util.List;
 
-    public OpenMeteoResponse getOpenMeteoResponse() {
-        return openMeteoResponse;
-    }
+public interface LocationResponse {
 
-    public void setOpenMeteoResponse(OpenMeteoResponse openMeteoResponse) {
-        this.openMeteoResponse = openMeteoResponse;
-    }
-
-    public Location getLocation() {
-        return location;
-    }
-
-    public void setLocation(Location location) {
-        this.location = location;
-    }
+   List<String> getTime();
+   List<? extends Number> getData(String dataType);
+    Location getLocation();
 }

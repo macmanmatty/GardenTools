@@ -3,7 +3,7 @@ package com.example.FruitTrees.OpenMeteo;
 import java.util.ArrayList;
 import java.util.List;
 
-public class OpenMeteoLocationResponses {
+public class LocationResponses {
     /**
      * list  of responses  from the Open Meteo API for given locations
      */

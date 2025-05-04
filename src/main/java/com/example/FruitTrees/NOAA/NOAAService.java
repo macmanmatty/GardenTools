@@ -1,45 +1,47 @@
-package com.example.FruitTrees.OpenMeteo;
+package com.example.FruitTrees.NOAA;
+
 import com.example.FruitTrees.Location.Location;
+import com.example.FruitTrees.OpenMeteo.LocationResponse;
+import com.example.FruitTrees.OpenMeteo.OpenMeteoLocationResponse;
+import com.example.FruitTrees.OpenMeteo.LocationResponses;
 import com.example.FruitTrees.OpenStreetMap.OpenStreetLocationService;
-import com.example.FruitTrees.WeatherConroller.RequestValidation;
-import com.example.FruitTrees.WeatherProcessor.WeatherProcessorService;
 import com.example.FruitTrees.WeatherConroller.BadRequestException;
 import com.example.FruitTrees.WeatherConroller.HourlyWeatherProcessRequest;
+import com.example.FruitTrees.WeatherConroller.RequestValidation;
 import com.example.FruitTrees.WeatherConroller.WeatherRequest;
 import com.example.FruitTrees.WeatherConroller.WeatherResponse.WeatherResponse;
+import com.example.FruitTrees.WeatherProcessor.WeatherProcessorService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
+
 import java.io.IOException;
 import java.util.List;
 @Service
-public class OpenMeteoService {
-   private final  OpenMeteoHTTPRequest openMeteoHTTPRequest;
+public class NOAAService {
+   private final NOAAHTTPRequest noaahttpRequest;
    private  final WeatherProcessorService weatherProcessorService;
    private final OpenStreetLocationService openStreetLocationService;
-    @Value("${enable.Multiple.Location.Processing}")
-    private  boolean processMultipleLocationRequestsEnabled;
-    @Value("${max.Multiple.OpenMeteo.Requests}")
-    private  int maxMultipleOpenMeteoRequests;
+
    @Autowired
-    public OpenMeteoService(OpenMeteoHTTPRequest openMeteoHTTPRequest, WeatherProcessorService weatherProcessorService,
-   OpenStreetLocationService openStreetLocationService) {
-        this.openMeteoHTTPRequest = openMeteoHTTPRequest;
+    public NOAAService( NOAAHTTPRequest noaahttpRequest, WeatherProcessorService weatherProcessorService,
+                       OpenStreetLocationService openStreetLocationService) {
+        this.noaahttpRequest = noaahttpRequest;
         this.weatherProcessorService = weatherProcessorService;
         this.openStreetLocationService=openStreetLocationService;
     }
-    public WeatherResponse getData( LocationResponses locationResponses, WeatherRequest weatherRequest ) throws IOException {
+    public WeatherResponse getData(LocationResponses locationResponses, WeatherRequest weatherRequest ) throws IOException, InterruptedException {
         extractHourlyDataTypes(weatherRequest);
-        LocationResponses openMeteoResponses=makeRequest(locationResponses, weatherRequest);
-        WeatherResponse  response= weatherProcessorService.processHourlyData( weatherRequest, openMeteoResponses);
+        LocationResponses noaaRespnses=makeRequest(locationResponses, weatherRequest);
+        WeatherResponse  response= weatherProcessorService.processHourlyData( weatherRequest, noaaRespnses);
         return  response;
     }
     /**
      * extracts the   hourly  data types  from the HourlyWeatherProcessRequest objects
      * @param weatherRequest
      */
-    private void extractHourlyDataTypes(WeatherRequest weatherRequest) {
+    private void extractHourlyDataTypes( WeatherRequest weatherRequest) {
         List<HourlyWeatherProcessRequest> hourlyWeatherProcessRequests=weatherRequest.getHourlyWeatherProcessRequests();
         weatherRequest.getHourlyDataTypes().clear();
         for(HourlyWeatherProcessRequest hourlyWeatherProcessRequest:hourlyWeatherProcessRequests){
@@ -53,15 +55,14 @@ public class OpenMeteoService {
      * @return
      * @throws IOException
      */
-    private LocationResponses makeRequest( LocationResponses locationResponses, WeatherRequest weatherRequest) throws IOException {
-        LocationResponses openMeteoResponses=  new LocationResponses();
+    private LocationResponses makeRequest( LocationResponses locationResponses, WeatherRequest weatherRequest) throws IOException, InterruptedException {
         List<Location> locations =weatherRequest.getLocations();
         RequestValidation.locationCheck(locations);
         boolean populateLocationData= weatherRequest.isPopulateLocationData();
         for (Location location : locations) {
             try {
-                OpenMeteoLocationResponse locationResponse= openMeteoHTTPRequest.makeLocationRequest(location, weatherRequest);
-                openMeteoResponses.getLocationResponses().add(locationResponse);
+                LocationResponse locationResponse= noaahttpRequest.makeLocationRequest(  location, weatherRequest);
+               locationResponses.getLocationResponses().add(locationResponse);
                 if(populateLocationData){
                     openStreetLocationService.populateLocationData(location);
                 }
@@ -69,7 +70,7 @@ public class OpenMeteoService {
                 throw new IOException(e);
             }
         }
-        return  openMeteoResponses;
+        return  locationResponses;
     }
 
 }

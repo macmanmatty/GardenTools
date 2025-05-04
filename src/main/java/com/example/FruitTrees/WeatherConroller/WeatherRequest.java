@@ -77,7 +77,6 @@ public class WeatherRequest {
 
 
 
-
     public List<Location> locations = new ArrayList<>();
 
     public Set<String> getHourlyDataTypes() {
@@ -202,5 +201,7 @@ public class WeatherRequest {
     public void setOutputFileType(String outputFileType) {
         this.outputFileType = outputFileType;
     }
+
+
 }
 
