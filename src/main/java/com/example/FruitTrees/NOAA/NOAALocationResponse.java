@@ -7,9 +7,18 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class NOAALocationResponse implements LocationResponse {
+    /**
+     * the map of NOAA weather  data
+     * key= weather type temperature, precipitation tec.
+     * value = list of hourly numeric values
+     */
   private NOAAHourlyDataMap noaaHourlyDataMap = new NOAAHourlyDataMap();
+    /**
+     * the location object
+     */
   private Location location;
-    public Location getLocation() {
+  private final String DATA_SOURCE="NOAA";
+  public Location getLocation() {
         return location;
     }
 
@@ -44,6 +53,8 @@ public class NOAALocationResponse implements LocationResponse {
                     .collect(Collectors.toList());
             return data;
     }
-
-
+    @Override
+    public String getDataSource() {
+        return DATA_SOURCE;
+    }
 }

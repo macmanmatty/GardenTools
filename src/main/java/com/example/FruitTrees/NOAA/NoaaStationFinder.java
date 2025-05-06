@@ -2,14 +2,17 @@ package com.example.FruitTrees.NOAA;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
+import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import java.util.logging.Logger;
+@Component
 public class NoaaStationFinder {
 
-        @Value("${noaa.station-url}")
-        String  noaaStationUrl;
+        @Value("${noaa.station.url}")
+     private   String  noaaStationUrl;
     @Value("${noaa.api.key}")
     private  String noaaApiKey;
         private final RestTemplate restTemplate = new RestTemplate();
@@ -21,10 +24,10 @@ public class NoaaStationFinder {
         public String findNearestStation(String latitude, String longitude) {
             try {
                 String url = String.format(
-                        "%s?limit=1&sortfield=distance&sortorder=asc&latitude=%f&longitude=%f",
+                        "%s?limit=1&latitude=%s&longitude=%s",
                         noaaStationUrl, latitude, longitude
                 );
-
+                Logger.getLogger("").info("noaa url " + url);
                 HttpHeaders headers = new HttpHeaders();
                 headers.set("token", noaaApiKey);
                 HttpEntity<String> entity = new HttpEntity<>(headers);

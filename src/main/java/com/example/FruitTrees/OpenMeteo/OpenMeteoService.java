@@ -17,16 +17,14 @@ public class OpenMeteoService {
    private final  OpenMeteoHTTPRequest openMeteoHTTPRequest;
    private  final WeatherProcessorService weatherProcessorService;
    private final OpenStreetLocationService openStreetLocationService;
-    @Value("${enable.Multiple.Location.Processing}")
-    private  boolean processMultipleLocationRequestsEnabled;
-    @Value("${max.Multiple.OpenMeteo.Requests}")
-    private  int maxMultipleOpenMeteoRequests;
-   @Autowired
+    private final RequestValidation requestValidation;
+    @Autowired
     public OpenMeteoService(OpenMeteoHTTPRequest openMeteoHTTPRequest, WeatherProcessorService weatherProcessorService,
-   OpenStreetLocationService openStreetLocationService) {
+   OpenStreetLocationService openStreetLocationService, RequestValidation requestValidation) {
         this.openMeteoHTTPRequest = openMeteoHTTPRequest;
         this.weatherProcessorService = weatherProcessorService;
         this.openStreetLocationService=openStreetLocationService;
+        this.requestValidation = requestValidation;
     }
     public WeatherResponse getData( LocationResponses locationResponses, WeatherRequest weatherRequest ) throws IOException {
         extractHourlyDataTypes(weatherRequest);
@@ -55,7 +53,7 @@ public class OpenMeteoService {
     private LocationResponses makeRequest( LocationResponses locationResponses, WeatherRequest weatherRequest) throws IOException {
 
         List<Location> locations =weatherRequest.getLocations();
-        RequestValidation.locationCheck(locations);
+        requestValidation.locationCheck(locations);
         boolean populateLocationData= weatherRequest.isPopulateLocationData();
         for (Location location : locations) {
             try {

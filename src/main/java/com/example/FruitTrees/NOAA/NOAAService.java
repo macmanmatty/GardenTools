@@ -20,13 +20,14 @@ public class NOAAService {
    private final NOAAHTTPRequest noaahttpRequest;
    private  final WeatherProcessorService weatherProcessorService;
    private final OpenStreetLocationService openStreetLocationService;
-
+    private final RequestValidation requestValidation;
    @Autowired
     public NOAAService( NOAAHTTPRequest noaahttpRequest, WeatherProcessorService weatherProcessorService,
-                       OpenStreetLocationService openStreetLocationService) {
+                       OpenStreetLocationService openStreetLocationService, RequestValidation requestValidation) {
         this.noaahttpRequest = noaahttpRequest;
         this.weatherProcessorService = weatherProcessorService;
         this.openStreetLocationService=openStreetLocationService;
+        this.requestValidation = requestValidation;
     }
     public WeatherResponse getData(LocationResponses locationResponses, WeatherRequest weatherRequest ) throws IOException, InterruptedException {
         extractHourlyDataTypes(weatherRequest);
@@ -54,7 +55,7 @@ public class NOAAService {
      */
     private LocationResponses makeRequest( LocationResponses locationResponses, WeatherRequest weatherRequest) throws IOException, InterruptedException {
         List<Location> locations =weatherRequest.getLocations();
-        RequestValidation.locationCheck(locations);
+        requestValidation.locationCheck(locations);
         boolean populateLocationData= weatherRequest.isPopulateLocationData();
         for (Location location : locations) {
             try {

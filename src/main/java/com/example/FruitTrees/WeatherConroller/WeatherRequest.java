@@ -75,6 +75,9 @@ public class WeatherRequest {
      */
     private String outputFileType;
 
+    private boolean useNOAA;
+
+
 
 
     public List<Location> locations = new ArrayList<>();
@@ -202,6 +205,12 @@ public class WeatherRequest {
         this.outputFileType = outputFileType;
     }
 
+    public boolean isUseNOAA() {
+        return useNOAA;
+    }
 
+    public void setUseNOAA(boolean useNOAA) {
+        this.useNOAA = useNOAA;
+    }
 }
 

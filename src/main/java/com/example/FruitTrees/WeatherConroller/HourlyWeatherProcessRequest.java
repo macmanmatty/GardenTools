@@ -54,6 +54,10 @@ public class HourlyWeatherProcessRequest {
      */
     private int roundTo;
 
+    /**
+     * the datasource mode to use
+     */
+    private String dataSourceMode="default";
 
     public String getHourlyDataType() {
         return hourlyDataType;
@@ -137,5 +141,13 @@ public class HourlyWeatherProcessRequest {
     public void setOnlyCalculateAverage(boolean onlyCalculateAverage) {
         this.onlyCalculateAverage = onlyCalculateAverage;
         this.calculateAverage=onlyCalculateAverage;
+    }
+
+    public String getDataSourceMode() {
+        return dataSourceMode;
+    }
+
+    public void setDataSourceMode(String dataSourceMode) {
+        this.dataSourceMode = dataSourceMode;
     }
 }
