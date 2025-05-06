@@ -38,7 +38,7 @@ public class HoursBetweenMonthly extends MonthlyWeatherProcessor {
         String text="Monthly Hours Of " +dataType+  " Between "+minValue+ " And " + maxValue;
         super.processorName="Hours Above Monthly "+inputParameters.get(0);
         monthlyValuesResponse.getValues().put(text, String.valueOf(hours));
-            addProcessedValue(text + " For " + currentMonthName + " " + currentYear + " : " + hours);
+            addProcessedTextValue(text + " For " + currentMonthName + " " + currentYear + " : " + hours);
 
         monthlyValues.get(currentMonthName).add(hours);
         hours =0;

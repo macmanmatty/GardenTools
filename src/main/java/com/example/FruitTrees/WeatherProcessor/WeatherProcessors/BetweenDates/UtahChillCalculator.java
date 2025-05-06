@@ -4,8 +4,6 @@ import com.example.FruitTrees.Utilities.DateUtilities;
 import com.example.FruitTrees.WeatherConroller.WeatherResponse.YearlyValuesResponse;
 import org.springframework.stereotype.Component;
 
-import java.time.LocalDateTime;
-
 /**
  *  A weather processor that calculates the total amount of
  *  counting chilling hours (temperature ) for deciduous fruit trees
@@ -29,7 +27,7 @@ public class UtahChillCalculator extends ProcessWeatherBetweenDates {
         String text="Chilling Hours";
         String years= text+ " Utah Calculation Method ";
         yearlyValuesResponse.getValues().put(years, String.valueOf(chillHours));
-        addProcessedValue(years+" For " +year+" from: "+ startMonth +"/"+startDay+" to "+endMonth+"/" +endDay+ ": "+ chillHours);
+        addProcessedTextValue(years+" For " +year+" from: "+ startMonth +"/"+startDay+" to "+endMonth+"/" +endDay+ ": "+ chillHours);
         chillHours =0;
     }
     @Override

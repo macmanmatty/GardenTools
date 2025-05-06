@@ -23,7 +23,7 @@ public class HoursBelowCalculator extends ProcessWeatherBetweenDates {
     }
     @Override
     public void before() {
-        if(inputParameters.size()<1){
+        if(inputParameters.isEmpty()){
             throw new IllegalArgumentException("Missing parameter");
         }
         this.maxValue = Double.parseDouble(inputParameters.get(0));
@@ -40,7 +40,7 @@ public class HoursBelowCalculator extends ProcessWeatherBetweenDates {
         YearlyValuesResponse yearlyValuesResponse = locationWeatherResponse.getYearlyValues(String.valueOf(year));
         String text="Hours Of " +dataType+  " Below "+maxValue;
         yearlyValuesResponse.getValues().put(text, String.valueOf(hours));
-        addProcessedValue(text+ year+" from: "+ startMonth +"/"+startDay+" to "+endMonth+"/" +endDay+ ": "+ hours);
+        addProcessedTextValue(text+ year+" from: "+ startMonth +"/"+startDay+" to "+endMonth+"/" +endDay+ ": "+ hours);
         hours =0;
     }
     @Override

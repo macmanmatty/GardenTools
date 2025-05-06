@@ -47,7 +47,7 @@ public class FirstDateAboveValue extends DateValueProcessor {
             YearlyValuesResponse yearlyValuesResponse = locationWeatherResponse.getYearlyValues(String.valueOf(year));
             String text = "First instance of " + dataType + " Above " + firstValue;
             yearlyValuesResponse.getValues().put(text, localDate.toString());
-            addProcessedValue(text + year + " from: " + startMonth + "/" + startDay + " to " + endMonth + "/" + endDay + " was on  " + localDateTime.toLocalDate().toString() + " at " + localDateTime.getHour());
+            addProcessedTextValue(text + year + " from: " + startMonth + "/" + startDay + " to " + endMonth + "/" + endDay + " was on  " + localDateTime.toLocalDate().toString() + " at " + localDateTime.getHour());
             this.date = null;
         }
         else{
@@ -55,7 +55,7 @@ public class FirstDateAboveValue extends DateValueProcessor {
             String text = "First instance of " + dataType + " Above " + firstValue;
             YearlyValuesResponse yearlyValuesResponse = locationWeatherResponse.getYearlyValues(String.valueOf(year));
             yearlyValuesResponse.getValues().put(text, "value never reached");
-            addProcessedValue(text + year + " from: " + startMonth + "/" + startDay + " to " + endMonth + "/" + endDay + " was never reached ");
+            addProcessedTextValue(text + year + " from: " + startMonth + "/" + startDay + " to " + endMonth + "/" + endDay + " was never reached ");
 
         }
 

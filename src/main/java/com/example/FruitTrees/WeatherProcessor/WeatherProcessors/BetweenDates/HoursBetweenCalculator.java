@@ -46,7 +46,7 @@ public class HoursBetweenCalculator extends ProcessWeatherBetweenDates {
         String text="Chilling Hours";
         String years= text+ " Above "+minTemp+" And Below "+maxTemp;
         yearlyValuesResponse.getValues().put(years, String.valueOf(chillHours));
-        addProcessedValue(years+" For " +year+" from: "+ startMonth +"/"+startDay+" to "+endMonth+"/" +endDay+ ": "+ chillHours);
+        addProcessedTextValue(years+" For " +year+" from: "+ startMonth +"/"+startDay+" to "+endMonth+"/" +endDay+ ": "+ chillHours);
         chillHours =0;
     }
 

@@ -23,7 +23,7 @@ public class FirstDateBelowValue extends DateValueProcessor {
     }
     @Override
     public void before() {
-        if(inputParameters.size()<1){
+        if(inputParameters.isEmpty()){
             throw new IllegalArgumentException("Missing parameter");
         }
         this.firstValue = Double.parseDouble(inputParameters.get(0));
@@ -44,7 +44,7 @@ public class FirstDateBelowValue extends DateValueProcessor {
             YearlyValuesResponse yearlyValuesResponse = locationWeatherResponse.getYearlyValues(String.valueOf(year));
             String text = "First instance of " + dataType + " Below " + firstValue;
             yearlyValuesResponse.getValues().put(text, localDate.toString());
-            addProcessedValue(text + year + " from: " + startMonth + "/" + startDay + " to " + endMonth + "/" + endDay + " was on  " + localDateTime.toLocalDate().toString() + " at " + localDateTime.getHour());
+            addProcessedTextValue(text + year + " from: " + startMonth + "/" + startDay + " to " + endMonth + "/" + endDay + " was on  " + localDateTime.toLocalDate().toString() + " at " + localDateTime.getHour());
             this.date = null;
         }
         else{
@@ -52,7 +52,7 @@ public class FirstDateBelowValue extends DateValueProcessor {
             String text = "First instance of " + dataType + " Below " + firstValue;
             YearlyValuesResponse yearlyValuesResponse = locationWeatherResponse.getYearlyValues(String.valueOf(year));
             yearlyValuesResponse.getValues().put(text, "value never reached");
-            addProcessedValue(text + year + " from: " + startMonth + "/" + startDay + " to " + endMonth + "/" + endDay + " was never reached ");
+            addProcessedTextValue(text + year + " from: " + startMonth + "/" + startDay + " to " + endMonth + "/" + endDay + " was never reached ");
 
         }
     }

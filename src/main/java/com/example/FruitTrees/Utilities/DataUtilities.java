@@ -1,11 +1,8 @@
 package com.example.FruitTrees.Utilities;
 
+import com.example.FruitTrees.NOAA.NOAAHourlyObservation;
 import com.example.FruitTrees.OpenMeteo.OpenMeteoResponse;
-
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-
 public class DataUtilities {
 
     private  DataUtilities() {
@@ -47,6 +44,27 @@ public class DataUtilities {
             case "soil_moisture_100_to_255cm" -> data.soil_moisture_100_to_255cm;
             case "soil_temperature_100_to_255cm" -> data.soil_temperature_100_to_255cm;
             default -> throw new IllegalArgumentException("Invalid field name: " + fieldName);
+        };
+    }
+
+    public static Number getMappedNoaaField( NOAAHourlyObservation data, String openMeteoField) {
+        return switch (openMeteoField) {
+            case "temperature_2m" -> data.temperature;
+            case "dew_point_2m" -> data.dewPoint;
+            case "relative_humidity_2m" -> data.humidity;
+            case "wind_speed_10m" -> data.windSpeed;
+            case "wind_direction_10m" -> data.windDirection;
+            case "wind_gusts_10m" -> data.windGust;
+            case "pressure_msl", "surface_pressure" -> data.pressure;
+            case "precipitation", "rain" -> data.precipitation;
+            case "snow_depth" -> data.snowDepth;
+            case "cloud_cover", "cloud_cover_low", "cloud_cover_mid", "cloud_cover_high" -> {
+                throw new IllegalArgumentException("cloudCover is a String, not Number.");
+            }
+            case "weather_code" -> {
+                throw new IllegalArgumentException("weatherType is a String, not Number.");
+            }
+            default -> throw new IllegalArgumentException("Unmapped Open-Meteo field: " + openMeteoField);
         };
     }
 

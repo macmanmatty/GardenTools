@@ -1,10 +1,8 @@
 package com.example.FruitTrees.WeatherProcessor;
 import com.example.FruitTrees.Location.Location;
-import com.example.FruitTrees.Utilities.DataUtilities;
-import com.example.FruitTrees.WeatherProcessor.WeatherProcessors.WeatherProcessor;
 import com.example.FruitTrees.OpenMeteo.LocationResponse;
-import com.example.FruitTrees.OpenMeteo.OpenMeteoResponse;
-import com.example.FruitTrees.OpenMeteo.OpenMeteoLocationResponses;
+import com.example.FruitTrees.WeatherProcessor.WeatherProcessors.WeatherProcessor;
+import com.example.FruitTrees.OpenMeteo.LocationResponses;
 import com.example.FruitTrees.WeatherConroller.HourlyWeatherProcessRequest;
 import com.example.FruitTrees.WeatherConroller.WeatherResponse.LocationWeatherResponse;
 import com.example.FruitTrees.WeatherConroller.WeatherRequest;
@@ -31,7 +29,7 @@ public class WeatherProcessorService {
      *  in the WeatherRequest Object
      * @return WeatherResponse object containing all of the processed data from the processors
      */
-    public WeatherResponse processHourlyData( WeatherRequest weatherRequest, OpenMeteoLocationResponses openMeteoResponses){
+    public WeatherResponse processHourlyData( WeatherRequest weatherRequest, LocationResponses openMeteoResponses){
         List<LocationResponse> locationResponses=openMeteoResponses.getLocationResponses();
         WeatherResponse weatherResponse = new WeatherResponse();
         for(LocationResponse locationResponse: locationResponses) {
@@ -47,7 +45,7 @@ public class WeatherProcessorService {
      * @param weatherResponse  The WeatherResponse object to add all of  processed data from the processors to
      * @return WeatherResponse object containing all the processed data from the processors
      */
- private WeatherResponse   processLocationData(LocationResponse locationResponse, WeatherRequest weatherRequest,  WeatherResponse weatherResponse){
+ private WeatherResponse   processLocationData(LocationResponse locationResponse, WeatherRequest weatherRequest, WeatherResponse weatherResponse){
      Location location =locationResponse.getLocation();
     LocationWeatherResponse locationWeatherResponse= new LocationWeatherResponse();
      locationWeatherResponse.setLocation(location);
@@ -55,15 +53,11 @@ public class WeatherProcessorService {
      weatherResponse.getLocationWeatherResponses().put(name,locationWeatherResponse);
      String text="Values For Location: "+ location.getName();
      locationWeatherResponse.getLocationResponses().add(text);
-     OpenMeteoResponse openMeteoResponse=locationResponse.getOpenMeteoResponse();
      List<HourlyWeatherProcessRequest> hourlyWeatherProcessRequests = weatherRequest.getHourlyWeatherProcessRequests();
-     List<String> time = openMeteoResponse.hourly.time;
+     List<String> time = locationResponse.getTime();
      for (HourlyWeatherProcessRequest hourlyWeatherProcessRequest : hourlyWeatherProcessRequests) {
-
              WeatherProcessor weatherProcessor = applicationContext.getBean(hourlyWeatherProcessRequest.getProcessorName(), WeatherProcessor.class);
-             processHourlyWeather( time, weatherProcessor,hourlyWeatherProcessRequest,  openMeteoResponse, locationWeatherResponse);
-
-
+             processHourlyWeather( time, weatherProcessor,hourlyWeatherProcessRequest,  locationResponse, locationWeatherResponse);
      }
         return weatherResponse;
  }
@@ -71,12 +65,11 @@ public class WeatherProcessorService {
      *
      * @param weatherProcessor
      * @param hourlyWeatherProcessRequest
-     * @param openMeteoResponse
      * @param locationWeatherResponse
      * @param openMeteoDateAndTime
      */
 public void processHourlyWeather( List<String> openMeteoDateAndTime,  WeatherProcessor weatherProcessor, HourlyWeatherProcessRequest hourlyWeatherProcessRequest,
-                                 OpenMeteoResponse openMeteoResponse,
+                                 LocationResponse locationResponse,
                                   LocationWeatherResponse locationWeatherResponse){
      weatherProcessor.setStartMonthDay(hourlyWeatherProcessRequest.getStartProcessMonth(), hourlyWeatherProcessRequest.getStartProcessDay());
      weatherProcessor.setEndMonthDay(hourlyWeatherProcessRequest.getEndProcessMonth(), hourlyWeatherProcessRequest.getEndProcessDay());
@@ -84,7 +77,7 @@ public void processHourlyWeather( List<String> openMeteoDateAndTime,  WeatherPro
      weatherProcessor.setDataType(hourlyWeatherProcessRequest.getHourlyDataType());
      weatherProcessor.setLocationWeatherResponse(locationWeatherResponse);
      weatherProcessor.setOnlyCalculateAverage(hourlyWeatherProcessRequest.isOnlyCalculateAverage() && hourlyWeatherProcessRequest.isCalculateAverage());
-     List<? extends Number> data = DataUtilities.getHourlyData(openMeteoResponse, hourlyWeatherProcessRequest.getHourlyDataType());
+     List<? extends Number> data = locationResponse.getData(hourlyWeatherProcessRequest.getHourlyDataType());
      int size = data.size();
      weatherProcessor.before();
      for (int count = 0; count < size; count++) {

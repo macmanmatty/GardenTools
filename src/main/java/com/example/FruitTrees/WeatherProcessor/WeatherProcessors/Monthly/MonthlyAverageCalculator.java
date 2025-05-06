@@ -14,6 +14,8 @@ public class MonthlyAverageCalculator extends MonthlyWeatherProcessor {
     @Override
     public void before() {
         super.before();
+        processorName = "Monthly Average For "+dataType;
+
     }
    
     @Override
@@ -21,7 +23,7 @@ public class MonthlyAverageCalculator extends MonthlyWeatherProcessor {
         monthlyValuesResponse.getValues().put(processorName +" For "+dataType, String.valueOf(finalValue));
         LocalDateTime localDateTime=LocalDateTime.parse(date);
         finalValue=(finalValue/hours);
-        addValue(finalValue, localDateTime.getYear(), localDateTime.getMonth().name());
+        addProcessedTextValue(finalValue, localDateTime.getYear(), localDateTime.getMonth().name());
         monthlyValues.get(currentMonthName).add(finalValue);
         finalValue =0;
         hours=0;
