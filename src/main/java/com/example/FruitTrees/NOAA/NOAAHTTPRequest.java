@@ -1,7 +1,10 @@
 package com.example.FruitTrees.NOAA;
 
 import com.example.FruitTrees.Location.Location;
+import com.example.FruitTrees.Utilities.DataUtilities;
+import com.example.FruitTrees.WeatherConroller.HourlyWeatherProcessRequest;
 import com.example.FruitTrees.WeatherConroller.WeatherRequest;
+import com.example.FruitTrees.WeatherProcessor.WeatherProcessors.WeatherProcessor;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.ILoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,16 +55,14 @@ public class NOAAHTTPRequest {
      */
     @Cacheable(value = "openMeteoDataCache",
      key = "#location.getLatitude() + ':' + #location.getLongitude() + ':' + #weatherRequest.getHourlyDataTypes.hashCode() + ':' + #weatherRequest.getStartDate() + ':' + #weatherRequest.getEndDate()")
-    public NOAALocationResponse makeLocationRequest (Location location, WeatherRequest weatherRequest) throws InterruptedException {
-       NOAALocationResponse locationResponse = new NOAALocationResponse();
-        NOAAResponse noaaResponse = new NOAAResponse();
+    public NOAAHourlyDataMap makeLocationRequest (Location location, WeatherRequest weatherRequest,  HourlyWeatherProcessRequest hourlyWeatherProcessRequest) throws InterruptedException {
         List<NOAAWeatherRecord> allData = new ArrayList<>();
         int offset = 1;
         boolean moreData = true;
         int pageSize=1000;
         String stationId= location.getStationId();
         if(stationId==null || stationId.isEmpty()){
-            stationId=noaaStationFinder.findNearestStation(location.getLatitude(), location.getLongitude());
+            stationId=noaaStationFinder.findNearestStation(location.getLatitude(), location.getLongitude(),weatherRequest.getStartDate(), weatherRequest.getEndDate(),  hourlyWeatherProcessRequest.getHourlyDataType());
         }
 
         while (moreData) {
@@ -74,7 +75,7 @@ public class NOAAHTTPRequest {
                     + "&offset=" + offset;
           Set<String> dataTypes=weatherRequest.getHourlyDataTypes();
             for (String datatype : dataTypes) {
-                url += "&datatypeid=" + datatype;
+                url += "&datatypeid=" + DataUtilities.toNOAADatatype(datatype);
 
             }
             Logger.getLogger("").info("noaa url " + url);
@@ -90,6 +91,7 @@ public class NOAAHTTPRequest {
                     entity,
                     NOAAResponse.class
             );
+            Logger.getLogger("").info("response " + response);
 
             List<NOAAWeatherRecord> results = Objects.requireNonNull(response.getBody()).getNoaaHourlyObservations();
             if (results == null || results.isEmpty()) {
@@ -107,8 +109,8 @@ public class NOAAHTTPRequest {
         }
        NOAAHourlyDataMap noaaHourlyDataMap= new NOAAHourlyDataMap();
         noaaHourlyDataMap.addRecords(allData);
-        locationResponse.setNoaaHourlyDataMap(noaaHourlyDataMap);
-        return locationResponse;
+
+        return noaaHourlyDataMap;
     }
     
 

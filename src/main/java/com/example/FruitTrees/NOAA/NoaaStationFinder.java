@@ -1,4 +1,5 @@
 package com.example.FruitTrees.NOAA;
+import com.example.FruitTrees.WeatherConroller.WeatherRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
@@ -21,11 +22,12 @@ public class NoaaStationFinder {
         /**
          * Find the nearest NOAA station to a given latitude and longitude
          */
-        public String findNearestStation(String latitude, String longitude) {
+        public String findNearestStation (String latitude,  String longitude,  String startDate, String endDate, String dataType) {
+
             try {
                 String url = String.format(
-                        "%s?limit=1&latitude=%s&longitude=%s",
-                        noaaStationUrl, latitude, longitude
+                        "%s?limit=1&latitude=%s&longitude=%s&datatypeid=%s&startdate=%s&enddate=%s",
+                        noaaStationUrl, latitude, longitude, dataType, startDate, endDate
                 );
                 Logger.getLogger("").info("noaa url " + url);
                 HttpHeaders headers = new HttpHeaders();

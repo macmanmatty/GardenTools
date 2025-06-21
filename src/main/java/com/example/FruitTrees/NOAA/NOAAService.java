@@ -9,12 +9,15 @@ import com.example.FruitTrees.WeatherConroller.RequestValidation;
 import com.example.FruitTrees.WeatherConroller.WeatherRequest;
 import com.example.FruitTrees.WeatherConroller.WeatherResponse.WeatherResponse;
 import com.example.FruitTrees.WeatherProcessor.WeatherProcessorService;
+import com.example.FruitTrees.WeatherProcessor.WeatherProcessors.WeatherProcessor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.logging.Logger;
+
 @Service
 public class NOAAService {
    private final NOAAHTTPRequest noaahttpRequest;
@@ -57,14 +60,21 @@ public class NOAAService {
         List<Location> locations =weatherRequest.getLocations();
         requestValidation.locationCheck(locations);
         boolean populateLocationData= weatherRequest.isPopulateLocationData();
+        NOAALocationResponse noaaLocationResponse= new NOAALocationResponse();
         for (Location location : locations) {
             try {
-                LocationResponse locationResponse= noaahttpRequest.makeLocationRequest(  location, weatherRequest);
-               locationResponses.getLocationResponses().add(locationResponse);
-                if(populateLocationData){
-                    openStreetLocationService.populateLocationData(location);
+                for(HourlyWeatherProcessRequest weatherProcessor: weatherRequest.hourlyWeatherProcessRequests) {
+                    NOAAHourlyDataMap noaaHourlyDataMap = noaahttpRequest.makeLocationRequest(location, weatherRequest, weatherProcessor);
+                    noaaLocationResponse.getNoaaHourlyDataMap().getNoaaHourlyObservationsMap().putAll(noaaHourlyDataMap.getNoaaHourlyObservationsMap());
                 }
+                    if (populateLocationData) {
+                        openStreetLocationService.populateLocationData(location);
+                    }
+                locationResponses.getLocationResponses().add(noaaLocationResponse);
+
             } catch (RestClientException e) {
+                Logger.getLogger("").info(e.toString());
+
                 throw new IOException(e);
             }
         }

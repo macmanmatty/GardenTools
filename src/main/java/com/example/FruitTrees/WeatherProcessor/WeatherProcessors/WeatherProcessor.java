@@ -90,6 +90,11 @@ public abstract class WeatherProcessor {
      */
     protected  boolean onlyCalculateAverage;
 
+    /**
+     * station Id used for NOAA processing
+     *
+     */
+        String stationId;
 
     public WeatherProcessor(String processorName) {
         this.processorName = processorName;
@@ -250,4 +255,14 @@ public abstract class WeatherProcessor {
     public void clearProcessedTextValues() {
         processedTextValues.clear();
     }
+
+    public String getStationId() {
+        return stationId;
+    }
+
+    public void setStationId(String stationId) {
+        this.stationId = stationId;
+    }
+
+
 }

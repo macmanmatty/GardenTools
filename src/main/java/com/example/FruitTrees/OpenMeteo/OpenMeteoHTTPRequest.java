@@ -1,5 +1,6 @@
 package com.example.FruitTrees.OpenMeteo;
 import com.example.FruitTrees.Location.Location;
+import com.example.FruitTrees.Utilities.DataUtilities;
 import com.example.FruitTrees.WeatherConroller.WeatherRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -41,7 +42,7 @@ public class OpenMeteoHTTPRequest {
                 "&end_date=" + weatherRequest.getEndDate();
         Set<String> hourlyDataTypes = weatherRequest.getHourlyDataTypes();
         for (String dataType : hourlyDataTypes) {
-            fullUrl = fullUrl + "&hourly=" + dataType;
+            fullUrl = fullUrl + "&hourly=" + DataUtilities.toOpenMeteoDatatype(dataType);
         }
         fullUrl = addConversionUnits(fullUrl, weatherRequest);
         Logger.getLogger("").info("full url " + fullUrl);

@@ -1,4 +1,5 @@
-package com.example.FruitTrees.WeatherProcessor.WeatherProcessors.Monthly;
+package com.example.FruitTrees.WeatherProcessor.WeatherProcessors.MonthlyAndDaily;
+import com.example.FruitTrees.WeatherProcessor.WeatherProcessors.DateRecord;
 import com.example.FruitTrees.WeatherProcessor.WeatherProcessors.DateType;
 import com.example.FruitTrees.WeatherProcessor.WeatherProcessors.WeatherProcessor;
 import java.time.LocalDateTime;
@@ -7,12 +8,12 @@ import java.util.*;
  *  base class for weather data processor that processes yearly from 1/1 to 12/31 and   monthly weather
  * from 1/1 to 12/31.
  */
-public abstract  class MonthlyWeatherProcessor extends WeatherProcessor {
+public abstract  class DailyAndMonthlyWeatherProcessor extends WeatherProcessor {
     /**
      *  this is true if  the weather falls between the given dates
      *  and the weather data is currently processing
      */
-    public MonthlyWeatherProcessor(String name) {
+    public DailyAndMonthlyWeatherProcessor(String name) {
         super(name);
     }
     /**
@@ -36,9 +37,9 @@ public abstract  class MonthlyWeatherProcessor extends WeatherProcessor {
      * key= string month name
      * value=  yearly data for month for the processed weather data
      */
-    Map<String, List<Double>> monthlyValues=new HashMap<>();
+    protected Map<String, List<Double>> monthlyValues=new HashMap<>();
 
-    protected MonthlyWeatherProcessor() {
+    protected DailyAndMonthlyWeatherProcessor() {
     }
 
     @Override
@@ -67,7 +68,20 @@ public abstract  class MonthlyWeatherProcessor extends WeatherProcessor {
      */
     @Override
     public void processWeather(Number value, String date) {
-       switch( checkDate(date)){
+        processWeatherBetween(value, date);
+        DateRecord dateRecord=analyzeDate(date);
+        switch (dateRecord.hourType()){
+            case START_DAY -> {
+                onStartDay(value, date);
+                break;
+
+            }
+            case END_DAY -> {
+                onEndDay(value, date);
+            }
+
+        }
+       switch( dateRecord.dayType()){
            case NEW_YEARS_EVE -> {
                onEndYear(value, date);
                onMonthEnd(value, date);
@@ -84,7 +98,6 @@ public abstract  class MonthlyWeatherProcessor extends WeatherProcessor {
                onMonthEnd(value, date);
            }
        }
-        processWeatherBetween(value, date);
         }
     @Override
     public void calculateAverage() {
@@ -99,6 +112,26 @@ public abstract  class MonthlyWeatherProcessor extends WeatherProcessor {
           this.addAverageValue("Average "+processorName+" For Month "+month+" "+average);
       }
     }
+
+    /**
+     * Called at the start of a new day (typically at hour 0).
+     * Override this method to perform any setup or initialization
+     * required before processing the day's weather data.
+     *
+     * @param value the first weather value of the day
+     * @param date the full date string (e.g., "2025-06-19T00:00:00")
+     */
+    public void onStartDay(Number value, String date) {}
+
+    /**
+     * Called at the end of a day (typically at hour 23).
+     * Override this method to finalize or summarize any
+     * calculations for the day (e.g., count hours above a threshold).
+     *
+     * @param value the last weather value of the day
+     * @param date the full date string (e.g., "2025-06-19T23:00:00")
+     */
+    public void onEndDay(Number value, String date) {}
     public void addProcessedTextValue(double value, int year, String month){
         addProcessedTextValue(processorName +" for "+dataType+" " +month+" "+year+  " : "+ value);
     }
@@ -146,33 +179,41 @@ public abstract  class MonthlyWeatherProcessor extends WeatherProcessor {
      * @return true if the day / time is the 0 hour of the first day of the month
      * otherwise returns false
      */
-    protected DateType checkDate(String openMeteoDateAndTime) {
-        LocalDateTime localDate=LocalDateTime.parse(openMeteoDateAndTime);
-        int maxDayOfMonth = localDate.toLocalDate().lengthOfMonth();
-        int dayOfMonth=localDate.getDayOfMonth();
-        int hour=localDate.getHour();
-        int month=localDate.getMonthValue();
-       if(dayOfMonth==31 && hour==23 &&month==12 ){
-           return DateType.NEW_YEARS_EVE;
-       }
-       if(dayOfMonth==1 && hour==0 &&month==1 ){
-           currentYear=localDate.getYear();
-           currentMonth=1;
-           currentMonthName=localDate.getMonth().name();
-           currentYearlyValuesResponse =locationWeatherResponse.getYearlyValues(String.valueOf(currentYear));
-           monthlyValuesResponse = currentYearlyValuesResponse.getMonthlyValues(currentMonthName);
-           return DateType.NEW_YEARS_DAY;
-       }
-        if(dayOfMonth==maxDayOfMonth && hour==23){
-            return DateType.LAST_DAY_OF_MONTH;
+    protected DateRecord analyzeDate(String openMeteoDateAndTime) {
+        LocalDateTime localDate = LocalDateTime.parse(openMeteoDateAndTime);
+
+        // Determine hour type
+        DateType hourType = switch (localDate.getHour()) {
+            case 0 -> DateType.START_DAY;
+            case 23 -> DateType.END_DAY;
+            default -> DateType.NORMAL_HOUR;
+        };
+
+        // Determine day type
+        int day = localDate.getDayOfMonth();
+        int month = localDate.getMonthValue();
+        int maxDay = localDate.toLocalDate().lengthOfMonth();
+        DateType dayType = DateType.STANDARD_DAY;
+
+        if (day == 31 && localDate.getHour() == 23 && month == 12) {
+            dayType = DateType.NEW_YEARS_EVE;
+        } else if (day == 1 && localDate.getHour() == 0 && month == 1) {
+            currentYear = localDate.getYear();
+            currentMonth = 1;
+            currentMonthName = localDate.getMonth().name();
+            currentYearlyValuesResponse = locationWeatherResponse.getYearlyValues(String.valueOf(currentYear));
+            monthlyValuesResponse = currentYearlyValuesResponse.getMonthlyValues(currentMonthName);
+            dayType = DateType.NEW_YEARS_DAY;
+        } else if (day == maxDay && localDate.getHour() == 23) {
+            dayType = DateType.LAST_DAY_OF_MONTH;
+        } else if (day == 1 && localDate.getHour() == 0) {
+            currentMonth = month;
+            currentMonthName = localDate.getMonth().name();
+            monthlyValuesResponse = currentYearlyValuesResponse.getMonthlyValues(currentMonthName);
+            dayType = DateType.FIRST_DAY_OF_MONTH;
         }
-       if(dayOfMonth==1 && hour==0){
-           currentMonth=month;
-           currentMonthName=localDate.getMonth().name();
-           monthlyValuesResponse = currentYearlyValuesResponse.getMonthlyValues(currentMonthName);
-           return DateType.FIRST_DAY_OF_MONTH;
-       }
-        return DateType.STANDARD_DAY;
+
+        return new DateRecord(hourType, dayType);
     }
     
 }
