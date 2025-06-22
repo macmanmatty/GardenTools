@@ -35,7 +35,7 @@ public class DaysAboveYearly extends DailyAndMonthlyWeatherProcessor {
             throw new IllegalArgumentException(" Params Array Size<1 You Must Include  The Minimum Value In The Array Of Parameters ");
         }
 
-        super.processorName=" Days Above "+inputParameters.get(0)+" Monthly";
+        super.processorName=" Days Above "+inputParameters.get(0)+" Yearly";
         this.valueToCheck = Double.parseDouble(inputParameters.get(0));
         clearProcessedTextValues();
     }
