@@ -134,9 +134,7 @@ public abstract class WeatherProcessor {
         }
         processWeather(value, date);
 
-    };
-
-
+    }
 
     /**
      *

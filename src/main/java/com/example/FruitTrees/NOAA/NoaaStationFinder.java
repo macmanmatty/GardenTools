@@ -1,6 +1,4 @@
 package com.example.FruitTrees.NOAA;
-import com.example.FruitTrees.WeatherConroller.WeatherRequest;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Component;
@@ -36,7 +34,7 @@ public class NoaaStationFinder {
                 ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, entity, String.class);
                 JsonNode json = objectMapper.readTree(response.getBody());
                 JsonNode results = json.get("results");
-                if (results != null && results.isArray() && results.size() > 0) {
+                if (results != null && results.isArray() && !results.isEmpty()) {
                     JsonNode station = results.get(0);
                     return station.get("id").asText();  // Example: GHCND:USW00012921
                 }

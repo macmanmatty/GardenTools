@@ -4,9 +4,6 @@ import com.example.FruitTrees.Location.Location;
 import com.example.FruitTrees.Utilities.DataUtilities;
 import com.example.FruitTrees.WeatherConroller.HourlyWeatherProcessRequest;
 import com.example.FruitTrees.WeatherConroller.WeatherRequest;
-import com.example.FruitTrees.WeatherProcessor.WeatherProcessors.WeatherProcessor;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.slf4j.ILoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.CacheManager;
@@ -22,7 +19,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
-import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 import com.google.common.util.concurrent.RateLimiter;
 /**

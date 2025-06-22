@@ -53,16 +53,6 @@ public class DaysAboveYearly extends DailyAndMonthlyWeatherProcessor {
         hours =0;
     }
 
-    @Override
-    protected void onMonthEnd(Number value, String date) {
-
-
-    }
-
-    @Override
-    protected void onStartNewYear(Number value, String date) {
-
-    }
 
     @Override
     protected void onEndYear(Number value, String date) {

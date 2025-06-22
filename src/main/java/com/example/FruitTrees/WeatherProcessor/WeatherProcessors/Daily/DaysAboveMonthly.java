@@ -66,16 +66,6 @@ public class DaysAboveMonthly extends DailyAndMonthlyWeatherProcessor  {
     }
 
     @Override
-    protected void onStartNewMonth(Number value, String date) {
-
-    }
-
-    @Override
-    protected void onEndYear(Number value, String date) {
-
-    }
-
-    @Override
     protected void processWeatherBetween(Number data, String date) {
         double value=data.doubleValue();
         if( value>= valueToCheck) {
