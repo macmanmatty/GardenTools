@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
  *  A weather processor that calculates the first instance of some
  *  weather value below a certain value  and between dates
  *
- */@Component("FirstDateBelowValue")
+ */@Component("FirstDateBelow")
 public class FirstDateBelowValue extends DateValueProcessor {
     /**
      * the first value date
