@@ -1,8 +1,9 @@
 package com.example.FruitTrees.NOAA;
 
 import com.example.FruitTrees.Location.Location;
+import com.example.FruitTrees.Utilities.DataUtilities;
+import com.example.FruitTrees.WeatherConroller.HourlyWeatherProcessRequest;
 import com.example.FruitTrees.WeatherConroller.WeatherRequest;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.CacheManager;
@@ -13,14 +14,13 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
-import java.util.concurrent.TimeUnit;
-
+import java.util.logging.Logger;
+import com.google.common.util.concurrent.RateLimiter;
 /**
  * service class for making Open-Meteo requests
  */
@@ -34,10 +34,12 @@ public class NOAAHTTPRequest {
     private  int rateLimit;
     private final  RestTemplate restTemplate = new RestTemplate();
     private final  CacheManager cacheManager;
-    private NoaaStationFinder noaaStationFinder= new NoaaStationFinder();
+    private NoaaStationFinder noaaStationFinder;
+    private final RateLimiter limiter = RateLimiter.create(2.0); // 2 permits per second
     @Autowired
-    public NOAAHTTPRequest(CacheManager cacheManager) {
+    public NOAAHTTPRequest(CacheManager cacheManager,  NoaaStationFinder noaaStationFinder) {
         this.cacheManager = cacheManager;
+        this.noaaStationFinder = noaaStationFinder;
     }
     
     /**
@@ -48,17 +50,15 @@ public class NOAAHTTPRequest {
      * @throws IOException
      */
     @Cacheable(value = "openMeteoDataCache",
-      key = "#location.getLatitude() + ':' + #location.getLongitude() + ':' + #weatherRequest.getHourlyDataTypes.hashCode() + ':' + #weatherRequest.getStartDate() + ':' + #weatherRequest.getEndDate()")
-    public NOAALocationResponse makeLocationRequest (Location location, WeatherRequest weatherRequest) throws InterruptedException {
-       NOAALocationResponse locationResponse = new NOAALocationResponse();
-        NOAAResponse noaaResponse = new NOAAResponse();
+     key = "#location.getLatitude() + ':' + #location.getLongitude() + ':' + #weatherRequest.getHourlyDataTypes.hashCode() + ':' + #weatherRequest.getStartDate() + ':' + #weatherRequest.getEndDate()")
+    public NOAAHourlyDataMap makeLocationRequest (Location location, WeatherRequest weatherRequest,  HourlyWeatherProcessRequest hourlyWeatherProcessRequest) throws InterruptedException {
         List<NOAAWeatherRecord> allData = new ArrayList<>();
         int offset = 1;
         boolean moreData = true;
-        int pageSize=100;
+        int pageSize=1000;
         String stationId= location.getStationId();
         if(stationId==null || stationId.isEmpty()){
-            stationId=noaaStationFinder.findNearestStation(location.getLatitude(), location.getLongitude());
+            stationId=noaaStationFinder.findNearestStation(location.getLatitude(), location.getLongitude(),weatherRequest.getStartDate(), weatherRequest.getEndDate(),  hourlyWeatherProcessRequest.getHourlyDataType());
         }
 
         while (moreData) {
@@ -71,8 +71,11 @@ public class NOAAHTTPRequest {
                     + "&offset=" + offset;
           Set<String> dataTypes=weatherRequest.getHourlyDataTypes();
             for (String datatype : dataTypes) {
-                url += "&datatypeid=" + datatype;
+                url += "&datatypeid=" + DataUtilities.toNOAADatatype(datatype);
+
             }
+            Logger.getLogger("").info("noaa url " + url);
+            Logger.getLogger("").info("noaa station id " + stationId);
 
             HttpHeaders headers = new HttpHeaders();
             headers.set("token", noaaApiKey);
@@ -84,6 +87,7 @@ public class NOAAHTTPRequest {
                     entity,
                     NOAAResponse.class
             );
+            Logger.getLogger("").info("response " + response);
 
             List<NOAAWeatherRecord> results = Objects.requireNonNull(response.getBody()).getNoaaHourlyObservations();
             if (results == null || results.isEmpty()) {
@@ -96,35 +100,14 @@ public class NOAAHTTPRequest {
                     offset += pageSize;
                 }
             }
+            limiter.acquire(); // This blocks until a permit is available
 
-            TimeUnit.MILLISECONDS.sleep(rateLimit); // avoid rate limit
         }
        NOAAHourlyDataMap noaaHourlyDataMap= new NOAAHourlyDataMap();
         noaaHourlyDataMap.addRecords(allData);
-        locationResponse.setNoaaHourlyDataMap(noaaHourlyDataMap);
-        return locationResponse;
+
+        return noaaHourlyDataMap;
     }
     
-    /**
-     *  adds additional params to the url to specify the units
-     * you wish to have data sent back in Fahrenheit, Celsius, Inches , Meters Etc.
-     * @param openMeteoUrl the request url for open meteo
-     * @param weatherRequest the weather request object
-     * @return
-     */
-    public String addConversionUnits(String openMeteoUrl, WeatherRequest weatherRequest){
-        String temperatureUnit=weatherRequest.getTemperatureUnit();
-        String windSpeedUnit=weatherRequest.getWindSpeedUnit();
-        String precipitationUnit=weatherRequest.getPrecipitationUnit();
-        if(temperatureUnit!=null && !temperatureUnit.isEmpty()) {
-         openMeteoUrl=openMeteoUrl+   "&temperature_unit=" + weatherRequest.getTemperatureUnit();
-        }
-            if(windSpeedUnit!=null && !windSpeedUnit.isEmpty()) {
-              openMeteoUrl=openMeteoUrl+  "&wind_speed_unit=" + weatherRequest.getWindSpeedUnit();
-            }
-            if(precipitationUnit!=null && !precipitationUnit.isEmpty()) {
-              openMeteoUrl=openMeteoUrl+  "&precipitation_unit=" + weatherRequest.getPrecipitationUnit();
-            }
-         return    openMeteoUrl;
-  }
+
 }

@@ -1,4 +1,4 @@
-package com.example.FruitTrees.WeatherProcessor.WeatherProcessors.Monthly;
+package com.example.FruitTrees.WeatherProcessor.WeatherProcessors.MonthlyAndDaily;
 
 import org.springframework.stereotype.Component;
 
@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
  *
  */
 @Component("HoursBelowMonthly")
-public class HoursBelowMonthly extends MonthlyWeatherProcessor {
+public class HoursBelowMonthly extends DailyAndMonthlyWeatherProcessor {
     /**
      * the counted hours
      */

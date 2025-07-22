@@ -9,4 +9,6 @@ public interface LocationResponse {
    List<String> getTime();
    List<? extends Number> getData(String dataType);
     Location getLocation();
+    String getDataSource();
+
 }

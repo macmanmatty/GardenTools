@@ -1,7 +1,6 @@
 package com.example.FruitTrees.NOAA;
 
 import com.example.FruitTrees.Location.Location;
-import com.example.FruitTrees.OpenMeteo.LocationResponse;
 import com.example.FruitTrees.OpenMeteo.LocationResponses;
 import com.example.FruitTrees.OpenStreetMap.OpenStreetLocationService;
 import com.example.FruitTrees.WeatherConroller.HourlyWeatherProcessRequest;
@@ -15,18 +14,21 @@ import org.springframework.web.client.RestClientException;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.logging.Logger;
+
 @Service
 public class NOAAService {
    private final NOAAHTTPRequest noaahttpRequest;
    private  final WeatherProcessorService weatherProcessorService;
    private final OpenStreetLocationService openStreetLocationService;
-
+    private final RequestValidation requestValidation;
    @Autowired
     public NOAAService( NOAAHTTPRequest noaahttpRequest, WeatherProcessorService weatherProcessorService,
-                       OpenStreetLocationService openStreetLocationService) {
+                       OpenStreetLocationService openStreetLocationService, RequestValidation requestValidation) {
         this.noaahttpRequest = noaahttpRequest;
         this.weatherProcessorService = weatherProcessorService;
         this.openStreetLocationService=openStreetLocationService;
+        this.requestValidation = requestValidation;
     }
     public WeatherResponse getData(LocationResponses locationResponses, WeatherRequest weatherRequest ) throws IOException, InterruptedException {
         extractHourlyDataTypes(weatherRequest);
@@ -54,16 +56,23 @@ public class NOAAService {
      */
     private LocationResponses makeRequest( LocationResponses locationResponses, WeatherRequest weatherRequest) throws IOException, InterruptedException {
         List<Location> locations =weatherRequest.getLocations();
-        RequestValidation.locationCheck(locations);
+        requestValidation.locationCheck(locations);
         boolean populateLocationData= weatherRequest.isPopulateLocationData();
+        NOAALocationResponse noaaLocationResponse= new NOAALocationResponse();
         for (Location location : locations) {
             try {
-                LocationResponse locationResponse= noaahttpRequest.makeLocationRequest(  location, weatherRequest);
-               locationResponses.getLocationResponses().add(locationResponse);
-                if(populateLocationData){
-                    openStreetLocationService.populateLocationData(location);
+                for(HourlyWeatherProcessRequest weatherProcessor: weatherRequest.hourlyWeatherProcessRequests) {
+                    NOAAHourlyDataMap noaaHourlyDataMap = noaahttpRequest.makeLocationRequest(location, weatherRequest, weatherProcessor);
+                    noaaLocationResponse.getNoaaHourlyDataMap().getNoaaHourlyObservationsMap().putAll(noaaHourlyDataMap.getNoaaHourlyObservationsMap());
                 }
+                    if (populateLocationData) {
+                        openStreetLocationService.populateLocationData(location);
+                    }
+                locationResponses.getLocationResponses().add(noaaLocationResponse);
+
             } catch (RestClientException e) {
+                Logger.getLogger("").info(e.toString());
+
                 throw new IOException(e);
             }
         }

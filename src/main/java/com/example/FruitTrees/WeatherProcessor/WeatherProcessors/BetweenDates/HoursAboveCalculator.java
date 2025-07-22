@@ -34,7 +34,7 @@ public class HoursAboveCalculator extends ProcessWeatherBetweenDates {
     }
 
     @Override
-    protected void onEndDate(String date) {
+    public void onEndDate(String date) {
         int year= DateUtilities.getYear(date);
         super.yearlyDataValues.add(hours);
        YearlyValuesResponse yearlyValuesResponse = locationWeatherResponse.getYearlyValues(String.valueOf(year));

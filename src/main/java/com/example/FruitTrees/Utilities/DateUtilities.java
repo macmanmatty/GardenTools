@@ -4,7 +4,10 @@ import com.example.FruitTrees.WeatherProcessor.WeatherProcessors.DateType;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class DateUtilities {
 
@@ -80,30 +83,45 @@ public class DateUtilities {
         return  DateType.STANDARD_DAY;
     }
 
-        public static LocalDate calculateAverageDate(List<LocalDate> dates) {
-            long totalTime = 0;
-
-            // Sum the milliseconds of all the dates
-            for (LocalDate date : dates) {
-                totalTime =totalTime+ date.toEpochDay();
+        public static Optional<LocalDateTime> calculateAverageDate(List<Optional<LocalDateTime>> dateOptionals, float percentMissing) {
+            List<LocalDateTime> dates = dateOptionals.stream()
+                    .filter(Optional::isPresent)
+                    .map(Optional::get)
+                    .collect(Collectors.toList());
+            if(dateOptionals.size()-dates.size()>dateOptionals.size()*percentMissing){
+                return Optional.empty();
             }
 
-            // Calculate the average milliseconds
-            long averageTime = totalTime / dates.size();
+            if (dates.isEmpty()) return Optional.empty();
 
-            // Return the average date
-            return LocalDate.ofEpochDay(averageTime);  // Convert back to Date object
+            long avgEpochSeconds = (long) dates.stream()
+                    .mapToLong(date -> date.toEpochSecond(ZoneOffset.UTC))
+                    .average()
+                    .orElseThrow();
+
+            return Optional.of(LocalDateTime.ofEpochSecond(avgEpochSeconds, 0, ZoneOffset.UTC));
         }
 
+
+
     /**
-     * gets the year from a string date
-     * @param date
-     * @return
-     */
+             * gets the year from a string date with or without a Time
+             * @param date
+             * @return
+             */
     public  static int getYear(String date){
-      LocalDateTime localDateTime=LocalDateTime.parse(date);
-     return localDateTime.getYear();
+        if(date.contains("T") || date.contains("t")  ) {
+            LocalDateTime localDateTime = LocalDateTime.parse(date);
+            localDateTime.getYear();
+        }
+        else{
+            LocalDate localDate = LocalDate.parse(date);
+            return localDate.getYear();
+        }
+        return 0;
    }
+
+
 
 
 

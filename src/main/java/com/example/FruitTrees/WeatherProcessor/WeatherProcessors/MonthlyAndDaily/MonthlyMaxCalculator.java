@@ -1,8 +1,8 @@
-package com.example.FruitTrees.WeatherProcessor.WeatherProcessors.Monthly;
+package com.example.FruitTrees.WeatherProcessor.WeatherProcessors.MonthlyAndDaily;
 import org.springframework.stereotype.Component;
 import java.time.LocalDateTime;
 @Component("MaxMonthly")
-public class MonthlyMaxCalculator extends MonthlyWeatherProcessor {
+public class MonthlyMaxCalculator extends DailyAndMonthlyWeatherProcessor {
     private double finalValue =Double.MIN_VALUE;
     public MonthlyMaxCalculator() {
         super("Monthly Max");
