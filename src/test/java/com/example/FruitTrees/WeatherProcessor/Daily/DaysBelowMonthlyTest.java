@@ -1,14 +1,17 @@
-package com.example.FruitTrees.WeatherProcessor.MonthlyAndDaily.Daily;
+package com.example.FruitTrees.WeatherProcessor.Daily;
+
 import com.example.FruitTrees.WeatherConroller.WeatherResponse.LocationWeatherResponse;
 import com.example.FruitTrees.WeatherProcessor.WeatherProcessors.Daily.DaysAboveMonthly;
+import com.example.FruitTrees.WeatherProcessor.WeatherProcessors.Daily.DaysBelowMonthly;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
-public class DaysAboveMonthlyTest {
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+public class DaysBelowMonthlyTest {
 
     @Test
     public void testLastDayOfMonthWith24HoursAboveThreshold() {
-        DaysAboveMonthly processor = new DaysAboveMonthly();
+        DaysBelowMonthly processor = new DaysBelowMonthly();
         processor.currentYear = 2024;
         processor.getInputParameters().add("32");
         processor.setDataType( "Temperature");
@@ -20,7 +23,7 @@ public class DaysAboveMonthlyTest {
         // Simulate Feb 29, 2024 (leap year), 24 hours all above threshold
         for (int hour = 0; hour < 24; hour++) {
             String dateTime = String.format("2024-02-29T%02d:00:00", hour);
-            processor.processWeather(33.0, dateTime); // value is always above
+            processor.processWeather(30.0, dateTime); // value is always above
         }
 
         // Simulate the start of the next month to trigger onMonthEnd + onStartNewMonth
@@ -28,8 +31,7 @@ public class DaysAboveMonthlyTest {
 
         // Check processed values
         String key = "Days Temperature Above 32";
-        String summaryText = "Days Temperature Above 32 For FEBRUARY 2024 : 24.0";
 
-        assertEquals("1.0", processor.getLocationWeatherResponse().getYearlyValues("2024").getMonthlyValues("FEBRUARY").getValues().get("Days Temperature Above 32.0"), "Should count 1 full day above 32°F");
+        assertEquals("1.0", processor.getLocationWeatherResponse().getYearlyValues("2024").getMonthlyValues("FEBRUARY").getValues().get("Days Temperature Below 32.0"), "Should count 1 full day below 32°F");
     }
 }

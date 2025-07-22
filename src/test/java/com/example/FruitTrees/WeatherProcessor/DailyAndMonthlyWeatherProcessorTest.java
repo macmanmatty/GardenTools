@@ -1,4 +1,4 @@
-package com.example.FruitTrees.WeatherProcessor.MonthlyAndDaily;
+package com.example.FruitTrees.WeatherProcessor;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
