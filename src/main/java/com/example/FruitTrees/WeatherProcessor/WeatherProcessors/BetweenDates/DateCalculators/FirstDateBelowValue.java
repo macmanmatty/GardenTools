@@ -39,14 +39,12 @@ public class FirstDateBelowValue extends DateValueProcessor {
         if (this.date.isPresent()) {
             LocalDateTime localDate = this.date.get();
             int year = localDate.getYear();
-
             super.yearlyDates.add(this.date);
-
             YearlyValuesResponse yearlyValuesResponse = locationWeatherResponse.getYearlyValues(String.valueOf(year));
             String text = "First instance of " + dataType + " Below " + firstValue;
             yearlyValuesResponse.getValues().put(text, localDate.toString());
             addProcessedTextValue(text + year + " from: " + startMonth + "/" + startDay + " to " + endMonth + "/" + endDay + " was on  " + localDate.toLocalDate().toString() + " at " + localDate.getHour());
-            this.date = null;
+            this.date = Optional.empty();
         }
         else{
             int year= DateUtilities.getYear(date);

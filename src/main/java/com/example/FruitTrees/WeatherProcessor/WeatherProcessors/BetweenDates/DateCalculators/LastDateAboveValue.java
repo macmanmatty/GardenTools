@@ -45,10 +45,7 @@ public class LastDateAboveValue extends DateValueProcessor {
         if (this.date.isPresent()) {
             LocalDateTime localDate = this.date.get();
             int year = localDate.getYear();
-
             super.yearlyDates.add(this.date);
-
-
             YearlyValuesResponse yearlyValuesResponse = locationWeatherResponse.getYearlyValues(String.valueOf(year));
             String text = "Last instance of " + dataType + " Above " + lastValue;
             yearlyValuesResponse.getValues().put(text, localDate.toString());
