@@ -5,6 +5,8 @@ import com.example.FruitTrees.WeatherConroller.WeatherResponse.YearlyValuesRespo
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Locale;
 import java.util.Optional;
 
 /**
@@ -42,29 +44,9 @@ public class FirstDateAboveValue extends DateValueProcessor {
     }
 
     public void onStop(String date) {
-        if (this.date.isPresent()) {
-            LocalDateTime localDate = this.date.get();
-            int year = localDate.getYear();
-
-            super.yearlyDates.add(this.date);
-
-            YearlyValuesResponse yearlyValuesResponse = locationWeatherResponse.getYearlyValues(String.valueOf(year));
             String text = "First instance of " + dataType + " Above " + firstValue;
-            yearlyValuesResponse.getValues().put(text, localDate.toString());
-            addProcessedTextValue(text + year + " from: " + startMonth + "/" + startDay + " to " + endMonth + "/" + endDay + " was on  " + localDate.toLocalDate().toString() + " at " + localDate.getHour());
+          addValue(date,this.date, text);
             this.date=Optional.empty();
-
-
-        }
-        else{
-            int year= DateUtilities.getYear(date);
-            String text = "First instance of " + dataType + " Above " + firstValue;
-            YearlyValuesResponse yearlyValuesResponse = locationWeatherResponse.getYearlyValues(String.valueOf(year));
-            yearlyValuesResponse.getValues().put(text, "value never reached");
-            addProcessedTextValue(text + year + " from: " + startMonth + "/" + startDay + " to " + endMonth + "/" + endDay + " was never reached ");
-
-        }
-
 
     }
     @Override

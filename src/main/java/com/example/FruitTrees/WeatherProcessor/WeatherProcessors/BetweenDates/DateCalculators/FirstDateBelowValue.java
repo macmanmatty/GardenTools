@@ -39,25 +39,11 @@ public class FirstDateBelowValue extends DateValueProcessor {
     }
 
     public void onStop(String date) {
-        if (this.date.isPresent()) {
-            LocalDateTime localDate = this.date.get();
-            int year = localDate.getYear();
-            super.yearlyDates.add(this.date);
-            YearlyValuesResponse yearlyValuesResponse = locationWeatherResponse.getYearlyValues(String.valueOf(year));
-            String text = "First instance of " + dataType + " Below " + firstValue;
-            yearlyValuesResponse.getValues().put(text, localDate.toString());
-            addProcessedTextValue(text + year + " from: " + startMonth + "/" + startDay + " to " + endMonth + "/" + endDay + " was on  " + localDate.toLocalDate().toString() + " at " + localDate.getHour());
-            this.date = Optional.empty();
-            startProcessing();
-        }
-        else{
-            int year= DateUtilities.getYear(date);
-            String text = "First instance of " + dataType + " Below " + firstValue;
-            YearlyValuesResponse yearlyValuesResponse = locationWeatherResponse.getYearlyValues(String.valueOf(year));
-            yearlyValuesResponse.getValues().put(text, "value never reached");
-            addProcessedTextValue(text + year + " from: " + startMonth + "/" + startDay + " to " + endMonth + "/" + endDay + " was never reached ");
+        String text = "First instance of " + dataType + " Below " + firstValue;
+        addValue(date,this.date, text);
+        this.date = Optional.empty();
 
-        }
+
     }
     @Override
     public void processWeatherBetween(Number data, String date) {

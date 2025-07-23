@@ -42,25 +42,9 @@ public class LastDateAboveValue extends DateValueProcessor {
 
     @Override
     public void onEndDate(String date) {
-        if (this.date.isPresent()) {
-            LocalDateTime localDate = this.date.get();
-            int year = localDate.getYear();
-            super.yearlyDates.add(this.date);
-            YearlyValuesResponse yearlyValuesResponse = locationWeatherResponse.getYearlyValues(String.valueOf(year));
             String text = "Last instance of " + dataType + " Above " + lastValue;
-            yearlyValuesResponse.getValues().put(text, localDate.toString());
-            addProcessedTextValue(text + year + " from: " + startMonth + "/" + startDay + " to " + endMonth + "/" + endDay + " was on  " + localDate.toLocalDate().toString() + " at " + localDate.getHour());
+            addValue(date,this.date, text);
             this.date = Optional.empty();
-            startProcessing();
-        }
-        else{
-            int year= DateUtilities.getYear(date);
-            String text = "Last instance of " + dataType + " Above " + lastValue;
-            YearlyValuesResponse yearlyValuesResponse = locationWeatherResponse.getYearlyValues(String.valueOf(year));
-            yearlyValuesResponse.getValues().put(text, "value never reached");
-            addProcessedTextValue(text + year + " from: " + startMonth + "/" + startDay + " to " + endMonth + "/" + endDay + " was never reached ");
-
-        }
     }
     @Override
     public void processWeatherBetween(Number data, String date) {
