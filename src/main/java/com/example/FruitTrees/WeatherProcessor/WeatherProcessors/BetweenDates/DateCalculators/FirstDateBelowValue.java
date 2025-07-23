@@ -3,7 +3,6 @@ import com.example.FruitTrees.Utilities.DateUtilities;
 import com.example.FruitTrees.WeatherConroller.WeatherResponse.YearlyValuesResponse;
 import org.springframework.stereotype.Component;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
@@ -35,18 +34,21 @@ public class FirstDateBelowValue extends DateValueProcessor {
         yearlyDataValues.clear();
     }
     @Override
-    public void onEndDate(String date) {
+    protected void onEndDate(String date) {
+        startProcessing();
+    }
+
+    public void onStop(String date) {
         if (this.date.isPresent()) {
             LocalDateTime localDate = this.date.get();
             int year = localDate.getYear();
-
             super.yearlyDates.add(this.date);
-
             YearlyValuesResponse yearlyValuesResponse = locationWeatherResponse.getYearlyValues(String.valueOf(year));
             String text = "First instance of " + dataType + " Below " + firstValue;
             yearlyValuesResponse.getValues().put(text, localDate.toString());
             addProcessedTextValue(text + year + " from: " + startMonth + "/" + startDay + " to " + endMonth + "/" + endDay + " was on  " + localDate.toLocalDate().toString() + " at " + localDate.getHour());
-            this.date = null;
+            this.date = Optional.empty();
+            startProcessing();
         }
         else{
             int year= DateUtilities.getYear(date);
@@ -63,7 +65,7 @@ public class FirstDateBelowValue extends DateValueProcessor {
         if( value<=firstValue) {
             this.date=Optional.of(LocalDateTime.parse(date));
            terminate();
-           onEndDate(date);
+          onStop(date);
         }
     }
 }

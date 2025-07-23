@@ -80,8 +80,9 @@ public void processHourlyWeather( List<String> openMeteoDateAndTime,  WeatherPro
      List<? extends Number> data = locationResponse.getData(hourlyWeatherProcessRequest.getHourlyDataType());
      int size = data.size();
      weatherProcessor.before();
-     for (int count = 0; count < size; count++) {
-         log.info(" started processing of {}", weatherProcessor.getProcessorName());
+    log.info(" started processing of {}", weatherProcessor.getProcessorName() +" for "+locationResponse.getLocation().getName());
+
+    for (int count = 0; count < size; count++) {
          weatherProcessor.processWeatherExternal(data.get(count), openMeteoDateAndTime.get(count));
      }
      weatherProcessor.after();
