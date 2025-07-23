@@ -61,7 +61,7 @@ public class FirstDateAboveValueTest {
         processor.processWeatherBetween(68.0, "2023-05-01T12:00:00");
         processor.processWeatherBetween(70.0, "2023-06-01T14:00:00");
 
-        processor.onEndDate("2023-12-31");
+        processor.onStop("2023-12-31");
 
         String key = "First instance of Temperature Above 75.0";
         assertEquals("value never reached", mockYearlyValuesResponse.getValues().get(key));

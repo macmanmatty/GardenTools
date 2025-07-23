@@ -50,7 +50,7 @@ public class FirstDateBelowValueTest {
         processor.processWeatherBetween(40.0, "2023-10-01T08:00:00");
         processor.processWeatherBetween(35.0, "2023-11-15T12:00:00");
 
-        processor.onEndDate("2023-12-31");
+        processor.onStop("2023-12-31");
 
         String key = "First instance of Temperature Below 32.0";
         assertEquals("value never reached", yearlyValues.getValues().get(key));

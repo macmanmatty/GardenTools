@@ -98,6 +98,10 @@ public abstract  class ProcessWeatherBetweenDates  extends WeatherProcessor {
         processing=false;
         stopProcessing();
     }
+    public void start(){
+        processing=true;
+        startProcessing();
+    }
 
 
 }

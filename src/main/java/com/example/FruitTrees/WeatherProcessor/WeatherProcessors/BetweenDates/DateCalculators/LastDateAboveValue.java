@@ -51,6 +51,7 @@ public class LastDateAboveValue extends DateValueProcessor {
             yearlyValuesResponse.getValues().put(text, localDate.toString());
             addProcessedTextValue(text + year + " from: " + startMonth + "/" + startDay + " to " + endMonth + "/" + endDay + " was on  " + localDate.toLocalDate().toString() + " at " + localDate.getHour());
             this.date = Optional.empty();
+            startProcessing();
         }
         else{
             int year= DateUtilities.getYear(date);
