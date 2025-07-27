@@ -1,10 +1,13 @@
 package com.example.FruitTrees.WeatherProcessor.WeatherProcessors.MonthlyAndDaily;
 
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 
 @Component("AverageMonthly")
+@Scope("prototype")
+
 public class MonthlyAverageCalculator extends DailyAndMonthlyWeatherProcessor {
     private double finalValue =0;
     private int hours;

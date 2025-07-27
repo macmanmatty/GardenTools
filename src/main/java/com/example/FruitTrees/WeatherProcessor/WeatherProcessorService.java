@@ -103,7 +103,7 @@ public void processHourlyWeather( List<String> openMeteoDateAndTime,  WeatherPro
          weatherProcessor.processWeatherExternal(data.get(count), openMeteoDateAndTime.get(count));
      }
      weatherProcessor.after();
-     if(weatherProcessor.isCalculateAverage()){
+    if(weatherProcessor.isCalculateAverage()){
          weatherProcessor.calculateMeanAverageValue();
      }
     if(weatherProcessor.isCalculateMin()){

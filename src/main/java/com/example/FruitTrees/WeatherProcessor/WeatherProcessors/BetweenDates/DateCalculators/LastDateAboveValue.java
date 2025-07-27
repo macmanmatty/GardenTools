@@ -2,6 +2,7 @@ package com.example.FruitTrees.WeatherProcessor.WeatherProcessors.BetweenDates.D
 
 import com.example.FruitTrees.Utilities.DateUtilities;
 import com.example.FruitTrees.WeatherConroller.WeatherResponse.YearlyValuesResponse;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
@@ -12,6 +13,8 @@ import java.util.Optional;
  *  weather value above a certain value  and between dates
  *
  */@Component("LastDateAbove")
+@Scope("prototype")
+
 public class LastDateAboveValue extends DateValueProcessor {
     /**
      * the first value date

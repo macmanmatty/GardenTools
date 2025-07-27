@@ -2,6 +2,7 @@ package com.example.FruitTrees.WeatherProcessor.WeatherProcessors.MultipleDataSe
 
 import com.example.FruitTrees.WeatherConroller.WeatherResponse.YearlyValuesResponse;
 import com.example.FruitTrees.Utilities.DataUtilities;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
@@ -13,6 +14,8 @@ import java.util.List;
  *
  */
 @Component("FrostLine")
+@Scope("prototype")
+
 public class FrostLineCalculator extends ProcessMultipleWeatherDataSetsBetweenDates {
     /**
      * the min frost line

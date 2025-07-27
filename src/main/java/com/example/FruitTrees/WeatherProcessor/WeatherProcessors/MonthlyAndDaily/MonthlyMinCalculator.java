@@ -1,7 +1,10 @@
 package com.example.FruitTrees.WeatherProcessor.WeatherProcessors.MonthlyAndDaily;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import java.time.LocalDateTime;
 @Component("MinMonthly")
+@Scope("prototype")
+
 public class MonthlyMinCalculator extends DailyAndMonthlyWeatherProcessor {
     private double finalValue =Double.MAX_VALUE;
     public MonthlyMinCalculator() {

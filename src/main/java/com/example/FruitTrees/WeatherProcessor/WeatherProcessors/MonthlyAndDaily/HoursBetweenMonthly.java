@@ -1,5 +1,6 @@
 package com.example.FruitTrees.WeatherProcessor.WeatherProcessors.MonthlyAndDaily;
 
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 /**
@@ -8,6 +9,8 @@ import org.springframework.stereotype.Component;
  *
  */
 @Component("HoursBetweenMonthly")
+@Scope("prototype")
+
 public class HoursBetweenMonthly extends DailyAndMonthlyWeatherProcessor {
     /**
      * the counted hours

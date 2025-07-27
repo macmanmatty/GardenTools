@@ -2,6 +2,7 @@ package com.example.FruitTrees.WeatherProcessor.WeatherProcessors.BetweenDates;
 
 import com.example.FruitTrees.Utilities.DateUtilities;
 import com.example.FruitTrees.WeatherConroller.WeatherResponse.YearlyValuesResponse;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -14,6 +15,8 @@ import java.util.List;
  * from 11/1 to 3/31
  */
 @Component("UtahChillDynamic")
+@Scope("prototype")
+
 public class DynamicUtahChillCalculator extends ProcessWeatherBetweenDates {
     /**
      * the counted hours

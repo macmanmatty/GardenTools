@@ -1,4 +1,5 @@
 package com.example.FruitTrees.WeatherProcessor.WeatherProcessors.BetweenDates;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import java.time.LocalDateTime;
 /**
@@ -6,6 +7,8 @@ import java.time.LocalDateTime;
  * weather type usually rain fall or snow during given dates
  */
 @Component("Total")
+@Scope("prototype")
+
 public class TotalCalculator extends ProcessWeatherBetweenDates{
     /**
      * the total amount of weather
