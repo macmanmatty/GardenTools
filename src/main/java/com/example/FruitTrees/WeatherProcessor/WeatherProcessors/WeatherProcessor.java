@@ -1,4 +1,5 @@
 package com.example.FruitTrees.WeatherProcessor.WeatherProcessors;
+import com.example.FruitTrees.WeatherConroller.HourlyWeatherProcessRequest;
 import com.example.FruitTrees.WeatherConroller.WeatherResponse.DailyValuesResponse;
 import com.example.FruitTrees.WeatherConroller.WeatherResponse.LocationWeatherResponse;
 import com.example.FruitTrees.WeatherConroller.WeatherResponse.MonthlyValuesResponse;
@@ -111,7 +112,7 @@ public abstract class WeatherProcessor {
     /**
      * external processors required by this one
      */
-    public List<WeatherProcessor> requiredProcessors= new ArrayList<>();
+    public List<HourlyWeatherProcessRequest> hourlyWeatherProcessRequests = new ArrayList<>();
 
     public WeatherProcessor(String processorName) {
         this.processorName = processorName;
@@ -292,12 +293,12 @@ public abstract class WeatherProcessor {
         this.stationId = stationId;
     }
 
-    public List<WeatherProcessor> getRequiredProcessors() {
-        return requiredProcessors;
+    public List<HourlyWeatherProcessRequest> getHourlyWeatherProcessRequests() {
+        return hourlyWeatherProcessRequests;
     }
 
-    public void setRequiredProcessors(List<WeatherProcessor> requiredProcessors) {
-        this.requiredProcessors = requiredProcessors;
+    public void setHourlyWeatherProcessRequests(List<HourlyWeatherProcessRequest> hourlyWeatherProcessRequests) {
+        this.hourlyWeatherProcessRequests = hourlyWeatherProcessRequests;
     }
 
     public boolean isCalculateAverage() {

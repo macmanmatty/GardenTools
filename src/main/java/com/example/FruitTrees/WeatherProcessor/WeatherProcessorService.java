@@ -18,9 +18,9 @@ import java.util.*;
 @Service
 public class WeatherProcessorService {
     private static final Logger log = LoggerFactory.getLogger(WeatherProcessorService.class);
-    private  ApplicationContext applicationContext;
-    public WeatherProcessorService(@Autowired  ApplicationContext applicationContext) {
-        this.applicationContext = applicationContext;
+    WeatherProcessorFactory weatherProcessorFactory;
+    public WeatherProcessorService(@Autowired WeatherProcessorFactory weatherProcessorFactory) {
+        this.weatherProcessorFactory = weatherProcessorFactory;
     }
     /**
      *  processes hourly weather data
@@ -56,38 +56,17 @@ public class WeatherProcessorService {
      List<HourlyWeatherProcessRequest> hourlyWeatherProcessRequests = weatherRequest.getHourlyWeatherProcessRequests();
      List<String> time = locationResponse.getTime();
      for (HourlyWeatherProcessRequest hourlyWeatherProcessRequest : hourlyWeatherProcessRequests) {
-             WeatherProcessor weatherProcessor = applicationContext.getBean(hourlyWeatherProcessRequest.getProcessorName(), WeatherProcessor.class);
-             setProcessorConfiguration(weatherProcessor, hourlyWeatherProcessRequest, locationWeatherResponse);
+           WeatherProcessor weatherProcessor=  weatherProcessorFactory.createProcessor(hourlyWeatherProcessRequest, locationWeatherResponse);
          log.info(" started processing of {}", weatherProcessor.getProcessorName() +" for "+locationResponse.getLocation().getName());
-         List<WeatherProcessor> dependentWeatherProcessors=weatherProcessor.getRequiredProcessors();
-         for(WeatherProcessor dependentWeatherProcessor:dependentWeatherProcessors){
-             processHourlyWeather( time, dependentWeatherProcessor,locationResponse.getData(weatherProcessor.getDataType()));
+         List<HourlyWeatherProcessRequest> dependentWeatherProcessors=weatherProcessor.getHourlyWeatherProcessRequests();
+         for(HourlyWeatherProcessRequest dependentWeatherProcessorRequest:dependentWeatherProcessors){
+             WeatherProcessor dependentWeatherProcessor=  weatherProcessorFactory.createProcessor(dependentWeatherProcessorRequest, locationWeatherResponse);
+             processHourlyWeather( time, dependentWeatherProcessor,locationResponse.getData(dependentWeatherProcessor.getDataType()));
          }
          processHourlyWeather( time, weatherProcessor,locationResponse.getData(weatherProcessor.getDataType()));
      }
         return weatherResponse;
  }
-
-
-
-    /**
-     * sets the configuration for weather processor based on the request
-     * @param weatherProcessor
-     * @param hourlyWeatherProcessRequest
-     * @param locationWeatherResponse
-     */
- public void setProcessorConfiguration(WeatherProcessor weatherProcessor, HourlyWeatherProcessRequest hourlyWeatherProcessRequest, LocationWeatherResponse locationWeatherResponse   ){
-     weatherProcessor.setStartMonthDay(hourlyWeatherProcessRequest.getStartProcessMonth(), hourlyWeatherProcessRequest.getStartProcessDay());
-     weatherProcessor.setEndMonthDay(hourlyWeatherProcessRequest.getEndProcessMonth(), hourlyWeatherProcessRequest.getEndProcessDay());
-     weatherProcessor.setInputParameters(hourlyWeatherProcessRequest.getInputParameters());
-     weatherProcessor.setDataType(hourlyWeatherProcessRequest.getHourlyDataType());
-     weatherProcessor.setLocationWeatherResponse(locationWeatherResponse);
-     weatherProcessor.setCalculateAverage(hourlyWeatherProcessRequest.isCalculateAverage());
-     weatherProcessor.setOnlyCalculateAverage(hourlyWeatherProcessRequest.isOnlyCalculateAverage() && hourlyWeatherProcessRequest.isCalculateAverage());
-     weatherProcessor.setCalculateMin(hourlyWeatherProcessRequest.isCalculateMin());
-     weatherProcessor.setCalculateMax(hourlyWeatherProcessRequest.isCalculateMax());
- }
-
 
     /**
      *
