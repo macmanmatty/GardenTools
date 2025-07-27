@@ -112,13 +112,12 @@ public class DateUtilities {
     public  static int getYear(String date){
         if(date.contains("T") || date.contains("t")  ) {
             LocalDateTime localDateTime = LocalDateTime.parse(date);
-            localDateTime.getYear();
+           return localDateTime.getYear();
         }
         else{
             LocalDate localDate = LocalDate.parse(date);
             return localDate.getYear();
         }
-        return 0;
    }
 
 

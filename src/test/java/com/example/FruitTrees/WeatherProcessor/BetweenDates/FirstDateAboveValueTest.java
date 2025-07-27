@@ -27,8 +27,7 @@ public class FirstDateAboveValueTest {
         processor.setDataType("Temperature");
         processor.setStartMonthDay(4,1);
         processor.setEndMonthDay(9,30);
-
-
+        processor.startProcessing();
         // Mock response objects
         mockLocationWeatherResponse = mock(LocationWeatherResponse.class);
         mockYearlyValuesResponse = new YearlyValuesResponse();
@@ -43,9 +42,11 @@ public class FirstDateAboveValueTest {
         processor.before();
 
         // Value below threshold
-        processor.processWeatherBetween(70.0, "2023-05-01T12:00:00");
+        processor.processWeather(70.0, "2023-05-01T12:00:00");
         // Value above threshold — should trigger termination
-        processor.processWeatherBetween(77.0, "2023-05-03T14:00:00");
+        processor.processWeather(77.0, "2023-05-03T14:00:00");
+        processor.processWeather(77.0, "2023-05-22T14:00:00");
+        processor.startProcessing();
 
         // Check stored value
         String key = "First instance of Temperature Above 75.0";
@@ -58,8 +59,8 @@ public class FirstDateAboveValueTest {
         processor.before();
 
         // All values below threshold
-        processor.processWeatherBetween(68.0, "2023-05-01T12:00:00");
-        processor.processWeatherBetween(70.0, "2023-06-01T14:00:00");
+        processor.processWeather(68.0, "2023-05-01T12:00:00");
+        processor.processWeather(70.0, "2023-06-01T14:00:00");
 
         processor.onStop("2023-12-31");
 

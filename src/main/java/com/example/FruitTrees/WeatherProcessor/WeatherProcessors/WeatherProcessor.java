@@ -59,11 +59,16 @@ public abstract class WeatherProcessor {
     /**
      * the type of open meteo data the processor is currently processing
      */
-  protected String dataType="";
+    protected String dataType="";
     /**
      * the current of measurement for the data being processed
      */
     protected String dataUnit="";
+
+    protected List<String> dataTypes= new ArrayList<>();
+    protected List<String> dataUnits= new ArrayList<>();
+
+
     /**
      * the list of input values used to process the weather
      */
@@ -91,10 +96,22 @@ public abstract class WeatherProcessor {
     protected  boolean onlyCalculateAverage;
 
     /**
+     * weather or not to calculate the average
+     */
+    protected  boolean calculateAverage;
+
+    private boolean calculateMax;
+    private boolean calculateMin;
+
+    /**
      * station Id used for NOAA processing
      *
      */
         String stationId;
+    /**
+     * external processors required by this one
+     */
+    public List<WeatherProcessor> requiredProcessors= new ArrayList<>();
 
     public WeatherProcessor(String processorName) {
         this.processorName = processorName;
@@ -185,8 +202,18 @@ public abstract class WeatherProcessor {
      * overridden method  used to calculate the average
      * of the processed weather values
      */
-    public void calculateAverage(){}
-        public ArrayList<String> getProcessedTextValues() {
+    public abstract void  calculateMeanAverageValue();
+    /**
+     * overridden method  used to calculate the average
+     * of the processed weather values
+     */
+    public void calculateMedianAverageValue(){}
+
+    public void calculateMinValue(){};
+
+    public void calculateMaxValue(){};
+
+    public ArrayList<String> getProcessedTextValues() {
         return processedTextValues;
     }
     public int getStartDay() {
@@ -263,6 +290,54 @@ public abstract class WeatherProcessor {
 
     public void setStationId(String stationId) {
         this.stationId = stationId;
+    }
+
+    public List<WeatherProcessor> getRequiredProcessors() {
+        return requiredProcessors;
+    }
+
+    public void setRequiredProcessors(List<WeatherProcessor> requiredProcessors) {
+        this.requiredProcessors = requiredProcessors;
+    }
+
+    public boolean isCalculateAverage() {
+        return calculateAverage;
+    }
+
+    public void setCalculateAverage(boolean calculateAverage) {
+        this.calculateAverage = calculateAverage;
+    }
+
+    public List<String> getDataTypes() {
+        return dataTypes;
+    }
+
+    public void setDataTypes(List<String> dataTypes) {
+        this.dataTypes = dataTypes;
+    }
+
+    public List<String> getDataUnits() {
+        return dataUnits;
+    }
+
+    public void setDataUnits(List<String> dataUnits) {
+        this.dataUnits = dataUnits;
+    }
+
+    public boolean isCalculateMax() {
+        return calculateMax;
+    }
+
+    public void setCalculateMax(boolean calculateMax) {
+        this.calculateMax = calculateMax;
+    }
+
+    public boolean isCalculateMin() {
+        return calculateMin;
+    }
+
+    public void setCalculateMin(boolean calculateMin) {
+        this.calculateMin = calculateMin;
     }
 
 

@@ -76,7 +76,7 @@ public abstract  class ProcessMultipleWeatherDataSetsBetweenDates extends Multip
 
 
     @Override
-    public void calculateAverage() {
+    public void calculateMeanAverageValue() {
         double total=0;
        for( Double doubleNum: yearlyDataValues){
           total= doubleNum+total;

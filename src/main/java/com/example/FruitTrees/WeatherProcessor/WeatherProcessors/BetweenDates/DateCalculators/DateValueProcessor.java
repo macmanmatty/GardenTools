@@ -13,7 +13,7 @@ public abstract class DateValueProcessor extends ProcessWeatherBetweenDates {
     public List<Optional<LocalDateTime>> yearlyDates=new ArrayList<>();
     protected  float percentMissing=.33f;
     @Override
-    public void calculateAverage() {
+    public void calculateMeanAverageValue() {
         Optional<LocalDateTime> date = DateUtilities.calculateAverageDate(yearlyDates, percentMissing);
         if (date.isPresent()) {
             addAverageValue("Average " + processorName + " " + date.get());

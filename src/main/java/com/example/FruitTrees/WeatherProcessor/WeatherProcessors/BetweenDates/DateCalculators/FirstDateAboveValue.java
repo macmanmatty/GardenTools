@@ -47,6 +47,7 @@ public class FirstDateAboveValue extends DateValueProcessor {
             String text = "First instance of " + dataType + " Above " + firstValue;
           addValue(date,this.date, text);
             this.date=Optional.empty();
+            stopProcessing();
 
     }
     @Override
@@ -54,7 +55,6 @@ public class FirstDateAboveValue extends DateValueProcessor {
         double value=data.doubleValue();
         if(value>=firstValue){
             this.date=Optional.of(LocalDateTime.parse(date));
-            terminate();
             onStop(date);
         }
     }

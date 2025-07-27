@@ -59,6 +59,9 @@ public class HourlyWeatherProcessRequest {
      */
     private String dataSourceMode="default";
 
+    private boolean calculateMax;
+    private boolean calculateMin;
+
     public String getHourlyDataType() {
         return hourlyDataType;
     }
@@ -149,5 +152,21 @@ public class HourlyWeatherProcessRequest {
 
     public void setDataSourceMode(String dataSourceMode) {
         this.dataSourceMode = dataSourceMode;
+    }
+
+    public boolean isCalculateMax() {
+        return calculateMax;
+    }
+
+    public void setCalculateMax(boolean calculateMax) {
+        this.calculateMax = calculateMax;
+    }
+
+    public boolean isCalculateMin() {
+        return calculateMin;
+    }
+
+    public void setCalculateMin(boolean calculateMin) {
+        this.calculateMin = calculateMin;
     }
 }

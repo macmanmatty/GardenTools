@@ -100,7 +100,7 @@ public abstract  class DailyAndMonthlyWeatherProcessor extends WeatherProcessor 
        }
         }
     @Override
-    public void calculateAverage() {
+    public void calculateMeanAverageValue() {
       Set<String> monthNames= monthlyValues.keySet();
       for(String month:monthNames){
           double total=0;

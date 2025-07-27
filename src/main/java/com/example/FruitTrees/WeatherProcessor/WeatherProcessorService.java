@@ -57,40 +57,63 @@ public class WeatherProcessorService {
      List<String> time = locationResponse.getTime();
      for (HourlyWeatherProcessRequest hourlyWeatherProcessRequest : hourlyWeatherProcessRequests) {
              WeatherProcessor weatherProcessor = applicationContext.getBean(hourlyWeatherProcessRequest.getProcessorName(), WeatherProcessor.class);
-             processHourlyWeather( time, weatherProcessor,hourlyWeatherProcessRequest,  locationResponse, locationWeatherResponse);
+             setProcessorConfiguration(weatherProcessor, hourlyWeatherProcessRequest, locationWeatherResponse);
+         log.info(" started processing of {}", weatherProcessor.getProcessorName() +" for "+locationResponse.getLocation().getName());
+         List<WeatherProcessor> dependentWeatherProcessors=weatherProcessor.getRequiredProcessors();
+         for(WeatherProcessor dependentWeatherProcessor:dependentWeatherProcessors){
+             processHourlyWeather( time, dependentWeatherProcessor,locationResponse.getData(weatherProcessor.getDataType()));
+         }
+         processHourlyWeather( time, weatherProcessor,locationResponse.getData(weatherProcessor.getDataType()));
      }
         return weatherResponse;
  }
+
+
+
     /**
-     *
+     * sets the configuration for weather processor based on the request
      * @param weatherProcessor
      * @param hourlyWeatherProcessRequest
      * @param locationWeatherResponse
-     * @param openMeteoDateAndTime
      */
-public void processHourlyWeather( List<String> openMeteoDateAndTime,  WeatherProcessor weatherProcessor, HourlyWeatherProcessRequest hourlyWeatherProcessRequest,
-                                 LocationResponse locationResponse,
-                                  LocationWeatherResponse locationWeatherResponse){
+ public void setProcessorConfiguration(WeatherProcessor weatherProcessor, HourlyWeatherProcessRequest hourlyWeatherProcessRequest, LocationWeatherResponse locationWeatherResponse   ){
      weatherProcessor.setStartMonthDay(hourlyWeatherProcessRequest.getStartProcessMonth(), hourlyWeatherProcessRequest.getStartProcessDay());
      weatherProcessor.setEndMonthDay(hourlyWeatherProcessRequest.getEndProcessMonth(), hourlyWeatherProcessRequest.getEndProcessDay());
      weatherProcessor.setInputParameters(hourlyWeatherProcessRequest.getInputParameters());
      weatherProcessor.setDataType(hourlyWeatherProcessRequest.getHourlyDataType());
      weatherProcessor.setLocationWeatherResponse(locationWeatherResponse);
+     weatherProcessor.setCalculateAverage(hourlyWeatherProcessRequest.isCalculateAverage());
      weatherProcessor.setOnlyCalculateAverage(hourlyWeatherProcessRequest.isOnlyCalculateAverage() && hourlyWeatherProcessRequest.isCalculateAverage());
-     List<? extends Number> data = locationResponse.getData(hourlyWeatherProcessRequest.getHourlyDataType());
-     int size = data.size();
-     weatherProcessor.before();
-    log.info(" started processing of {}", weatherProcessor.getProcessorName() +" for "+locationResponse.getLocation().getName());
+     weatherProcessor.setCalculateMin(hourlyWeatherProcessRequest.isCalculateMin());
+     weatherProcessor.setCalculateMax(hourlyWeatherProcessRequest.isCalculateMax());
+ }
 
+
+    /**
+     *
+     * @param weatherProcessor
+     * @param data
+     * @param openMeteoDateAndTime
+     */
+public void processHourlyWeather( List<String> openMeteoDateAndTime,  WeatherProcessor weatherProcessor, List<? extends Number> data ){
+
+     int size = data.size();
+    weatherProcessor.before();
     for (int count = 0; count < size; count++) {
          weatherProcessor.processWeatherExternal(data.get(count), openMeteoDateAndTime.get(count));
      }
      weatherProcessor.after();
-     if(hourlyWeatherProcessRequest.isCalculateAverage()){
-         weatherProcessor.calculateAverage();
+     if(weatherProcessor.isCalculateAverage()){
+         weatherProcessor.calculateMeanAverageValue();
      }
+    if(weatherProcessor.isCalculateMin()){
+        weatherProcessor.calculateMinValue();
+    }
+    if(weatherProcessor.isCalculateMax()){
+        weatherProcessor.calculateMaxValue();
+    }
      List<String> values = weatherProcessor.getProcessedTextValues();
-     locationWeatherResponse.getLocationResponses().addAll(values);
+     weatherProcessor.getLocationWeatherResponse().getLocationResponses().addAll(values);
  }
 
 

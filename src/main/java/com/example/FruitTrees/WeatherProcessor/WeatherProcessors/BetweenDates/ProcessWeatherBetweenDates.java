@@ -81,7 +81,7 @@ public abstract  class ProcessWeatherBetweenDates  extends WeatherProcessor {
 
 
     @Override
-    public void calculateAverage() {
+    public void calculateMeanAverageValue() {
         double total=0;
        for( Double doubleNum: yearlyDataValues){
           total= doubleNum+total;
@@ -94,13 +94,13 @@ public abstract  class ProcessWeatherBetweenDates  extends WeatherProcessor {
     /**
      * stops all processing of data
      */
-    public void terminate(){
+    @Override
+    public void stopProcessing(){
         processing=false;
-        stopProcessing();
     }
-    public void start(){
+    @Override
+    public void startProcessing(){
         processing=true;
-        startProcessing();
     }
 
 

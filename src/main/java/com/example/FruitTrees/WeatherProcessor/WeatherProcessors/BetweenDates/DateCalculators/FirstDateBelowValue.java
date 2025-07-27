@@ -42,6 +42,7 @@ public class FirstDateBelowValue extends DateValueProcessor {
         String text = "First instance of " + dataType + " Below " + firstValue;
         addValue(date,this.date, text);
         this.date = Optional.empty();
+        stopProcessing();
 
 
     }
@@ -50,7 +51,6 @@ public class FirstDateBelowValue extends DateValueProcessor {
         double value=data.doubleValue();
         if( value<=firstValue) {
             this.date=Optional.of(LocalDateTime.parse(date));
-           terminate();
           onStop(date);
         }
     }

@@ -38,7 +38,7 @@ public class FirstDateBelowValueTest {
         processor.before();
         processor.processWeatherBetween(40.0, "2023-10-01T08:00:00");
         processor.processWeatherBetween(29.5, "2023-10-15T06:00:00");
-
+        processor.startProcessing();
         String key = "First instance of Temperature Below 32.0";
         assertEquals("2023-10-15T06:00", yearlyValues.getValues().get(key));
         assertTrue(processor.getProcessedTextValues().stream().anyMatch(s -> s.contains("2023-10-15")));
@@ -47,10 +47,11 @@ public class FirstDateBelowValueTest {
     @Test
     void testFirstDateBelow_neverReached() {
         processor.before();
-        processor.processWeatherBetween(40.0, "2023-10-01T08:00:00");
-        processor.processWeatherBetween(35.0, "2023-11-15T12:00:00");
+        processor.processWeather(40.0, "2023-10-01T08:00:00");
+        processor.processWeather(35.0, "2023-11-15T12:00:00");
 
         processor.onStop("2023-12-31");
+        processor.startProcessing();
 
         String key = "First instance of Temperature Below 32.0";
         assertEquals("value never reached", yearlyValues.getValues().get(key));

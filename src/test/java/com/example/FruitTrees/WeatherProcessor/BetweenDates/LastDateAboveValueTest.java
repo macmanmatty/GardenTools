@@ -37,11 +37,13 @@ public class LastDateAboveValueTest {
     @Test
     void testLastDateAbove_found() {
         processor.before();
-        processor.processWeatherBetween(75.0, "2023-07-01T14:00:00");
-        processor.processWeatherBetween(82.0, "2023-08-01T15:00:00");
-        processor.processWeatherBetween(85.0, "2023-08-05T16:00:00");
+        processor.processWeather(75.0, "2023-07-01T14:00:00");
+        processor.processWeather(82.0, "2023-08-01T15:00:00");
+        processor.processWeather(85.0, "2023-08-05T16:00:00");
+        processor.processWeather(35.0, "2023-09-30T23:00:00");
 
         processor.onEndDate("2023-09-30");
+        processor.startProcessing();
 
         String key = "Last instance of Temperature Above 80.0";
         assertEquals("2023-08-05T16:00", yearlyValues.getValues().get(key));
@@ -51,8 +53,8 @@ public class LastDateAboveValueTest {
     @Test
     void testLastDateAbove_neverReached() {
         processor.before();
-        processor.processWeatherBetween(60.0, "2023-06-01T12:00:00");
-        processor.processWeatherBetween(79.9, "2023-07-10T10:00:00");
+        processor.processWeather(60.0, "2023-06-01T12:00:00");
+        processor.processWeather(79.9, "2023-07-10T10:00:00");
 
         processor.onEndDate("2023-09-30");
 
