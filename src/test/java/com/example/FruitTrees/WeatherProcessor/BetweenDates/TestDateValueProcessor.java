@@ -8,6 +8,10 @@ import java.util.List;
 public class TestDateValueProcessor extends DateValueProcessor {
     private final List<String> avgValues = new ArrayList<>();
 
+    public TestDateValueProcessor(String name) {
+        super(name);
+    }
+
     @Override
     public void addAverageValue(String value) {
         avgValues.add(value);

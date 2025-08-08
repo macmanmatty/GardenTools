@@ -14,7 +14,7 @@ public class DateValueProcessorTest {
 
     @BeforeEach
     void setUp() {
-        processor = new TestDateValueProcessor();
+        processor = new TestDateValueProcessor("Test Date");
     }
 
     @Test

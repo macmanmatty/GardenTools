@@ -8,6 +8,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 /**
  *a base  abstract class for implementing a weather processor
@@ -97,10 +98,15 @@ public abstract class WeatherProcessor {
     protected  boolean onlyCalculateAverage;
 
     /**
-     * weather or not to calculate the average
+     * weather or not to calculate  mean the average
      */
-    protected  boolean calculateAverage;
+    protected  boolean calculateMeanAverage;
 
+
+    /**
+     * weather or not to calculate median  the average
+     */
+    protected  boolean calculateMedianAverage;
     private boolean calculateMax;
     private boolean calculateMin;
 
@@ -204,11 +210,14 @@ public abstract class WeatherProcessor {
      * of the processed weather values
      */
     public abstract void  calculateMeanAverageValue();
+
     /**
      * overridden method  used to calculate the average
      * of the processed weather values
      */
-    public void calculateMedianAverageValue(){}
+    public abstract void  calculateMedianAverageValue();
+
+
 
     public void calculateMinValue(){};
 
@@ -301,12 +310,12 @@ public abstract class WeatherProcessor {
         this.hourlyWeatherProcessRequests = hourlyWeatherProcessRequests;
     }
 
-    public boolean isCalculateAverage() {
-        return calculateAverage;
+    public boolean isCalculateMeanAverage() {
+        return calculateMeanAverage;
     }
 
-    public void setCalculateAverage(boolean calculateAverage) {
-        this.calculateAverage = calculateAverage;
+    public void setCalculateMeanAverage(boolean calculateAverage) {
+        this.calculateMeanAverage = calculateAverage;
     }
 
     public List<String> getDataTypes() {
@@ -341,5 +350,11 @@ public abstract class WeatherProcessor {
         this.calculateMin = calculateMin;
     }
 
+    public boolean isCalculateMedianAverage() {
+        return calculateMedianAverage;
+    }
 
+    public void setCalculateMedianAverage(boolean calculateMedianAverage) {
+        this.calculateMedianAverage = calculateMedianAverage;
+    }
 }

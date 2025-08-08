@@ -26,6 +26,7 @@ public class FirstDateAboveValue extends DateValueProcessor {
      */
     private double firstValue;
     public FirstDateAboveValue() {
+        super("First Date Above");
     }
     @Override
     public void before() {

@@ -10,7 +10,6 @@ import com.example.FruitTrees.WeatherConroller.WeatherResponse.WeatherResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -82,9 +81,12 @@ public void processHourlyWeather( List<String> openMeteoDateAndTime,  WeatherPro
          weatherProcessor.processWeatherExternal(data.get(count), openMeteoDateAndTime.get(count));
      }
      weatherProcessor.after();
-    if(weatherProcessor.isCalculateAverage()){
+    if(weatherProcessor.isCalculateMeanAverage()){
          weatherProcessor.calculateMeanAverageValue();
      }
+    if(weatherProcessor.isCalculateMedianAverage()){
+        weatherProcessor.calculateMedianAverageValue();
+    }
     if(weatherProcessor.isCalculateMin()){
         weatherProcessor.calculateMinValue();
     }

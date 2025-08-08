@@ -29,8 +29,9 @@ public class WeatherProcessorFactory {
         processor.setInputParameters(config.getInputParameters());
         processor.setDataType(config.getHourlyDataType());
         processor.setLocationWeatherResponse(locationWeatherResponse);
-        processor.setCalculateAverage(config.isCalculateAverage());
-        processor.setOnlyCalculateAverage(config.isOnlyCalculateAverage() && config.isCalculateAverage());
+        processor.setCalculateMeanAverage(config.isCalculateMeanAverage());
+        processor.setCalculateMedianAverage(config.isCalculateMedianAverage());
+        processor.setOnlyCalculateAverage(config.isOnlyCalculateAverage() && config.isCalculateMeanAverage());
         processor.setCalculateMin(config.isCalculateMin());
         processor.setCalculateMax(config.isCalculateMax());
 

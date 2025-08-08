@@ -1,4 +1,5 @@
 package com.example.FruitTrees.WeatherProcessor.WeatherProcessors.MonthlyAndDaily;
+import com.example.FruitTrees.Utilities.ArrayUtilities;
 import com.example.FruitTrees.WeatherProcessor.WeatherProcessors.DateRecord;
 import com.example.FruitTrees.WeatherProcessor.WeatherProcessors.DateType;
 import com.example.FruitTrees.WeatherProcessor.WeatherProcessors.WeatherProcessor;
@@ -111,6 +112,19 @@ public abstract  class DailyAndMonthlyWeatherProcessor extends WeatherProcessor 
           double average=Math.round(total/monthlyValues.size());
           this.addAverageValue("Average "+processorName+" For Month "+month+" "+average);
       }
+    }
+
+    @Override
+    public void calculateMedianAverageValue() {
+        Set<String> monthNames= monthlyValues.keySet();
+
+        for(String month:monthNames) {
+            List<Double> monthlyValues = this.monthlyValues.get(month);
+            double average = ArrayUtilities.medianOfList(monthlyValues);
+
+            addAverageValue(" Median Average For " + processorName + " " + average);
+        }
+
     }
 
     /**

@@ -34,6 +34,11 @@ public class FrostLineCalculator extends ProcessMultipleWeatherDataSetsBetweenDa
     }
 
     @Override
+    public void calculateMedianAverageValue() {
+
+    }
+
+    @Override
     protected void onEndDate(String date) {
         LocalDateTime localDateTime=LocalDateTime.parse(date);
         int year= localDateTime.getYear();

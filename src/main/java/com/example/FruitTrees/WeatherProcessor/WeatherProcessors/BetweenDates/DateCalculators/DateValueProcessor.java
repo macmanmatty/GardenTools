@@ -1,8 +1,9 @@
 package com.example.FruitTrees.WeatherProcessor.WeatherProcessors.BetweenDates.DateCalculators;
+import com.example.FruitTrees.Utilities.ArrayUtilities;
 import com.example.FruitTrees.Utilities.DateUtilities;
 import com.example.FruitTrees.WeatherConroller.WeatherResponse.YearlyValuesResponse;
 import com.example.FruitTrees.WeatherProcessor.WeatherProcessors.BetweenDates.ProcessWeatherBetweenDates;
-import java.time.LocalDate;
+
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -12,14 +13,30 @@ import java.util.Optional;
 public abstract class DateValueProcessor extends ProcessWeatherBetweenDates {
     public List<Optional<LocalDateTime>> yearlyDates=new ArrayList<>();
     protected  float percentMissing=.33f;
+
+    public DateValueProcessor(String name) {
+        super(name);
+    }
+
     @Override
     public void calculateMeanAverageValue() {
-        Optional<LocalDateTime> date = DateUtilities.calculateAverageDate(yearlyDates, percentMissing);
+        Optional<LocalDateTime> date = DateUtilities.calculateMeanAverageDate(yearlyDates, percentMissing);
         if (date.isPresent()) {
-            addAverageValue("Average " + processorName + " " + date.get());
+            addAverageValue("Mean Average For " + processorName + " " + date.get());
         }
     else{
-            addAverageValue("Average " + processorName + " " + "Too many dates where value was never reached!");
+            addAverageValue("Mean Average " + processorName + " " + "Too many dates where value was never reached!");
+        }
+    }
+
+    @Override
+    public void calculateMedianAverageValue() {
+        Optional<LocalDateTime> date = DateUtilities.calculateMedianAverageDate(yearlyDates, percentMissing);
+        if (date.isPresent()) {
+            addAverageValue("Median verage " + processorName + " " + date.get());
+        }
+        else{
+            addAverageValue("Median Average " + processorName + " " + "Too many dates where value was never reached!");
         }
     }
    public void addValue( String date, Optional<LocalDateTime> endDate, String text){

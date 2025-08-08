@@ -83,7 +83,7 @@ public class DateUtilities {
         return  DateType.STANDARD_DAY;
     }
 
-        public static Optional<LocalDateTime> calculateAverageDate(List<Optional<LocalDateTime>> dateOptionals, float percentMissing) {
+        public static Optional<LocalDateTime> calculateMeanAverageDate(List<Optional<LocalDateTime>> dateOptionals, float percentMissing) {
             List<LocalDateTime> dates = dateOptionals.stream()
                     .filter(Optional::isPresent)
                     .map(Optional::get)
@@ -101,6 +101,40 @@ public class DateUtilities {
 
             return Optional.of(LocalDateTime.ofEpochSecond(avgEpochSeconds, 0, ZoneOffset.UTC));
         }
+
+
+        public static Optional<LocalDateTime> calculateMedianAverageDate(List<Optional<LocalDateTime>> dateOptionals, float percentMissing) {
+            List<LocalDateTime> dates = dateOptionals.stream()
+                    .filter(Optional::isPresent)
+                    .map(Optional::get)
+                    .collect(Collectors.toList());
+
+            // Check if too many are missing
+            if (dateOptionals.size() - dates.size() > dateOptionals.size() * percentMissing) {
+                return Optional.empty();
+            }
+
+            if (dates.isEmpty()) return Optional.empty();
+
+            // Convert to epoch seconds and sort
+            List<Long> epochSeconds = dates.stream()
+                    .map(date -> date.toEpochSecond(ZoneOffset.UTC))
+                    .sorted()
+                    .collect(Collectors.toList());
+
+            int n = epochSeconds.size();
+            long medianEpoch;
+
+            if (n % 2 == 0) {
+                medianEpoch = (epochSeconds.get(n / 2 - 1) + epochSeconds.get(n / 2)) / 2;
+            } else {
+                medianEpoch = epochSeconds.get(n / 2);
+            }
+
+            return Optional.of(LocalDateTime.ofEpochSecond(medianEpoch, 0, ZoneOffset.UTC));
+        }
+
+
 
 
 

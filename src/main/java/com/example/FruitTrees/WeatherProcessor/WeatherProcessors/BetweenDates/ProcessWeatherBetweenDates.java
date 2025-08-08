@@ -1,9 +1,12 @@
 package com.example.FruitTrees.WeatherProcessor.WeatherProcessors.BetweenDates;
 
+import com.example.FruitTrees.Utilities.ArrayUtilities;
 import com.example.FruitTrees.Utilities.DateUtilities;
 import com.example.FruitTrees.WeatherProcessor.WeatherProcessors.WeatherProcessor;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -87,8 +90,15 @@ public abstract  class ProcessWeatherBetweenDates  extends WeatherProcessor {
           total= doubleNum+total;
         }
        double average=Math.round(total/yearlyDataValues.size());
-       addAverageValue("Average "+ processorName +" "+average);
+       addAverageValue("Mean Average For "+ processorName +" "+average);
     }
+    @Override
+    public void calculateMedianAverageValue() {
+        double average=ArrayUtilities.medianOfList(yearlyDataValues);
+        addAverageValue(" Median Average For "+ processorName +" "+average);
+
+    }
+
 
 
     /**

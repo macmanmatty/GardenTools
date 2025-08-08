@@ -40,9 +40,13 @@ public class HourlyWeatherProcessRequest {
      */
     private List<String> inputParameters= new ArrayList<>();
     /**
-     * whether to calculate the average of the processed data
+     * whether to calculate the  mean average of the processed data
      */
-    private   boolean calculateAverage;
+    private   boolean calculateMeanAverage;
+    /**
+     * whether to calculate the  median average of the processed data
+     */
+    private   boolean calculateMedianAverage;
     /**
      * whether to only  calculate the average of the processed data
      */
@@ -118,13 +122,13 @@ public class HourlyWeatherProcessRequest {
         this.inputParameters = inputParameters;
     }
 
-    public boolean isCalculateAverage() {
-        return calculateAverage;
+    public boolean isCalculateMeanAverage() {
+        return calculateMeanAverage;
     }
 
-    public void setCalculateAverage(boolean calculateAverage) {
-        this.calculateAverage = calculateAverage;
-        if(!calculateAverage){
+    public void setCalculateMeanAverage(boolean calculateMeanAverage) {
+        this.calculateMeanAverage = calculateMeanAverage;
+        if(!calculateMeanAverage){
             onlyCalculateAverage=false;
         }
     }
@@ -143,7 +147,7 @@ public class HourlyWeatherProcessRequest {
 
     public void setOnlyCalculateAverage(boolean onlyCalculateAverage) {
         this.onlyCalculateAverage = onlyCalculateAverage;
-        this.calculateAverage=onlyCalculateAverage;
+        this.calculateMeanAverage =onlyCalculateAverage;
     }
 
     public String getDataSourceMode() {
@@ -168,5 +172,13 @@ public class HourlyWeatherProcessRequest {
 
     public void setCalculateMin(boolean calculateMin) {
         this.calculateMin = calculateMin;
+    }
+
+    public boolean isCalculateMedianAverage() {
+        return calculateMedianAverage;
+    }
+
+    public void setCalculateMedianAverage(boolean calculateMedianAverage) {
+        this.calculateMedianAverage = calculateMedianAverage;
     }
 }

@@ -25,6 +25,7 @@ public class LastDateBelowValue extends DateValueProcessor{
      */
     private double lastValue;
     public LastDateBelowValue() {
+        super("last Date Below");
     }
     @Override
     public void before() {
