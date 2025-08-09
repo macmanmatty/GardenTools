@@ -4,6 +4,8 @@ import com.example.FruitTrees.WeatherConroller.WeatherResponse.YearlyValuesRespo
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDateTime;
+
 /**
  *  A weather processor that calculates the total amount of some
  *  weather value between two  values  and between dates usually used  for counting chilling hours (temperature ) for deciduous fruit trees
@@ -42,8 +44,8 @@ public class HoursBetweenCalculator extends ProcessWeatherBetweenDates {
 
     }
     @Override
-    protected void onEndDate(String date) {
-        int year= DateUtilities.getYear(date);
+    protected void onEndDate(LocalDateTime date) {
+        int year= date.getYear();
         super.yearlyDataValues.add(chillHours);
         YearlyValuesResponse yearlyValuesResponse = locationWeatherResponse.getYearlyValues(String.valueOf(year));
         String text="Chilling Hours";
@@ -59,7 +61,7 @@ public class HoursBetweenCalculator extends ProcessWeatherBetweenDates {
      * @param date  the current date and time of the weather  being processed
      */
     @Override
-    protected void processWeatherBetween(Number data, String date) {
+    protected void processWeatherBetween(Number data, LocalDateTime date) {
         double value=data.doubleValue();
         if( value>=minTemp && value<=maxTemp) {
             chillHours++;

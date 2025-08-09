@@ -7,8 +7,8 @@ import com.example.FruitTrees.WeatherConroller.WeatherResponse.YearlyValuesRespo
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 /**
  *a base  abstract class for implementing a weather processor
@@ -144,14 +144,14 @@ public abstract class WeatherProcessor {
      * @param value the number value of the weather parameter
      * @param date the date and time the value happened
      */
-    protected abstract void processWeather(Number value, String date);
+    protected abstract void processWeather(double value, LocalDateTime date);
     /**
      *
      * the externally called method for processing weather
      * @param value the number value of the weather parameter
      * @param date the date and time the value happened
      */
-    public void processWeatherExternal(Number value, String date){
+    public void processWeatherExternal(double value, LocalDateTime date){
 
         if(stopProcessing){
             return;

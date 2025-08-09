@@ -1,6 +1,4 @@
 package com.example.FruitTrees.WeatherProcessor.WeatherProcessors.BetweenDates.DateCalculators;
-import com.example.FruitTrees.Utilities.DateUtilities;
-import com.example.FruitTrees.WeatherConroller.WeatherResponse.YearlyValuesResponse;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -37,11 +35,11 @@ public class FirstDateBelowValue extends DateValueProcessor {
         yearlyDataValues.clear();
     }
     @Override
-    protected void onEndDate(String date) {
+    protected void onEndDate(LocalDateTime date) {
         startProcessing();
     }
 
-    public void onStop(String date) {
+    public void onStop(LocalDateTime date) {
         String text = "First instance of " + dataType + " Below " + firstValue;
         addValue(date,this.date, text);
         this.date = Optional.empty();
@@ -50,10 +48,10 @@ public class FirstDateBelowValue extends DateValueProcessor {
 
     }
     @Override
-    public void processWeatherBetween(Number data, String date) {
+    public void processWeatherBetween(Number data, LocalDateTime date) {
         double value=data.doubleValue();
         if( value<=firstValue) {
-            this.date=Optional.of(LocalDateTime.parse(date));
+            this.date=Optional.of(date);
           onStop(date);
         }
     }

@@ -6,6 +6,7 @@ import com.example.FruitTrees.WeatherProcessor.WeatherProcessors.BetweenDates.Da
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.time.LocalDateTime;
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -36,8 +37,8 @@ public class FirstDateBelowValueTest {
     @Test
     void testFirstDateBelow_found() {
         processor.before();
-        processor.processWeatherBetween(40.0, "2023-10-01T08:00:00");
-        processor.processWeatherBetween(29.5, "2023-10-15T06:00:00");
+        processor.processWeatherBetween(40.0, LocalDateTime.parse("2023-10-01T08:00:00"));
+        processor.processWeatherBetween(29.5, LocalDateTime.parse("2023-10-15T06:00:00"));
         processor.startProcessing();
         String key = "First instance of Temperature Below 32.0";
         assertEquals("2023-10-15T06:00", yearlyValues.getValues().get(key));
@@ -47,10 +48,10 @@ public class FirstDateBelowValueTest {
     @Test
     void testFirstDateBelow_neverReached() {
         processor.before();
-        processor.processWeather(40.0, "2023-10-01T08:00:00");
-        processor.processWeather(35.0, "2023-11-15T12:00:00");
+        processor.processWeather(40.0, LocalDateTime.parse("2023-10-01T08:00:00"));
+        processor.processWeather(35.0, LocalDateTime.parse("2023-11-15T12:00:00"));
 
-        processor.onStop("2023-12-31");
+        processor.onStop(LocalDateTime.parse("2023-12-31T00:00:00"));
         processor.startProcessing();
 
         String key = "First instance of Temperature Below 32.0";

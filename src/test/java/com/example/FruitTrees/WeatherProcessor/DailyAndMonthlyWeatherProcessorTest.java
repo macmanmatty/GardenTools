@@ -1,6 +1,7 @@
 package com.example.FruitTrees.WeatherProcessor;
 import org.junit.jupiter.api.Test;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -22,7 +23,8 @@ public class DailyAndMonthlyWeatherProcessorTest {
         };
 
         for (String timestamp : sampleDates) {
-            processor.processWeather(32.0, timestamp);
+            LocalDateTime ts=LocalDateTime.parse(timestamp);
+            processor.processWeather(32.0, ts);
         }
 
         List<String> events = processor.eventLog;

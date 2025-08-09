@@ -2,11 +2,12 @@ package com.example.FruitTrees.WeatherProcessor.WeatherProcessors.MultipleDataSe
 
 import com.example.FruitTrees.WeatherProcessor.WeatherProcessors.WeatherProcessor;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 public abstract class MultipleDataSetWeatherProcessor  extends WeatherProcessor {
     @Override
-    public void processWeather(Number value, String date) {
+    public void processWeather(double value, LocalDateTime date) {
         throw new IllegalArgumentException("");
     }
 
@@ -16,5 +17,5 @@ public abstract class MultipleDataSetWeatherProcessor  extends WeatherProcessor 
      * @param value the number value of the weather parameter
      * @param date the date and time the value happened
      */
-    public abstract void processWeather(List<Number> value, List<String> dataType, String date);
+    public abstract void processWeather(List<Number> value, List<String> dataType, LocalDateTime date);
 }

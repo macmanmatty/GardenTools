@@ -39,8 +39,7 @@ public class FrostLineCalculator extends ProcessMultipleWeatherDataSetsBetweenDa
     }
 
     @Override
-    protected void onEndDate(String date) {
-        LocalDateTime localDateTime=LocalDateTime.parse(date);
+    protected void onEndDate(LocalDateTime localDateTime) {
         int year= localDateTime.getYear();
        YearlyValuesResponse yearlyValuesResponse = locationWeatherResponse.getYearlyValues(String.valueOf(year));
         String text="Frost Line is below "+ frostLine;
@@ -48,7 +47,7 @@ public class FrostLineCalculator extends ProcessMultipleWeatherDataSetsBetweenDa
         frostLine ="No Frost Line";
     }
     @Override
-    void processWeatherBetween(List<Number> data, List<String> dataType, String date) {
+    void processWeatherBetween(List<Number> data, List<String> dataType, LocalDateTime date) {
         int size=data.size();
        for(int count=0; count<size; count++){
            double value=data.get(0).doubleValue();

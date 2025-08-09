@@ -3,6 +3,7 @@ package com.example.FruitTrees.WeatherProcessor;
 import com.example.FruitTrees.WeatherConroller.WeatherResponse.LocationWeatherResponse;
 import com.example.FruitTrees.WeatherProcessor.WeatherProcessors.MonthlyAndDaily.DailyAndMonthlyWeatherProcessor;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,37 +17,37 @@ public class TestProcessor extends DailyAndMonthlyWeatherProcessor {
     }
 
     @Override
-    public void onStartDay(Number value, String date) {
+    public void onStartDay(double value, LocalDateTime date) {
         eventLog.add("StartDay:" + date);
     }
 
     @Override
-    public void onEndDay(Number value, String date) {
+    public void onEndDay(Number value, LocalDateTime date) {
         eventLog.add("EndDay:" + date);
     }
 
     @Override
-    protected void onStartNewYear(Number value, String date) {
+    protected void onStartNewYear(double value, LocalDateTime date) {
         eventLog.add("StartNewYear:" + date);
     }
 
     @Override
-    protected void onStartNewMonth(Number value, String date) {
+    protected void onStartNewMonth(double value, LocalDateTime date) {
         eventLog.add("StartNewMonth:" + date);
     }
 
     @Override
-    protected void onMonthEnd(Number value, String date) {
+    protected void onMonthEnd(double value, LocalDateTime date) {
         eventLog.add("MonthEnd:" + date);
     }
 
     @Override
-    protected void onEndYear(Number value, String date) {
+    protected void onEndYear(Number value, LocalDateTime date) {
         eventLog.add("EndYear:" + date);
     }
 
     @Override
-    protected void processWeatherBetween(Number data, String date) {
+    protected void processWeatherBetween(double value, LocalDateTime date) {
         eventLog.add("Between:" + date);
     }
 }

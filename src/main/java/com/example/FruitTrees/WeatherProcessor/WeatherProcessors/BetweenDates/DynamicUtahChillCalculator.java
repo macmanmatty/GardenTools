@@ -5,6 +5,7 @@ import com.example.FruitTrees.WeatherConroller.WeatherResponse.YearlyValuesRespo
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -51,8 +52,8 @@ public class DynamicUtahChillCalculator extends ProcessWeatherBetweenDates {
     }
 
     @Override
-    protected void onEndDate(String date) {
-       int year= DateUtilities.getYear(date);
+    protected void onEndDate(LocalDateTime date) {
+       int year= date.getYear();
         super.yearlyDataValues.add(chillHours);
         YearlyValuesResponse yearlyValuesResponse = locationWeatherResponse.getYearlyValues(String.valueOf(year));
         String text="Chilling Hours";
@@ -62,7 +63,7 @@ public class DynamicUtahChillCalculator extends ProcessWeatherBetweenDates {
         chillHours =0;
     }
     @Override
-    protected void processWeatherBetween(Number data, String date) {
+    protected void processWeatherBetween(Number data, LocalDateTime date) {
         double value=data.doubleValue();
         int size=ragesBottom.size();
         for(int count=0; count<size; count++){

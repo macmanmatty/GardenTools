@@ -4,7 +4,13 @@ import com.example.FruitTrees.Location.Location;
 import com.example.FruitTrees.Utilities.DataUtilities;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-import java.util.List;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Map;
+
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class OpenMeteoLocationResponse  implements LocationResponse {
     /**
@@ -31,13 +37,19 @@ public class OpenMeteoLocationResponse  implements LocationResponse {
     }
 
     @Override
-    public List<String> getTime() {
-        return openMeteoResponse.hourly.time;
+    public LocalDateTime[] getTime() {
+        DateTimeFormatter FMT = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm");
+
+        return openMeteoResponse.hourly.time.stream()
+                .map(s -> LocalDateTime.parse(s, FMT))          // parse without offset
+                .map(ldt -> ldt.atZone(ZoneOffset.UTC))         // assume UTC
+                .map(ZonedDateTime::toLocalDateTime)            // strip zone if you want pure LocalDateTime
+                .toArray(LocalDateTime[]::new);
     }
 
     @Override
-    public List<? extends Number> getData(String type){
-       return DataUtilities.getHourlyData(openMeteoResponse, type);
+    public Map< String, double[]> getData(){
+        return  DataUtilities.getAllHourlyData(openMeteoResponse);
     }
     @Override
     public String getDataSource() {

@@ -6,6 +6,7 @@ import com.example.FruitTrees.WeatherProcessor.WeatherProcessors.BetweenDates.Da
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.time.LocalDateTime;
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -37,12 +38,12 @@ public class LastDateAboveValueTest {
     @Test
     void testLastDateAbove_found() {
         processor.before();
-        processor.processWeather(75.0, "2023-07-01T14:00:00");
-        processor.processWeather(82.0, "2023-08-01T15:00:00");
-        processor.processWeather(85.0, "2023-08-05T16:00:00");
-        processor.processWeather(35.0, "2023-09-30T23:00:00");
+        processor.processWeather(75.0, LocalDateTime.parse("2023-07-01T14:00:00"));
+        processor.processWeather(82.0, LocalDateTime.parse("2023-08-01T15:00:00"));
+        processor.processWeather(85.0, LocalDateTime.parse("2023-08-05T16:00:00"));
+        processor.processWeather(35.0, LocalDateTime.parse("2023-09-30T23:00:00"));
 
-        processor.onEndDate("2023-09-30");
+        processor.onEndDate(LocalDateTime.parse("2023-09-30T23:00:00"));
         processor.startProcessing();
 
         String key = "Last instance of Temperature Above 80.0";
@@ -53,10 +54,10 @@ public class LastDateAboveValueTest {
     @Test
     void testLastDateAbove_neverReached() {
         processor.before();
-        processor.processWeather(60.0, "2023-06-01T12:00:00");
-        processor.processWeather(79.9, "2023-07-10T10:00:00");
+        processor.processWeather(60.0, LocalDateTime.parse("2023-06-01T12:00:00"));
+        processor.processWeather(79.9, LocalDateTime.parse("2023-07-10T10:00:00"));
 
-        processor.onEndDate("2023-09-30");
+        processor.onEndDate(LocalDateTime.parse("2023-09-30T00:00:00"));
 
         String key = "Last instance of Temperature Above 80.0";
         assertEquals("value never reached", yearlyValues.getValues().get(key));

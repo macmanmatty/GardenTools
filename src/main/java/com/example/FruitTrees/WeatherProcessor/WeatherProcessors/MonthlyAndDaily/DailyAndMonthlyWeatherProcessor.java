@@ -68,7 +68,7 @@ public abstract  class DailyAndMonthlyWeatherProcessor extends WeatherProcessor 
      * @param date the date and time the value happened
      */
     @Override
-    public void processWeather(Number value, String date) {
+    public void processWeather(double value, LocalDateTime date) {
         processWeatherBetween(value, date);
         DateRecord dateRecord=analyzeDate(date);
         switch (dateRecord.hourType()){
@@ -135,7 +135,7 @@ public abstract  class DailyAndMonthlyWeatherProcessor extends WeatherProcessor 
      * @param value the first weather value of the day
      * @param date the full date string (e.g., "2025-06-19T00:00:00")
      */
-    public void onStartDay(Number value, String date) {}
+    public void onStartDay(double value, LocalDateTime date) {}
 
     /**
      * Called at the end of a day (typically at hour 23).
@@ -145,7 +145,7 @@ public abstract  class DailyAndMonthlyWeatherProcessor extends WeatherProcessor 
      * @param value the last weather value of the day
      * @param date the full date string (e.g., "2025-06-19T23:00:00")
      */
-    public void onEndDay(Number value, String date) {}
+    public void onEndDay(Number value, LocalDateTime date) {}
     public void addProcessedTextValue(double value, int year, String month){
         addProcessedTextValue(processorName +" for "+dataType+" " +month+" "+year+  " : "+ value);
     }
@@ -155,46 +155,46 @@ public abstract  class DailyAndMonthlyWeatherProcessor extends WeatherProcessor 
      * when the processing of weather ends
      * @param date  the current date and time of the weather  being processed
      */
-    protected  void onEndYear(Number value, String date){}
+    protected  void onEndYear(Number value, LocalDateTime date){}
     /**
      * subclass implemented method  for
      * preforming actions on weather  the first hour jan 1
      * when the processing of weather ends
      * @param date  the current date and time of the weather  being processed
      */
-    protected  void onStartNewYear(Number value, String date) {}
+    protected  void onStartNewYear(double value, LocalDateTime date) {}
     /**
      * subclass implemented method  for
      * preforming actions on weather first day of the first hour
      * when the processing of weather ends
      * @param date  the current date and time of the weather  being processed
      */
-    protected  void onStartNewMonth(Number value, String date){}
+    protected  void onStartNewMonth(double value, LocalDateTime date){}
     /**
      * subclass implemented method  for
      * preforming actions on weather last day of the  month on the 23 hour
      * when the processing of weather ends
      * @param date  the current date and time of the weather  being processed
      */
-    protected  void onMonthEnd(Number value, String date){}
+    protected  void onMonthEnd(double value, LocalDateTime date){}
     /**
      * subclass implemented method  for
      * processing the weather
+     *
+     * @param value the value of the weather data at the current date and time
      * @param date  the current date and time of the weather  being processed
-     * @param  data the value of the weather data at the current date and time
      */
-    protected abstract void processWeatherBetween(Number data, String date);
+    protected abstract void processWeatherBetween(double value, LocalDateTime date);
     /**
      * checks to see if date / time is  the 0 hour of the first day of the month
      * or the last day of the month or new years day or new years eve
      * if so sets the current years and month and returns a enum used to call
      * the correct abstract processing method
-     * @param openMeteoDateAndTime the current date and time being processed
+     * @param localDate the current date and time being processed
      * @return true if the day / time is the 0 hour of the first day of the month
      * otherwise returns false
      */
-    protected DateRecord analyzeDate(String openMeteoDateAndTime) {
-        LocalDateTime localDate = LocalDateTime.parse(openMeteoDateAndTime);
+    protected DateRecord analyzeDate(LocalDateTime localDate) {
 
         // Determine hour type
         DateType hourType = switch (localDate.getHour()) {

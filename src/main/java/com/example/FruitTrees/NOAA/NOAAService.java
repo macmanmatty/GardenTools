@@ -68,7 +68,7 @@ public class NOAAService {
                     if (populateLocationData) {
                         openStreetLocationService.populateLocationData(location);
                     }
-                locationResponses.getLocationResponses().add(noaaLocationResponse);
+                //locationResponses.getLocationResponses().add(noaaLocationResponse);
 
             } catch (RestClientException e) {
                 Logger.getLogger("").info(e.toString());

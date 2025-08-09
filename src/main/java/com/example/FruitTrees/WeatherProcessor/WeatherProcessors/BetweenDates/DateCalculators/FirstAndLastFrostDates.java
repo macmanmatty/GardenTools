@@ -60,11 +60,11 @@ public class FirstAndLastFrostDates extends DateValueProcessor {
     }
 
     @Override
-    protected void onEndDate(String date) {
+    protected void onEndDate(LocalDateTime date) {
         startProcessing();
     }
 
-    public void onStop(String date) {
+    public void onStop(LocalDateTime date) {
             String text = "First instance of " + dataType + " Above " + lastFrost;
           addValue(date,this.firstFrost, text);
             this.firstFrost =Optional.empty();
@@ -75,10 +75,10 @@ public class FirstAndLastFrostDates extends DateValueProcessor {
 
     }
     @Override
-    public void processWeatherBetween(Number data, String date) {
+    public void processWeatherBetween(Number data, LocalDateTime date) {
         double value=data.doubleValue();
         if(value<= freezing){
-            this.firstFrost =Optional.of(LocalDateTime.parse(date));
+            this.firstFrost =Optional.of(date);
             onStop(date);
         }
     }

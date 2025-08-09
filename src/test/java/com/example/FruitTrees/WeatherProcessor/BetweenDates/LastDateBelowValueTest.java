@@ -5,6 +5,7 @@ import com.example.FruitTrees.WeatherProcessor.WeatherProcessors.BetweenDates.Da
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.time.LocalDateTime;
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -42,10 +43,10 @@ public class LastDateBelowValueTest {
     void testLastDateBelow_found() {
         // Simulate two data points — only the last is below 32.0
         processor.before();
-        processor.processWeatherBetween(35.0, "2023-10-10T00:00:00");
-        processor.processWeatherBetween(28.5, "2023-10-15T06:00:00");
+        processor.processWeatherBetween(35.0, LocalDateTime.parse("2023-10-10T00:00:00"));
+        processor.processWeatherBetween(28.5, LocalDateTime.parse("2023-10-15T06:00:00"));
 
-        processor.onEndDate("2023-12-31");
+        processor.onEndDate(LocalDateTime.parse("2023-12-31T00:00:00"));
 
         // Verify that the value was set
         assertEquals("2023-10-15T06:00", mockYearlyValuesResponse.getValues().get("Last instance of Temperature Below 32.0"));
@@ -55,11 +56,11 @@ public class LastDateBelowValueTest {
     @Test
     void testLastDateBelow_neverReached() {
         processor.before();
-        processor.processWeatherBetween(40.0, "2023-10-10T00:00:00");
-        processor.processWeatherBetween(35.0, "2023-10-15T06:00:00");
-        processor.processWeatherBetween(35.0, "2023-12-31T23:00:00");
+        processor.processWeatherBetween(40.0, LocalDateTime.parse("2023-10-10T00:00:00"));
+        processor.processWeatherBetween(35.0, LocalDateTime.parse("2023-10-15T06:00:00"));
+        processor.processWeatherBetween(35.0, LocalDateTime.parse("2023-12-31T23:00:00"));
 
-        processor.onEndDate("2023-12-31");
+        processor.onEndDate(LocalDateTime.parse("2023-12-31T00:00:00"));
         processor.startProcessing();
 
         // Verify fallback message

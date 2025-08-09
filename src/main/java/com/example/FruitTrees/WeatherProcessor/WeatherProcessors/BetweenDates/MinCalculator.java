@@ -4,6 +4,8 @@ import com.example.FruitTrees.WeatherConroller.WeatherResponse.YearlyValuesRespo
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDateTime;
+
 @Component("Min")
 @Scope("prototype")
 
@@ -14,8 +16,8 @@ public class MinCalculator extends ProcessWeatherBetweenDates {
     }
 
     @Override
-    protected void onEndDate(String date) {
-        int year= DateUtilities.getYear(date);
+    protected void onEndDate(LocalDateTime date) {
+        int year= date.getYear();
         super.yearlyDataValues.add(finalValue);
         YearlyValuesResponse yearlyValuesResponse = locationWeatherResponse.getYearlyValues(String.valueOf(year));
         yearlyValuesResponse.getValues().put(processorName +" For "+dataType, String.valueOf(inputParameters));
@@ -23,7 +25,7 @@ public class MinCalculator extends ProcessWeatherBetweenDates {
             finalValue =Double.MAX_VALUE;
         }
     @Override
-    protected void processWeatherBetween(Number data, String date) {
+    protected void processWeatherBetween(Number data, LocalDateTime date) {
         double value=data.doubleValue();
         if (value < finalValue) {
             finalValue = value;

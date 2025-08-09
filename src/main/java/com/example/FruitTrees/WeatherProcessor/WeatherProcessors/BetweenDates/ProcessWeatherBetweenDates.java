@@ -4,9 +4,8 @@ import com.example.FruitTrees.Utilities.ArrayUtilities;
 import com.example.FruitTrees.Utilities.DateUtilities;
 import com.example.FruitTrees.WeatherProcessor.WeatherProcessors.WeatherProcessor;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -42,7 +41,7 @@ public abstract  class ProcessWeatherBetweenDates  extends WeatherProcessor {
      * @param date the date and time the value happened
      */
     @Override
-    public final  void processWeather(Number value, String date) {
+    public final  void processWeather(double value, LocalDateTime date) {
         switch(DateUtilities.checkDate(date, startDay, startMonth, endDay, endMonth)){
                 case START_PROCESSING -> {
                     processing =true;
@@ -64,14 +63,14 @@ public abstract  class ProcessWeatherBetweenDates  extends WeatherProcessor {
      * @param date  the current date and time of the weather  being processed
      * 
      */
-    protected  void onStartDate(String date){}
+    protected  void onStartDate(LocalDateTime date){}
     /**
      *  method  for
      * preforming actions on weather end date
      * when the processing of weather ends
      * @param date  the current date and time of the weather  being processed
      */
-    protected void onEndDate(String date){
+    protected void onEndDate(LocalDateTime date){
 
     }
     /**
@@ -80,7 +79,7 @@ public abstract  class ProcessWeatherBetweenDates  extends WeatherProcessor {
      * @param date  the current date and time of the weather  being processed
      * @param  data the value of the weather data at the current date and time
      */
-    protected abstract void processWeatherBetween(Number data, String date);
+    protected abstract void processWeatherBetween(Number data, LocalDateTime date);
 
 
     @Override

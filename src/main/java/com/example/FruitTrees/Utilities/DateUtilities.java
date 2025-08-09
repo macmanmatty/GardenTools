@@ -66,11 +66,10 @@ public class DateUtilities {
     /**
      *  checks a string  date in YYYY-MM-DDTHH:MM format   to see if
      *  it is the start date or the end date or justa normal date
-     * @param openMeteoDateAndTime
+     * @param localDate
      * @return
      */
-    public static  DateType checkDate(String openMeteoDateAndTime, int startDay,  int startMonth, int  endDay, int endMonth){
-        LocalDateTime localDate=LocalDateTime.parse(openMeteoDateAndTime);
+    public static  DateType checkDate(LocalDateTime localDate, int startDay,  int startMonth, int  endDay, int endMonth){
         int dayOfMonth=localDate.getDayOfMonth();
         int month=localDate.getMonthValue();
         int hour=localDate.getHour();

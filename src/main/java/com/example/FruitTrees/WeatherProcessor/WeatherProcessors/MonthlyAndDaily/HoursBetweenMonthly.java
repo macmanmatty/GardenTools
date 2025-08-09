@@ -3,6 +3,8 @@ package com.example.FruitTrees.WeatherProcessor.WeatherProcessors.MonthlyAndDail
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDateTime;
+
 /**
  *  A weather processor that calculates the total amount of some
  *  weather value between a min and max   value  for each month
@@ -37,7 +39,7 @@ public class HoursBetweenMonthly extends DailyAndMonthlyWeatherProcessor {
     }
 
     @Override
-    protected void onMonthEnd(Number value, String date) {
+    protected void onMonthEnd(double value, LocalDateTime date) {
         String text="Monthly Hours Of " +dataType+  " Between "+minValue+ " And " + maxValue;
         super.processorName="Hours Above Monthly "+inputParameters.get(0);
         monthlyValuesResponse.getValues().put(text, String.valueOf(hours));
@@ -47,8 +49,7 @@ public class HoursBetweenMonthly extends DailyAndMonthlyWeatherProcessor {
         hours =0;
     }
     @Override
-    protected void processWeatherBetween(Number data, String date) {
-        double value=data.doubleValue();
+    protected void processWeatherBetween(double value, LocalDateTime date) {
         if( value<= maxValue && value>=minValue) {
             hours++;
         }
