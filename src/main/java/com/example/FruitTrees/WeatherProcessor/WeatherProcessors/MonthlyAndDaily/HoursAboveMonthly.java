@@ -1,6 +1,9 @@
 package com.example.FruitTrees.WeatherProcessor.WeatherProcessors.MonthlyAndDaily;
 
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+
+import java.time.LocalDateTime;
 
 
 /**
@@ -9,6 +12,8 @@ import org.springframework.stereotype.Component;
  *
  */
 @Component("HoursAboveMonthly")
+@Scope("prototype")
+
 public class HoursAboveMonthly extends DailyAndMonthlyWeatherProcessor {
     /**
      * the counted hours
@@ -34,7 +39,7 @@ public class HoursAboveMonthly extends DailyAndMonthlyWeatherProcessor {
     }
 
     @Override
-    protected void onMonthEnd(Number value, String date) {
+    protected void onMonthEnd(double value, LocalDateTime date) {
         String text="Monthly Hours Of " +dataType+  " Above "+minValue;
         monthlyValuesResponse.getValues().put(text, String.valueOf(hours));
            addProcessedTextValue(text + " For " + currentMonthName + "  " + currentYear + " : " + hours);
@@ -43,8 +48,7 @@ public class HoursAboveMonthly extends DailyAndMonthlyWeatherProcessor {
         hours =0;
     }
     @Override
-    protected void processWeatherBetween(Number data, String date) {
-        double value=data.doubleValue();
+    protected void processWeatherBetween(double value, LocalDateTime date) {
         if( value>= minValue) {
             hours++;
         }

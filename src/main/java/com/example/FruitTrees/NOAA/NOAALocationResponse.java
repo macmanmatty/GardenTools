@@ -3,10 +3,12 @@ package com.example.FruitTrees.NOAA;
 import com.example.FruitTrees.Location.Location;
 import com.example.FruitTrees.OpenMeteo.LocationResponse;
 
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.List;
-import java.util.stream.Collectors;
 
-public class NOAALocationResponse implements LocationResponse {
+public class NOAALocationResponse  {
     /**
      * the map of NOAA weather  data
      * key= weather type temperature, precipitation tec.
@@ -34,26 +36,27 @@ public class NOAALocationResponse implements LocationResponse {
         this.noaaHourlyDataMap = noaaHourlyDataMap;
     }
 
-    @Override
-    public List<String> getTime() {
-        return noaaHourlyDataMap.getTime();
+
+    public LocalDateTime[] getTime() {
+        return new LocalDateTime[0];
     }
 
     /**
      * get the data from the map of noaa data as a list of numbers
+     *
      * @param type the data of weather to get
      * @return The list of numerical data
      */
-    public List<? extends Number> getData(String type){
+    public double[] getData(String type){
     List<NOAAWeatherRecord> records= noaaHourlyDataMap.getNoaaHourlyObservationsMap().get(type);
-            List<? extends Number> data = records.stream()
+            double [] data = records.stream()
                     .map(NOAAWeatherRecord::getValue)
                     .distinct()  // Optional: remove duplicates
-                    .sorted()    // Optional: ensure chronological order
-                    .collect(Collectors.toList());
+                    .sorted().mapToDouble(Number::doubleValue) // unbox + widen
+                .toArray();
             return data;
     }
-    @Override
+
     public String getDataSource() {
         return DATA_SOURCE;
     }

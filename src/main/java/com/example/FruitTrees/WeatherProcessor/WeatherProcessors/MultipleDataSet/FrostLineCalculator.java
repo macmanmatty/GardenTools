@@ -2,6 +2,7 @@ package com.example.FruitTrees.WeatherProcessor.WeatherProcessors.MultipleDataSe
 
 import com.example.FruitTrees.WeatherConroller.WeatherResponse.YearlyValuesResponse;
 import com.example.FruitTrees.Utilities.DataUtilities;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
@@ -13,6 +14,8 @@ import java.util.List;
  *
  */
 @Component("FrostLine")
+@Scope("prototype")
+
 public class FrostLineCalculator extends ProcessMultipleWeatherDataSetsBetweenDates {
     /**
      * the min frost line
@@ -31,8 +34,12 @@ public class FrostLineCalculator extends ProcessMultipleWeatherDataSetsBetweenDa
     }
 
     @Override
-    protected void onEndDate(String date) {
-        LocalDateTime localDateTime=LocalDateTime.parse(date);
+    public void calculateMedianAverageValue() {
+
+    }
+
+    @Override
+    protected void onEndDate(LocalDateTime localDateTime) {
         int year= localDateTime.getYear();
        YearlyValuesResponse yearlyValuesResponse = locationWeatherResponse.getYearlyValues(String.valueOf(year));
         String text="Frost Line is below "+ frostLine;
@@ -40,7 +47,7 @@ public class FrostLineCalculator extends ProcessMultipleWeatherDataSetsBetweenDa
         frostLine ="No Frost Line";
     }
     @Override
-    void processWeatherBetween(List<Number> data, List<String> dataType, String date) {
+    void processWeatherBetween(List<Number> data, List<String> dataType, LocalDateTime date) {
         int size=data.size();
        for(int count=0; count<size; count++){
            double value=data.get(0).doubleValue();

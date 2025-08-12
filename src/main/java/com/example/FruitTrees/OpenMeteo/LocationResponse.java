@@ -2,12 +2,13 @@ package com.example.FruitTrees.OpenMeteo;
 
 import com.example.FruitTrees.Location.Location;
 
-import java.util.List;
+import java.time.LocalDateTime;
+import java.util.Map;
 
 public interface LocationResponse {
 
-   List<String> getTime();
-   List<? extends Number> getData(String dataType);
+   LocalDateTime[] getTime();
+   Map<String, double[]> getData();
     Location getLocation();
     String getDataSource();
 

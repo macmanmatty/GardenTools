@@ -1,7 +1,10 @@
 package com.example.FruitTrees.WeatherProcessor.WeatherProcessors.Daily;
 
 import com.example.FruitTrees.WeatherProcessor.WeatherProcessors.MonthlyAndDaily.DailyAndMonthlyWeatherProcessor;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+
+import java.time.LocalDateTime;
 
 
 /**
@@ -10,6 +13,8 @@ import org.springframework.stereotype.Component;
  *
  */
 @Component("DaysBelowMonthly")
+@Scope("prototype")
+
 public class DaysBelowMonthly extends DailyAndMonthlyWeatherProcessor {
     /**
      * the counted hours
@@ -42,11 +47,11 @@ public class DaysBelowMonthly extends DailyAndMonthlyWeatherProcessor {
     }
 
     @Override
-    public void onStartDay(Number value, String date) {
+    public void onStartDay(double value, LocalDateTime date) {
         super.onStartDay(value, date);
     }
     @Override
-    public void onEndDay(Number value, String date) {
+    public void onEndDay(Number value, LocalDateTime date) {
         if(hours==24){
             totalDays++;
         }
@@ -54,7 +59,7 @@ public class DaysBelowMonthly extends DailyAndMonthlyWeatherProcessor {
     }
 
     @Override
-    protected void onMonthEnd(Number value, String date) {
+    protected void onMonthEnd(double value, LocalDateTime date) {
         String text="Days " +dataType+  " Below "+ valueToCheck;
         monthlyValuesResponse.getValues().put(text, String.valueOf(totalDays));
         addProcessedTextValue(text + " For " + currentMonthName + " " + currentYear + " : " + hours);
@@ -65,12 +70,11 @@ public class DaysBelowMonthly extends DailyAndMonthlyWeatherProcessor {
     }
 
     @Override
-    protected void onStartNewMonth(Number value, String date) {
+    protected void onStartNewMonth(double value, LocalDateTime date) {
          }
 
     @Override
-    protected void processWeatherBetween(Number data, String date) {
-        double value=data.doubleValue();
+    protected void processWeatherBetween(double value, LocalDateTime date) {
         if( value <valueToCheck) {
             hours++;
         }

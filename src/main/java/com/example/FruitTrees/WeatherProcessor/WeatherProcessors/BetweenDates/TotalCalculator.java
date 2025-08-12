@@ -1,4 +1,5 @@
 package com.example.FruitTrees.WeatherProcessor.WeatherProcessors.BetweenDates;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import java.time.LocalDateTime;
 /**
@@ -6,6 +7,8 @@ import java.time.LocalDateTime;
  * weather type usually rain fall or snow during given dates
  */
 @Component("Total")
+@Scope("prototype")
+
 public class TotalCalculator extends ProcessWeatherBetweenDates{
     /**
      * the total amount of weather
@@ -15,14 +18,14 @@ public class TotalCalculator extends ProcessWeatherBetweenDates{
         super("Total");
     }
     @Override
-    protected void onEndDate(String date) {
-        LocalDateTime localDateTime=LocalDateTime.parse(date);
+    protected void onEndDate(LocalDateTime date) {
+
         super.yearlyDataValues.add(total);
-        addProcessedTextValue(total, localDateTime.getYear() );
+        addProcessedTextValue(total, date.getYear() );
         total =0;
     }
     @Override
-    protected void processWeatherBetween(Number data, String date) {
+    protected void processWeatherBetween(Number data, LocalDateTime date) {
         double value=data.doubleValue();
         this.total = this.total + value;
     }

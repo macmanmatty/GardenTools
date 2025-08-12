@@ -1,7 +1,13 @@
 package com.example.FruitTrees.Utilities;
 
 import com.example.FruitTrees.OpenMeteo.OpenMeteoResponse;
+
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.function.BiConsumer;
+
 public class DataUtilities {
 
     private  DataUtilities() {
@@ -9,43 +15,57 @@ public class DataUtilities {
 
 
 
-    public static List<? extends Number> getHourlyData(OpenMeteoResponse openMeteoResponse, String fieldName) {
-        OpenMeteoResponse.Hourly data=openMeteoResponse.hourly;
-        return switch (fieldName) {
-            case "temperature_2m" -> data.temperature_2m;
-            case "relative_humidity_2m" -> data.relative_humidity_2m;
-            case "dew_point_2m" -> data.dew_point_2m;
-            case "apparent_temperature" -> data.apparent_temperature;
-            case "precipitation" -> data.precipitation;
-            case "rain" -> data.rain;
-            case "snowfall" -> data.snowfall;
-            case "snow_depth" -> data.snow_depth;
-            case "weather_code" -> data.weather_code;
-            case "pressure_msl" -> data.pressure_msl;
-            case "surface_pressure" -> data.surface_pressure;
-            case "cloud_cover" -> data.cloud_cover;
-            case "cloud_cover_low" -> data.cloud_cover_low;
-            case "cloud_cover_mid" -> data.cloud_cover_mid;
-            case "cloud_cover_high" -> data.cloud_cover_high;
-            case "et0_fao_evapotranspiration" -> data.et0_fao_evapotranspiration;
-            case "vapour_pressure_deficit" -> data.vapour_pressure_deficit;
-            case "wind_speed_10m" -> data.wind_speed_10m;
-            case "wind_speed_100m" -> data.wind_speed_100m;
-            case "wind_direction_10m" -> data.wind_direction_10m;
-            case "wind_direction_100m" -> data.wind_direction_100m;
-            case "wind_gusts_10m" -> data.wind_gusts_10m;
-            case "soil_moisture_0_to_7cm" -> data.soil_moisture_0_to_7cm;
-            case "soil_temperature_0_to_7cm" -> data.soil_temperature_0_to_7cm;
-            case "soil_temperature_7_to_28cm" -> data.soil_temperature_7_to_28cm;
-            case "soil_moisture_7_to_28cm" -> data.soil_moisture_7_to_28cm;
-            case "soil_moisture_28_to_100cm" -> data.soil_moisture_28_to_100cm;
-            case "soil_temperature_28_to_100cm" -> data.soil_temperature_28_to_100cm;
-            case "soil_moisture_100_to_255cm" -> data.soil_moisture_100_to_255cm;
-            case "soil_temperature_100_to_255cm" -> data.soil_temperature_100_to_255cm;
-            default -> throw new IllegalArgumentException("Invalid field name: " + fieldName);
-        };
-    }
+    public static Map<String, double[]> getAllHourlyData(OpenMeteoResponse response) {
+        OpenMeteoResponse.Hourly data = response.hourly;
+        Map<String, List<? extends Number>> rawData = new HashMap<>();
+        BiConsumer<String, List<? extends Number>> putIfNotNull =
+                (key, value) -> { if (value != null) rawData.put(key, value); };
 
+        putIfNotNull.accept("temperature_2m", data.temperature_2m);
+        putIfNotNull.accept("relative_humidity_2m", data.relative_humidity_2m);
+        putIfNotNull.accept("dew_point_2m", data.dew_point_2m);
+        putIfNotNull.accept("apparent_temperature", data.apparent_temperature);
+        putIfNotNull.accept("precipitation", data.precipitation);
+        putIfNotNull.accept("rain", data.rain);
+        putIfNotNull.accept("snowfall", data.snowfall);
+        putIfNotNull.accept("snow_depth", data.snow_depth);
+        putIfNotNull.accept("weather_code", data.weather_code);
+        putIfNotNull.accept("pressure_msl", data.pressure_msl);
+        putIfNotNull.accept("surface_pressure", data.surface_pressure);
+        putIfNotNull.accept("cloud_cover", data.cloud_cover);
+        putIfNotNull.accept("cloud_cover_low", data.cloud_cover_low);
+        putIfNotNull.accept("cloud_cover_mid", data.cloud_cover_mid);
+        putIfNotNull.accept("cloud_cover_high", data.cloud_cover_high);
+        putIfNotNull.accept("et0_fao_evapotranspiration", data.et0_fao_evapotranspiration);
+        putIfNotNull.accept("vapour_pressure_deficit", data.vapour_pressure_deficit);
+        putIfNotNull.accept("wind_speed_10m", data.wind_speed_10m);
+        putIfNotNull.accept("wind_speed_100m", data.wind_speed_100m);
+        putIfNotNull.accept("wind_direction_10m", data.wind_direction_10m);
+        putIfNotNull.accept("wind_direction_100m", data.wind_direction_100m);
+        putIfNotNull.accept("wind_gusts_10m", data.wind_gusts_10m);
+        putIfNotNull.accept("soil_moisture_0_to_7cm", data.soil_moisture_0_to_7cm);
+        putIfNotNull.accept("soil_temperature_0_to_7cm", data.soil_temperature_0_to_7cm);
+        putIfNotNull.accept("soil_temperature_7_to_28cm", data.soil_temperature_7_to_28cm);
+        putIfNotNull.accept("soil_moisture_7_to_28cm", data.soil_moisture_7_to_28cm);
+        putIfNotNull.accept("soil_moisture_28_to_100cm", data.soil_moisture_28_to_100cm);
+        putIfNotNull.accept("soil_temperature_28_to_100cm", data.soil_temperature_28_to_100cm);
+        putIfNotNull.accept("soil_moisture_100_to_255cm", data.soil_moisture_100_to_255cm);
+        putIfNotNull.accept("soil_temperature_100_to_255cm", data.soil_temperature_100_to_255cm);
+
+
+
+        Map<String, double[]> result = new LinkedHashMap<>();
+        for (Map.Entry<String, List<? extends Number>> entry : rawData.entrySet()) {
+            List<? extends Number> list = entry.getValue();
+            if (list != null) {
+                double[] arr = list.stream()
+                        .mapToDouble(Number::doubleValue)
+                        .toArray();
+                result.put(entry.getKey(), arr);
+            }
+        }
+        return result;
+    }
 
     public static String toNOAADatatype(String field) {
         if (field == null) return null;

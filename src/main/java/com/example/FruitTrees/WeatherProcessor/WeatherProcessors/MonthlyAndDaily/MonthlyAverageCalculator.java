@@ -1,10 +1,13 @@
 package com.example.FruitTrees.WeatherProcessor.WeatherProcessors.MonthlyAndDaily;
 
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 
 @Component("AverageMonthly")
+@Scope("prototype")
+
 public class MonthlyAverageCalculator extends DailyAndMonthlyWeatherProcessor {
     private double finalValue =0;
     private int hours;
@@ -19,9 +22,8 @@ public class MonthlyAverageCalculator extends DailyAndMonthlyWeatherProcessor {
     }
    
     @Override
-    protected void onMonthEnd(Number value, String date) {
+    protected void onMonthEnd(double value, LocalDateTime localDateTime) {
         monthlyValuesResponse.getValues().put(processorName +" For "+dataType, String.valueOf(finalValue));
-        LocalDateTime localDateTime=LocalDateTime.parse(date);
         finalValue=(finalValue/hours);
         addProcessedTextValue(finalValue, localDateTime.getYear(), localDateTime.getMonth().name());
         monthlyValues.get(currentMonthName).add(finalValue);
@@ -29,8 +31,7 @@ public class MonthlyAverageCalculator extends DailyAndMonthlyWeatherProcessor {
         hours=0;
     }
     @Override
-    protected void processWeatherBetween(Number data, String date) {
-        double value=data.doubleValue();
+    protected void processWeatherBetween(double value, LocalDateTime date) {
             finalValue =finalValue+ value;
             hours++;
     }

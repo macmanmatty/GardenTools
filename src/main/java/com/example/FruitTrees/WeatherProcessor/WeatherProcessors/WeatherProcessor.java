@@ -1,4 +1,5 @@
 package com.example.FruitTrees.WeatherProcessor.WeatherProcessors;
+import com.example.FruitTrees.WeatherConroller.HourlyWeatherProcessRequest;
 import com.example.FruitTrees.WeatherConroller.WeatherResponse.DailyValuesResponse;
 import com.example.FruitTrees.WeatherConroller.WeatherResponse.LocationWeatherResponse;
 import com.example.FruitTrees.WeatherConroller.WeatherResponse.MonthlyValuesResponse;
@@ -6,6 +7,7 @@ import com.example.FruitTrees.WeatherConroller.WeatherResponse.YearlyValuesRespo
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 /**
@@ -59,11 +61,16 @@ public abstract class WeatherProcessor {
     /**
      * the type of open meteo data the processor is currently processing
      */
-  protected String dataType="";
+    protected String dataType="";
     /**
      * the current of measurement for the data being processed
      */
     protected String dataUnit="";
+
+    protected List<String> dataTypes= new ArrayList<>();
+    protected List<String> dataUnits= new ArrayList<>();
+
+
     /**
      * the list of input values used to process the weather
      */
@@ -91,10 +98,27 @@ public abstract class WeatherProcessor {
     protected  boolean onlyCalculateAverage;
 
     /**
+     * weather or not to calculate  mean the average
+     */
+    protected  boolean calculateMeanAverage;
+
+
+    /**
+     * weather or not to calculate median  the average
+     */
+    protected  boolean calculateMedianAverage;
+    private boolean calculateMax;
+    private boolean calculateMin;
+
+    /**
      * station Id used for NOAA processing
      *
      */
         String stationId;
+    /**
+     * external processors required by this one
+     */
+    public List<HourlyWeatherProcessRequest> hourlyWeatherProcessRequests = new ArrayList<>();
 
     public WeatherProcessor(String processorName) {
         this.processorName = processorName;
@@ -120,14 +144,14 @@ public abstract class WeatherProcessor {
      * @param value the number value of the weather parameter
      * @param date the date and time the value happened
      */
-    protected abstract void processWeather(Number value, String date);
+    protected abstract void processWeather(double value, LocalDateTime date);
     /**
      *
      * the externally called method for processing weather
      * @param value the number value of the weather parameter
      * @param date the date and time the value happened
      */
-    public void processWeatherExternal(Number value, String date){
+    public void processWeatherExternal(double value, LocalDateTime date){
 
         if(stopProcessing){
             return;
@@ -185,8 +209,21 @@ public abstract class WeatherProcessor {
      * overridden method  used to calculate the average
      * of the processed weather values
      */
-    public void calculateAverage(){}
-        public ArrayList<String> getProcessedTextValues() {
+    public abstract void  calculateMeanAverageValue();
+
+    /**
+     * overridden method  used to calculate the average
+     * of the processed weather values
+     */
+    public abstract void  calculateMedianAverageValue();
+
+
+
+    public void calculateMinValue(){};
+
+    public void calculateMaxValue(){};
+
+    public ArrayList<String> getProcessedTextValues() {
         return processedTextValues;
     }
     public int getStartDay() {
@@ -265,5 +302,59 @@ public abstract class WeatherProcessor {
         this.stationId = stationId;
     }
 
+    public List<HourlyWeatherProcessRequest> getHourlyWeatherProcessRequests() {
+        return hourlyWeatherProcessRequests;
+    }
 
+    public void setHourlyWeatherProcessRequests(List<HourlyWeatherProcessRequest> hourlyWeatherProcessRequests) {
+        this.hourlyWeatherProcessRequests = hourlyWeatherProcessRequests;
+    }
+
+    public boolean isCalculateMeanAverage() {
+        return calculateMeanAverage;
+    }
+
+    public void setCalculateMeanAverage(boolean calculateAverage) {
+        this.calculateMeanAverage = calculateAverage;
+    }
+
+    public List<String> getDataTypes() {
+        return dataTypes;
+    }
+
+    public void setDataTypes(List<String> dataTypes) {
+        this.dataTypes = dataTypes;
+    }
+
+    public List<String> getDataUnits() {
+        return dataUnits;
+    }
+
+    public void setDataUnits(List<String> dataUnits) {
+        this.dataUnits = dataUnits;
+    }
+
+    public boolean isCalculateMax() {
+        return calculateMax;
+    }
+
+    public void setCalculateMax(boolean calculateMax) {
+        this.calculateMax = calculateMax;
+    }
+
+    public boolean isCalculateMin() {
+        return calculateMin;
+    }
+
+    public void setCalculateMin(boolean calculateMin) {
+        this.calculateMin = calculateMin;
+    }
+
+    public boolean isCalculateMedianAverage() {
+        return calculateMedianAverage;
+    }
+
+    public void setCalculateMedianAverage(boolean calculateMedianAverage) {
+        this.calculateMedianAverage = calculateMedianAverage;
+    }
 }

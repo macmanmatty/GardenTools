@@ -3,6 +3,8 @@ import com.example.FruitTrees.WeatherConroller.WeatherResponse.LocationWeatherRe
 import com.example.FruitTrees.WeatherProcessor.WeatherProcessors.Daily.DaysAboveMonthly;
 import org.junit.jupiter.api.Test;
 
+import java.time.LocalDateTime;
+
 import static org.junit.jupiter.api.Assertions.*;
 public class DaysAboveMonthlyTest {
 
@@ -19,12 +21,14 @@ public class DaysAboveMonthlyTest {
 
         // Simulate Feb 29, 2024 (leap year), 24 hours all above threshold
         for (int hour = 0; hour < 24; hour++) {
-            String dateTime = String.format("2024-02-29T%02d:00:00", hour);
+            String dateTimeString = String.format("2024-02-29T%02d:00:00", hour);
+            LocalDateTime dateTime = LocalDateTime.parse(dateTimeString);
+
             processor.processWeather(33.0, dateTime); // value is always above
         }
 
         // Simulate the start of the next month to trigger onMonthEnd + onStartNewMonth
-        processor.processWeather(30.0, "2024-03-01T00:00:00");
+        processor.processWeather(30.0,           LocalDateTime.parse("2024-03-01T00:00:00"));
 
         // Check processed values
         String key = "Days Temperature Above 32";

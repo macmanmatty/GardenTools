@@ -10,17 +10,17 @@ import com.example.FruitTrees.WeatherConroller.WeatherResponse.WeatherResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.*;
 
 @Service
 public class WeatherProcessorService {
     private static final Logger log = LoggerFactory.getLogger(WeatherProcessorService.class);
-    private  ApplicationContext applicationContext;
-    public WeatherProcessorService(@Autowired  ApplicationContext applicationContext) {
-        this.applicationContext = applicationContext;
+    WeatherProcessorFactory weatherProcessorFactory;
+    public WeatherProcessorService(@Autowired WeatherProcessorFactory weatherProcessorFactory) {
+        this.weatherProcessorFactory = weatherProcessorFactory;
     }
     /**
      *  processes hourly weather data
@@ -54,44 +54,73 @@ public class WeatherProcessorService {
      String text="Values For Location: "+ location.getName();
      locationWeatherResponse.getLocationResponses().add(text);
      List<HourlyWeatherProcessRequest> hourlyWeatherProcessRequests = weatherRequest.getHourlyWeatherProcessRequests();
-     List<String> time = locationResponse.getTime();
+     LocalDateTime [] time = locationResponse.getTime();
+     List<WeatherProcessor> weatherProcessors = new ArrayList<>();
      for (HourlyWeatherProcessRequest hourlyWeatherProcessRequest : hourlyWeatherProcessRequests) {
-             WeatherProcessor weatherProcessor = applicationContext.getBean(hourlyWeatherProcessRequest.getProcessorName(), WeatherProcessor.class);
-             processHourlyWeather( time, weatherProcessor,hourlyWeatherProcessRequest,  locationResponse, locationWeatherResponse);
+           WeatherProcessor weatherProcessor=  weatherProcessorFactory.createProcessor(hourlyWeatherProcessRequest, locationWeatherResponse);
+         log.info(" started processing of {}", weatherProcessor.getProcessorName() +" for "+locationResponse.getLocation().getName());
+         List<HourlyWeatherProcessRequest> dependentWeatherProcessors=weatherProcessor.getHourlyWeatherProcessRequests();
+         for(HourlyWeatherProcessRequest dependentWeatherProcessorRequest:dependentWeatherProcessors){
+             WeatherProcessor dependentWeatherProcessor=  weatherProcessorFactory.createProcessor(dependentWeatherProcessorRequest, locationWeatherResponse);
+             weatherProcessors.add(dependentWeatherProcessor);
+         }
+         weatherProcessors.add(weatherProcessor);
      }
-        return weatherResponse;
- }
-    /**
-     *
-     * @param weatherProcessor
-     * @param hourlyWeatherProcessRequest
-     * @param locationWeatherResponse
-     * @param openMeteoDateAndTime
-     */
-public void processHourlyWeather( List<String> openMeteoDateAndTime,  WeatherProcessor weatherProcessor, HourlyWeatherProcessRequest hourlyWeatherProcessRequest,
-                                 LocationResponse locationResponse,
-                                  LocationWeatherResponse locationWeatherResponse){
-     weatherProcessor.setStartMonthDay(hourlyWeatherProcessRequest.getStartProcessMonth(), hourlyWeatherProcessRequest.getStartProcessDay());
-     weatherProcessor.setEndMonthDay(hourlyWeatherProcessRequest.getEndProcessMonth(), hourlyWeatherProcessRequest.getEndProcessDay());
-     weatherProcessor.setInputParameters(hourlyWeatherProcessRequest.getInputParameters());
-     weatherProcessor.setDataType(hourlyWeatherProcessRequest.getHourlyDataType());
-     weatherProcessor.setLocationWeatherResponse(locationWeatherResponse);
-     weatherProcessor.setOnlyCalculateAverage(hourlyWeatherProcessRequest.isOnlyCalculateAverage() && hourlyWeatherProcessRequest.isCalculateAverage());
-     List<? extends Number> data = locationResponse.getData(hourlyWeatherProcessRequest.getHourlyDataType());
-     int size = data.size();
-     weatherProcessor.before();
-    log.info(" started processing of {}", weatherProcessor.getProcessorName() +" for "+locationResponse.getLocation().getName());
+     processHourlyWeather( time, weatherProcessors,locationResponse.getData());
 
-    for (int count = 0; count < size; count++) {
-         weatherProcessor.processWeatherExternal(data.get(count), openMeteoDateAndTime.get(count));
-     }
-     weatherProcessor.after();
-     if(hourlyWeatherProcessRequest.isCalculateAverage()){
-         weatherProcessor.calculateAverage();
-     }
-     List<String> values = weatherProcessor.getProcessedTextValues();
-     locationWeatherResponse.getLocationResponses().addAll(values);
+     return weatherResponse;
  }
 
+
+    public void processHourlyWeather(
+            LocalDateTime [] iso8601Times,
+            List<WeatherProcessor> processors,
+            Map<String, double []> seriesByType
+    ) {
+        final int sampleCount = iso8601Times.length;
+        // De-dup & keep order stable
+        List<WeatherProcessor> activeProcessors = new ArrayList<>(new LinkedHashSet<>(processors));
+
+        // Run before() once per processor
+        for (WeatherProcessor weatherProcessor : activeProcessors) {
+            weatherProcessor.before();
+        }
+
+        // Walk hours once; fan out to processors
+        for (int hourIndex = 0; hourIndex < sampleCount && !activeProcessors.isEmpty(); hourIndex++) {
+            final LocalDateTime timestamp = iso8601Times[hourIndex];
+
+            for (int p = 0; p < activeProcessors.size(); ) {
+                WeatherProcessor weatherProcessor = activeProcessors.get(p);
+
+                // Pull this processor's series; skip if missing or ragged
+                double [] series = seriesByType.get(weatherProcessor.getDataType());
+                if (series == null || hourIndex >= series.length) { p++; continue; }
+
+                double value = series[hourIndex];
+
+                // If you add date-window logic, check here before processing:
+                // if (!weatherProcessor.dateRule().accepts(localDateFrom(timestamp))) { p++; continue; }
+
+                weatherProcessor.processWeatherExternal(value, timestamp);
+
+                // If you add an "isDone()" flag, you can prune here:
+                // if (weatherProcessor.isDone()) { activeProcessors.remove(p); } else { p++; }
+                p++;
+            }
+        }
+
+        // Finalize once per processor
+        for (WeatherProcessor processor : activeProcessors) {
+            processor.after();
+            if (processor.isCalculateMeanAverage())  processor.calculateMeanAverageValue();
+            if (processor.isCalculateMedianAverage()) processor.calculateMedianAverageValue();
+            if (processor.isCalculateMin())           processor.calculateMinValue();
+            if (processor.isCalculateMax())           processor.calculateMaxValue();
+
+            List<String> text = processor.getProcessedTextValues();
+            processor.getLocationWeatherResponse().getLocationResponses().addAll(text);
+        }
+    }
 
 }

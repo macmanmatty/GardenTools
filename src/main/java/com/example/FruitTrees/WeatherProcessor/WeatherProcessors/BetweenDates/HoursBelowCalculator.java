@@ -2,13 +2,18 @@ package com.example.FruitTrees.WeatherProcessor.WeatherProcessors.BetweenDates;
 
 import com.example.FruitTrees.Utilities.DateUtilities;
 import com.example.FruitTrees.WeatherConroller.WeatherResponse.YearlyValuesResponse;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+
+import java.time.LocalDateTime;
 
 /**
  *  A weather processor that calculates the total amount of some
  *  weather value below a certain value  and between dates
  *
  */@Component("HoursBelow")
+@Scope("prototype")
+
 public class HoursBelowCalculator extends ProcessWeatherBetweenDates {
     /**
      * the counted hours
@@ -34,8 +39,8 @@ public class HoursBelowCalculator extends ProcessWeatherBetweenDates {
     }
 
     @Override
-    protected void onEndDate(String date) {
-        int year= DateUtilities.getYear(date);
+    protected void onEndDate(LocalDateTime date) {
+        int year= date.getYear();
         super.yearlyDataValues.add(hours);
         YearlyValuesResponse yearlyValuesResponse = locationWeatherResponse.getYearlyValues(String.valueOf(year));
         String text="Hours Of " +dataType+  " Below "+maxValue;
@@ -44,7 +49,7 @@ public class HoursBelowCalculator extends ProcessWeatherBetweenDates {
         hours =0;
     }
     @Override
-    protected void processWeatherBetween(Number data, String date) {
+    protected void processWeatherBetween(Number data, LocalDateTime date) {
         double value=data.doubleValue();
         if( value<=maxValue) {
             hours++;

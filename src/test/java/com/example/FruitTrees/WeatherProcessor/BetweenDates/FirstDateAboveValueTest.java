@@ -6,6 +6,7 @@ import com.example.FruitTrees.WeatherProcessor.WeatherProcessors.BetweenDates.Da
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.time.LocalDateTime;
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -27,8 +28,7 @@ public class FirstDateAboveValueTest {
         processor.setDataType("Temperature");
         processor.setStartMonthDay(4,1);
         processor.setEndMonthDay(9,30);
-
-
+        processor.startProcessing();
         // Mock response objects
         mockLocationWeatherResponse = mock(LocationWeatherResponse.class);
         mockYearlyValuesResponse = new YearlyValuesResponse();
@@ -43,9 +43,11 @@ public class FirstDateAboveValueTest {
         processor.before();
 
         // Value below threshold
-        processor.processWeatherBetween(70.0, "2023-05-01T12:00:00");
+        processor.processWeather(70.0, LocalDateTime.parse("2023-05-01T12:00:00"));
         // Value above threshold — should trigger termination
-        processor.processWeatherBetween(77.0, "2023-05-03T14:00:00");
+        processor.processWeather(77.0, LocalDateTime.parse("2023-05-03T14:00:00"));
+        processor.processWeather(77.0, LocalDateTime.parse("2023-05-22T14:00:00"));
+        processor.startProcessing();
 
         // Check stored value
         String key = "First instance of Temperature Above 75.0";
@@ -58,10 +60,10 @@ public class FirstDateAboveValueTest {
         processor.before();
 
         // All values below threshold
-        processor.processWeatherBetween(68.0, "2023-05-01T12:00:00");
-        processor.processWeatherBetween(70.0, "2023-06-01T14:00:00");
+        processor.processWeather(68.0, LocalDateTime.parse("2023-05-01T12:00:00"));
+        processor.processWeather(70.0, LocalDateTime.parse("2023-06-01T14:00:00"));
 
-        processor.onStop("2023-12-31");
+        processor.onStop(LocalDateTime.parse("2023-12-31T00:00:00"));
 
         String key = "First instance of Temperature Above 75.0";
         assertEquals("value never reached", mockYearlyValuesResponse.getValues().get(key));

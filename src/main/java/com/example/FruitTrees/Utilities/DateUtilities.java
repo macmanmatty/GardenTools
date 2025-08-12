@@ -66,11 +66,10 @@ public class DateUtilities {
     /**
      *  checks a string  date in YYYY-MM-DDTHH:MM format   to see if
      *  it is the start date or the end date or justa normal date
-     * @param openMeteoDateAndTime
+     * @param localDate
      * @return
      */
-    public static  DateType checkDate(String openMeteoDateAndTime, int startDay,  int startMonth, int  endDay, int endMonth){
-        LocalDateTime localDate=LocalDateTime.parse(openMeteoDateAndTime);
+    public static  DateType checkDate(LocalDateTime localDate, int startDay,  int startMonth, int  endDay, int endMonth){
         int dayOfMonth=localDate.getDayOfMonth();
         int month=localDate.getMonthValue();
         int hour=localDate.getHour();
@@ -83,7 +82,7 @@ public class DateUtilities {
         return  DateType.STANDARD_DAY;
     }
 
-        public static Optional<LocalDateTime> calculateAverageDate(List<Optional<LocalDateTime>> dateOptionals, float percentMissing) {
+        public static Optional<LocalDateTime> calculateMeanAverageDate(List<Optional<LocalDateTime>> dateOptionals, float percentMissing) {
             List<LocalDateTime> dates = dateOptionals.stream()
                     .filter(Optional::isPresent)
                     .map(Optional::get)
@@ -103,6 +102,40 @@ public class DateUtilities {
         }
 
 
+        public static Optional<LocalDateTime> calculateMedianAverageDate(List<Optional<LocalDateTime>> dateOptionals, float percentMissing) {
+            List<LocalDateTime> dates = dateOptionals.stream()
+                    .filter(Optional::isPresent)
+                    .map(Optional::get)
+                    .collect(Collectors.toList());
+
+            // Check if too many are missing
+            if (dateOptionals.size() - dates.size() > dateOptionals.size() * percentMissing) {
+                return Optional.empty();
+            }
+
+            if (dates.isEmpty()) return Optional.empty();
+
+            // Convert to epoch seconds and sort
+            List<Long> epochSeconds = dates.stream()
+                    .map(date -> date.toEpochSecond(ZoneOffset.UTC))
+                    .sorted()
+                    .collect(Collectors.toList());
+
+            int n = epochSeconds.size();
+            long medianEpoch;
+
+            if (n % 2 == 0) {
+                medianEpoch = (epochSeconds.get(n / 2 - 1) + epochSeconds.get(n / 2)) / 2;
+            } else {
+                medianEpoch = epochSeconds.get(n / 2);
+            }
+
+            return Optional.of(LocalDateTime.ofEpochSecond(medianEpoch, 0, ZoneOffset.UTC));
+        }
+
+
+
+
 
     /**
              * gets the year from a string date with or without a Time
@@ -112,13 +145,12 @@ public class DateUtilities {
     public  static int getYear(String date){
         if(date.contains("T") || date.contains("t")  ) {
             LocalDateTime localDateTime = LocalDateTime.parse(date);
-            localDateTime.getYear();
+           return localDateTime.getYear();
         }
         else{
             LocalDate localDate = LocalDate.parse(date);
             return localDate.getYear();
         }
-        return 0;
    }
 
 

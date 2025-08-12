@@ -1,7 +1,10 @@
 package com.example.FruitTrees.WeatherProcessor.WeatherProcessors.Daily;
 
 import com.example.FruitTrees.WeatherProcessor.WeatherProcessors.MonthlyAndDaily.DailyAndMonthlyWeatherProcessor;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+
+import java.time.LocalDateTime;
 
 
 /**
@@ -10,6 +13,8 @@ import org.springframework.stereotype.Component;
  *
  */
 @Component("DaysAboveYearly")
+@Scope("prototype")
+
 public class DaysAboveYearly extends DailyAndMonthlyWeatherProcessor {
     /**
      * the counted hours
@@ -41,12 +46,12 @@ public class DaysAboveYearly extends DailyAndMonthlyWeatherProcessor {
     }
 
     @Override
-    public void onStartDay(Number value, String date) {
+    public void onStartDay(double value, LocalDateTime date) {
         super.onStartDay(value, date);
     }
 
     @Override
-    public void onEndDay(Number value, String date) {
+    public void onEndDay(Number value, LocalDateTime date) {
         if(hours==24){
             totalDays++;
         }
@@ -55,7 +60,7 @@ public class DaysAboveYearly extends DailyAndMonthlyWeatherProcessor {
 
 
     @Override
-    protected void onEndYear(Number value, String date) {
+    protected void onEndYear(Number value, LocalDateTime date) {
         String text="Days " +dataType+  " Above "+ valueToCheck;
         currentYearlyValuesResponse.getValues().put(text, String.valueOf(totalDays));
         addProcessedTextValue(text + " For " + currentYear + " : " + totalDays);
@@ -67,8 +72,7 @@ public class DaysAboveYearly extends DailyAndMonthlyWeatherProcessor {
     }
 
     @Override
-    protected void processWeatherBetween(Number data, String date) {
-        double value=data.doubleValue();
+    protected void processWeatherBetween(double value, LocalDateTime date) {
         if( value>= valueToCheck) {
             hours++;
         }

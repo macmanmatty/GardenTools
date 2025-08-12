@@ -2,6 +2,7 @@ package com.example.FruitTrees.WeatherProcessor.WeatherProcessors.MultipleDataSe
 
 import com.example.FruitTrees.Utilities.DateUtilities;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,7 +35,7 @@ public abstract  class ProcessMultipleWeatherDataSetsBetweenDates extends Multip
      * @param date the date and time the value happened
      */
     @Override
-    public final  void processWeather(List<Number> values, List<String> dataTypes, String date) {
+    public final  void processWeather(List<Number> values, List<String> dataTypes, LocalDateTime date) {
             switch(DateUtilities.checkDate(date, startDay, startMonth, endDay, endMonth)){
                 case START_PROCESSING -> {
                     processing =true;
@@ -56,14 +57,14 @@ public abstract  class ProcessMultipleWeatherDataSetsBetweenDates extends Multip
      * @param date  the current date and time of the weather  being processed
      * 
      */
-    protected  void onStartDate(String date){}
+    protected  void onStartDate(LocalDateTime date){}
     /**
      *  method  for
      * preforming actions on weather end date
      * when the processing of weather ends
      * @param date  the current date and time of the weather  being processed
      */
-    protected void onEndDate(String date){
+    protected void onEndDate(LocalDateTime date){
 
     }
     /**
@@ -72,11 +73,11 @@ public abstract  class ProcessMultipleWeatherDataSetsBetweenDates extends Multip
      * @param date  the current date and time of the weather  being processed
      * @param  data the value of the weather data at the current date and time
      */
-    abstract void processWeatherBetween(List<Number> data, List<String> dataType, String date);
+    abstract void processWeatherBetween(List<Number> data, List<String> dataType, LocalDateTime date);
 
 
     @Override
-    public void calculateAverage() {
+    public void calculateMeanAverageValue() {
         double total=0;
        for( Double doubleNum: yearlyDataValues){
           total= doubleNum+total;
