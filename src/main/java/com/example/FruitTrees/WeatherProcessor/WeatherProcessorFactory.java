@@ -37,6 +37,8 @@ public class WeatherProcessorFactory {
         processor.setUpperBound(config.getUpperBound());
         processor.setLowerBound(config.getLowerBound());
         processor.setThreshold(config.getThreshold());
+        processor.setBins(config.getBins());
+        processor.setDataTypes(config.getDataTypes());
         return processor;
     }
 }

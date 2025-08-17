@@ -95,6 +95,11 @@ public abstract class WeatherProcessor {
     private boolean calculateMax;
     private boolean calculateMin;
     /**
+     * temperature bins used for utah chill calculation
+     * maybe empty to use default calculation mode
+     */
+    protected List<Bin> bins=new ArrayList<>();
+    /**
      * station Id used for NOAA processing
      *
      */
@@ -319,5 +324,13 @@ public abstract class WeatherProcessor {
     }
     public void setThreshold(double threshold) {
         this.threshold = threshold;
+    }
+
+    public List<Bin> getBins() {
+        return bins;
+    }
+
+    public void setBins(List<Bin> bins) {
+        this.bins = bins;
     }
 }
