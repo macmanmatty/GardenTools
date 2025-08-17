@@ -23,7 +23,7 @@ public class UtahChillCalculator extends ProcessWeatherBetweenDates {
 
     // immutable bins: [minInclusive, maxExclusive, weight]
     public UtahChillCalculator() {
-        super("Dynamic Utah Chill Hours");
+        super(" Utah Chill Hours");
 
     }
     @Override
@@ -49,7 +49,7 @@ public class UtahChillCalculator extends ProcessWeatherBetweenDates {
         super.yearlyDataValues.add(chillUnits);
         YearlyValuesResponse yearlyValuesResponse = locationWeatherResponse.getYearlyValues(String.valueOf(year));
         String text="Chilling Hours";
-        String years= text+ "  Dynamic Utah Calculation Method ";
+        String years= text+ "  Utah Calculation Method ";
         yearlyValuesResponse.getValues().put(years, String.valueOf(chillUnits));
         addProcessedTextValue(years+" For " +year+" from: "+ startMonth +"/"+startDay+" to "+endMonth+"/" +endDay+ ": "+ chillUnits);
         chillUnits =0;

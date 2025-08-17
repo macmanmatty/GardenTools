@@ -15,7 +15,7 @@ public class DaysBelowMonthlyTest {
     public void testLastDayOfMonthWith24HoursAboveThreshold() {
         DaysBelowMonthly processor = new DaysBelowMonthly();
         processor.currentYear = 2024;
-        processor.getInputParameters().add("32");
+        processor.setThreshold(32.0); // freezing threshold
         processor.setDataType( "Temperature");
         processor.currentMonthName="FEBRUARY";
         processor.setLocationWeatherResponse(new LocationWeatherResponse());

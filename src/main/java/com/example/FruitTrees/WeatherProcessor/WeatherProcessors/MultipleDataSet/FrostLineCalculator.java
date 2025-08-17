@@ -44,7 +44,7 @@ public class FrostLineCalculator extends ProcessMultipleWeatherDataSetsBetweenDa
         frostLine ="No Frost Line";
     }
     @Override
-    void processWeatherBetween(List<Number> data, List<String> dataType, LocalDateTime date) {
+    void processWeatherBetween(List<Double> data, List<String> dataType, LocalDateTime date) {
         int size=data.size();
        for(int count=0; count<size; count++){
            double value=data.get(0).doubleValue();

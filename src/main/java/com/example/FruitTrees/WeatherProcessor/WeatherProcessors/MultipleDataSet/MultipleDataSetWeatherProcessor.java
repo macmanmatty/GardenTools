@@ -17,5 +17,5 @@ public abstract class MultipleDataSetWeatherProcessor  extends WeatherProcessor 
      * @param value the number value of the weather parameter
      * @param date the date and time the value happened
      */
-    public abstract void processWeather(List<Number> value, List<String> dataType, LocalDateTime date);
+    public abstract void processWeather(List<Double> value, List<String> dataType, LocalDateTime date);
 }

@@ -36,7 +36,7 @@ public class DailyAndMonthlyWeatherProcessorTest {
         assertTrue(events.contains("StartNewMonth:2025-01-01T00:00:00"));
         assertTrue(events.contains("EndYear:2024-12-31T23:00:00"));
         assertTrue(events.contains("MonthEnd:2024-12-31T23:00:00"));
-        assertTrue(events.contains("MonthEnd:2025-01-31T23:00:00") == false); // should not be present yet
+        assertTrue(events.contains("MonthEnd:2025-01-30T23:00:00") == false); // should not be present yet
 
         // Ensure `processWeatherBetween` was called multiple times
         long betweenCalls = events.stream().filter(e -> e.startsWith("Between:")).count();

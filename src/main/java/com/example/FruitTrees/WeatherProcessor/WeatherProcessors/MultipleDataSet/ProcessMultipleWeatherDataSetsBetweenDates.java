@@ -35,7 +35,7 @@ public abstract  class ProcessMultipleWeatherDataSetsBetweenDates extends Multip
      * @param date the date and time the value happened
      */
     @Override
-    public final  void processWeather(List<Number> values, List<String> dataTypes, LocalDateTime date) {
+    public final  void processWeather(List<Double> values, List<String> dataTypes, LocalDateTime date) {
             switch(DateUtilities.checkDate(date, startDay, startMonth, endDay, endMonth)){
                 case START_PROCESSING -> {
                     processing =true;
@@ -73,7 +73,7 @@ public abstract  class ProcessMultipleWeatherDataSetsBetweenDates extends Multip
      * @param date  the current date and time of the weather  being processed
      * @param  data the value of the weather data at the current date and time
      */
-    abstract void processWeatherBetween(List<Number> data, List<String> dataType, LocalDateTime date);
+    abstract void processWeatherBetween(List<Double> data, List<String> dataType, LocalDateTime date);
 
 
     @Override
