@@ -40,8 +40,8 @@ public class ApplicationConfiguration {
                         .build();
 
         RequestConfig requestConfig = RequestConfig.custom()
-                .setConnectTimeout(Timeout.ofSeconds(5))
-                .setResponseTimeout(Timeout.ofSeconds(20))
+                .setConnectTimeout(Timeout.ofSeconds(60))
+                .setResponseTimeout(Timeout.ofMinutes(20))
                 .build();
 
         CloseableHttpClient httpClient = HttpClients.custom()

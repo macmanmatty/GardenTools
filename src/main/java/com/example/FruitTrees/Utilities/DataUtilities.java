@@ -224,6 +224,7 @@ public class DataUtilities {
             // Dew point
             case "dew":
             case "dew point":
+            case "dewpoint":
             case "dew_point":
             case "dew_point_temperature":
             case "dew_point_2m":

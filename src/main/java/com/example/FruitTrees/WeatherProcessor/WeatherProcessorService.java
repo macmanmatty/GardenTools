@@ -1,6 +1,7 @@
 package com.example.FruitTrees.WeatherProcessor;
 import com.example.FruitTrees.Location.Location;
 import com.example.FruitTrees.OpenMeteo.LocationResponse;
+import com.example.FruitTrees.OpenMeteo.OpenMeteoService;
 import com.example.FruitTrees.WeatherProcessor.WeatherProcessors.WeatherProcessor;
 import com.example.FruitTrees.OpenMeteo.LocationResponses;
 import com.example.FruitTrees.WeatherConroller.HourlyWeatherProcessRequest;
@@ -22,6 +23,7 @@ import java.util.Map;
 public class WeatherProcessorService {
     private static final Logger log = LoggerFactory.getLogger(WeatherProcessorService.class);
     WeatherProcessorFactory weatherProcessorFactory;
+    OpenMeteoService openMeteoService;
     public WeatherProcessorService(@Autowired WeatherProcessorFactory weatherProcessorFactory) {
         this.weatherProcessorFactory = weatherProcessorFactory;
     }
@@ -88,30 +90,7 @@ public class WeatherProcessorService {
         for (WeatherProcessor weatherProcessor : activeProcessors) {
             weatherProcessor.before();
         }
-
-        // Walk hours once; fan out to processors
-        for (int hourIndex = 0; hourIndex < sampleCount && !activeProcessors.isEmpty(); hourIndex++) {
-            final LocalDateTime timestamp = iso8601Times[hourIndex];
-
-            for (int p = 0; p < activeProcessors.size(); ) {
-                WeatherProcessor weatherProcessor = activeProcessors.get(p);
-
-                // Pull this processor's series; skip if missing or ragged
-                double [] series = seriesByType.get(weatherProcessor.getDataType());
-                if (series == null || hourIndex >= series.length) { p++; continue; }
-
-                double value = series[hourIndex];
-
-                // If you add date-window logic, check here before processing:
-                // if (!weatherProcessor.dateRule().accepts(localDateFrom(timestamp))) { p++; continue; }
-
-                weatherProcessor.processWeatherExternal(value, timestamp);
-
-                // If you add an "isDone()" flag, you can prune here:
-                // if (weatherProcessor.isDone()) { activeProcessors.remove(p); } else { p++; }
-                p++;
-            }
-        }
+        processHourlyChunk(iso8601Times, activeProcessors, seriesByType);
 
         // Finalize once per processor
         for (WeatherProcessor processor : activeProcessors) {
@@ -126,4 +105,40 @@ public class WeatherProcessorService {
         }
     }
 
-}
+    public void processHourlyChunk(
+            LocalDateTime [] iso8601Times,
+            List<WeatherProcessor> activeProcessors,
+            Map<String, double []> seriesByType
+    ) {
+        final int sampleCount = iso8601Times.length;
+        // De-dup & keep order stable
+
+        // Walk hours once; fan out to processors
+        for (int hourIndex = 0; hourIndex < sampleCount && !activeProcessors.isEmpty(); hourIndex++) {
+            final LocalDateTime timestamp = iso8601Times[hourIndex];
+
+            for (int p = 0; p < activeProcessors.size(); ) {
+                WeatherProcessor weatherProcessor = activeProcessors.get(p);
+
+                // Pull this processor's series; skip if missing or ragged
+                double[] series = seriesByType.get(weatherProcessor.getDataType());
+                if (series == null || hourIndex >= series.length) {
+                    p++;
+                    continue;
+                }
+
+                double value = series[hourIndex];
+
+                // If you add date-window logic, check here before processing:
+                // if (!weatherProcessor.dateRule().accepts(localDateFrom(timestamp))) { p++; continue; }
+
+                weatherProcessor.processWeatherExternal(value, timestamp);
+
+                // If you add an "isDone()" flag, you can prune here:
+                // if (weatherProcessor.isDone()) { activeProcessors.remove(p); } else { p++; }
+                p++;
+            }
+        }
+    }
+
+    }
