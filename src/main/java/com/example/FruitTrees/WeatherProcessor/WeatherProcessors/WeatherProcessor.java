@@ -44,10 +44,6 @@ public abstract class WeatherProcessor {
    protected double upperBound;
    protected double threshold;
     /**
-     * the year weather was started processing on
-     */
-    protected int startYear;
-    /**
      * boolean to stop weather processing
      */
     boolean stopProcessing=false;
@@ -195,8 +191,8 @@ public abstract class WeatherProcessor {
      * of the processed weather values
      */
     public abstract void  calculateMedianAverageValue();
-    public void calculateMinValue(){};
-    public void calculateMaxValue(){};
+    public void calculateMinValue(){}
+    public void calculateMaxValue(){}
     public ArrayList<String> getProcessedTextValues() {
         return processedTextValues;
     }

@@ -17,9 +17,7 @@ public class FirstAndLastFrostDates extends DateValueProcessor {
      * the first frost date
      */
     private Optional<LocalDateTime> firstFrost =Optional.empty();
-    /**
-     * the min value
-     */
+
     /**
      * the last frost date
      */

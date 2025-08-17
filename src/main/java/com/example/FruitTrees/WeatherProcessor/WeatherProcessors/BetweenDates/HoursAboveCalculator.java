@@ -19,15 +19,12 @@ public class HoursAboveCalculator extends ProcessWeatherBetweenDates {
      * the counted hours
      */
     private double hours;
-    /**
-     * the min value
-     */
-    private double value;
+
     public HoursAboveCalculator() {
     }
     @Override
     public void before() {
-        this.processorName="Hours Above "+value;
+        this.processorName="Hours Above "+ threshold;
         clearProcessedTextValues();
         yearlyDataValues.clear();
     }
@@ -37,7 +34,7 @@ public class HoursAboveCalculator extends ProcessWeatherBetweenDates {
         int year= date.getYear();
         super.yearlyDataValues.add(hours);
        YearlyValuesResponse yearlyValuesResponse = locationWeatherResponse.getYearlyValues(String.valueOf(year));
-        String text="Hours Of " +dataType+  " Above "+ value;
+        String text="Hours Of " +dataType+  " Above "+ threshold;
         yearlyValuesResponse.getValues().put(text, String.valueOf(hours));
         if(!isOnlyCalculateAverage()) {
             addProcessedTextValue(text + year + " from: " + startMonth + "/" + startDay + " to " + endMonth + "/" + endDay + ": " + hours);

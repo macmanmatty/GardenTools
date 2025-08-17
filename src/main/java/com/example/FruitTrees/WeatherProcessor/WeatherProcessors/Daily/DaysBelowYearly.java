@@ -66,7 +66,7 @@ public class DaysBelowYearly extends DailyAndMonthlyWeatherProcessor {
 
     @Override
     protected void processWeatherBetween(double value, LocalDateTime date) {
-        if( value < value) {
+        if( value < threshold) {
             hours++;
         }
     }
