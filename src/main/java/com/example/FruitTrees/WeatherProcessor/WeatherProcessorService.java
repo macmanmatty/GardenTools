@@ -1,9 +1,7 @@
 package com.example.FruitTrees.WeatherProcessor;
 import com.example.FruitTrees.Location.Location;
-import com.example.FruitTrees.OpenMeteo.LocationResponse;
-import com.example.FruitTrees.OpenMeteo.OpenMeteoService;
+import com.example.FruitTrees.OpenMeteo.*;
 import com.example.FruitTrees.WeatherProcessor.WeatherProcessors.WeatherProcessor;
-import com.example.FruitTrees.OpenMeteo.LocationResponses;
 import com.example.FruitTrees.WeatherConroller.HourlyWeatherProcessRequest;
 import com.example.FruitTrees.WeatherConroller.WeatherResponse.LocationWeatherResponse;
 import com.example.FruitTrees.WeatherConroller.WeatherRequest;
@@ -11,8 +9,12 @@ import com.example.FruitTrees.WeatherConroller.WeatherResponse.WeatherResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.YearMonth;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -23,9 +25,12 @@ import java.util.Map;
 public class WeatherProcessorService {
     private static final Logger log = LoggerFactory.getLogger(WeatherProcessorService.class);
     WeatherProcessorFactory weatherProcessorFactory;
-    OpenMeteoService openMeteoService;
-    public WeatherProcessorService(@Autowired WeatherProcessorFactory weatherProcessorFactory) {
+    OpenMeteoHTTPRequest openMeteoHTTPRequest;
+    @Value("${stream-data}")
+    boolean streamData;
+    public WeatherProcessorService(@Autowired WeatherProcessorFactory weatherProcessorFactory, OpenMeteoHTTPRequest openMeteoHTTPRequest) {
         this.weatherProcessorFactory = weatherProcessorFactory;
+        this.openMeteoHTTPRequest = openMeteoHTTPRequest;
     }
     /**
      *  processes hourly weather data
@@ -34,7 +39,7 @@ public class WeatherProcessorService {
      *  in the WeatherRequest Object
      * @return WeatherResponse object containing all of the processed data from the processors
      */
-    public WeatherResponse processHourlyData( WeatherRequest weatherRequest, LocationResponses openMeteoResponses){
+    public WeatherResponse processHourlyData( WeatherRequest weatherRequest, LocationResponses openMeteoResponses) {
         List<LocationResponse> locationResponses=openMeteoResponses.getLocationResponses();
         WeatherResponse weatherResponse = new WeatherResponse();
         for(LocationResponse locationResponse: locationResponses) {
@@ -42,6 +47,7 @@ public class WeatherProcessorService {
         }
         return weatherResponse;
     }
+
     /**
      * processes the data for each individual location specified in the WeatherRequest Object
      * @param locationResponse the location response object holding the location object and
@@ -71,8 +77,12 @@ public class WeatherProcessorService {
          }
          weatherProcessors.add(weatherProcessor);
      }
-     processHourlyWeather( time, weatherProcessors,locationResponse.getData());
-
+     if (streamData) {
+         streamProcessHoulyWeather(location, weatherRequest, weatherProcessors);
+     }
+     else {
+         processHourlyWeather(time, weatherProcessors, locationResponse.getData());
+     }
      return weatherResponse;
  }
 
@@ -138,6 +148,58 @@ public class WeatherProcessorService {
                 // if (weatherProcessor.isDone()) { activeProcessors.remove(p); } else { p++; }
                 p++;
             }
+        }
+    }
+
+    public void streamProcessHoulyWeather(
+            Location location,
+            WeatherRequest request,
+            List<WeatherProcessor> processors
+    ) {
+        // 1) lifecycle once
+        List<WeatherProcessor> activeWeatherProcessors = new ArrayList<>(new LinkedHashSet<>(processors));
+        for (WeatherProcessor p : activeWeatherProcessors) p.before();
+
+        // 2) month-by-month over [startDate, endDate]
+        LocalDate start = LocalDate.parse(request.getStartDate()); // "yyyy-MM-dd"
+        LocalDate end   = LocalDate.parse(request.getEndDate());
+        YearMonth yearMonthStart    = YearMonth.from(start);
+        YearMonth yearMonthEnd  = YearMonth.from(end);
+
+        while (!yearMonthStart.isAfter(yearMonthEnd)) {
+            LocalDate sliceStart = yearMonthStart.atDay(1);
+            LocalDate sliceEnd   = yearMonthStart.atEndOfMonth();
+            if (sliceStart.isBefore(start)) sliceStart = start;
+            if (sliceEnd.isAfter(end))      sliceEnd   = end;
+
+            // 3) fetch one month (your cached method)
+            OpenMeteoLocationResponse openMeteoLocationResponse =openMeteoHTTPRequest.makeLocationRequest(
+                    location,
+                    sliceStart.toString(),   // "yyyy-MM-dd"
+                    sliceEnd.toString(),
+                    request
+            );
+
+            if (openMeteoLocationResponse != null && openMeteoLocationResponse.getOpenMeteoResponse().hourly != null && openMeteoLocationResponse.getOpenMeteoResponse().hourly.time != null && !openMeteoLocationResponse.getOpenMeteoResponse().hourly.time.isEmpty()) {
+                // 4) normalize to primitives (UTC)
+                LocalDateTime[] timesUtc = openMeteoLocationResponse.getTime();
+                Map<String,double[]> series = openMeteoLocationResponse.getData();
+
+                // 5) fan-out this month’s hours (pure CPU)
+                processHourlyChunk(timesUtc, activeWeatherProcessors, series);
+            }
+
+            yearMonthStart = yearMonthStart.plusMonths(1);
+        }
+
+        // 6) finalize once
+        for (WeatherProcessor p : activeWeatherProcessors) {
+            p.after();
+            if (p.isCalculateMeanAverage())   p.calculateMeanAverageValue();
+            if (p.isCalculateMedianAverage()) p.calculateMedianAverageValue();
+            if (p.isCalculateMin())           p.calculateMinValue();
+            if (p.isCalculateMax())           p.calculateMaxValue();
+            p.getLocationWeatherResponse().getLocationResponses().addAll(p.getProcessedTextValues());
         }
     }
 
