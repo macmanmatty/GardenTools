@@ -22,9 +22,9 @@ public class MaxFeelsLikeCalculator extends ProcessMultipleWeatherDataSetsBetwee
     }
     @Override
     public void before() {
-
         clearProcessedTextValues();
         yearlyDataValues.clear();
+        dataTypes.add("temperature");
     }
 
     @Override

@@ -22,7 +22,6 @@ public class MinFeelsLikeCalculator extends ProcessMultipleWeatherDataSetsBetwee
     }
     @Override
     public void before() {
-
         clearProcessedTextValues();
         yearlyDataValues.clear();
     }
