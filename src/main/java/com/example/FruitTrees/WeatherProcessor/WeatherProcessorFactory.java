@@ -26,15 +26,19 @@ public class WeatherProcessorFactory {
         // Apply common configuration
         processor.setStartMonthDay(config.getStartProcessMonth(), config.getStartProcessDay());
         processor.setEndMonthDay(config.getEndProcessMonth(), config.getEndProcessDay());
-        processor.setInputParameters(config.getInputParameters());
         processor.setDataType(config.getHourlyDataType());
         processor.setLocationWeatherResponse(locationWeatherResponse);
         processor.setCalculateMeanAverage(config.isCalculateMeanAverage());
         processor.setCalculateMedianAverage(config.isCalculateMedianAverage());
-        processor.setOnlyCalculateAverage(config.isOnlyCalculateAverage() && config.isCalculateMeanAverage());
+        processor.setOnlyCalculateAverage(config.isOnlyCalculateAverage() &&
+                (config.isCalculateMeanAverage() ||config.isCalculateMedianAverage()));
         processor.setCalculateMin(config.isCalculateMin());
         processor.setCalculateMax(config.isCalculateMax());
-
+        processor.setUpperBound(config.getUpperBound());
+        processor.setLowerBound(config.getLowerBound());
+        processor.setThreshold(config.getThreshold());
+        processor.setBins(config.getBins());
+        processor.setDataTypes(config.getDataTypes());
         return processor;
     }
 }

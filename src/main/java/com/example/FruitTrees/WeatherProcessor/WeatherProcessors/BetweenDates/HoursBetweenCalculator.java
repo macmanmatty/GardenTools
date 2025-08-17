@@ -1,5 +1,4 @@
 package com.example.FruitTrees.WeatherProcessor.WeatherProcessors.BetweenDates;
-import com.example.FruitTrees.Utilities.DateUtilities;
 import com.example.FruitTrees.WeatherConroller.WeatherResponse.YearlyValuesResponse;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -20,25 +19,13 @@ public class HoursBetweenCalculator extends ProcessWeatherBetweenDates {
      * the counted hours
      */
     private double chillHours;
-    /**
-     * the min value
-     */
-    private double minTemp;
-    /**
-     * the max value
-     */
-    private double maxTemp;
+
     public HoursBetweenCalculator() {
     }
     @Override
     public void before() {
-        if(inputParameters.size()<2){
-            throw new IllegalArgumentException("Missing min and max parameters");
-        }
-        this.processorName="Hours Between "+inputParameters.get(0)+" And "+inputParameters.get(1);
 
-        this.minTemp= Double.parseDouble(inputParameters.get(0));
-        this.maxTemp= Double.parseDouble(inputParameters.get(1));
+        this.processorName="Hours Between "+super.upperBound +" And "+super.lowerBound;
         clearProcessedTextValues();
         yearlyDataValues.clear();
 
@@ -49,7 +36,7 @@ public class HoursBetweenCalculator extends ProcessWeatherBetweenDates {
         super.yearlyDataValues.add(chillHours);
         YearlyValuesResponse yearlyValuesResponse = locationWeatherResponse.getYearlyValues(String.valueOf(year));
         String text="Chilling Hours";
-        String years= text+ " Above "+minTemp+" And Below "+maxTemp;
+        String years= text+ " Above "+ lowerBound +" And Below "+ upperBound;
         yearlyValuesResponse.getValues().put(years, String.valueOf(chillHours));
         addProcessedTextValue(years+" For " +year+" from: "+ startMonth +"/"+startDay+" to "+endMonth+"/" +endDay+ ": "+ chillHours);
         chillHours =0;
@@ -63,7 +50,7 @@ public class HoursBetweenCalculator extends ProcessWeatherBetweenDates {
     @Override
     protected void processWeatherBetween(Number data, LocalDateTime date) {
         double value=data.doubleValue();
-        if( value>=minTemp && value<=maxTemp) {
+        if( value>= lowerBound && value<= upperBound) {
             chillHours++;
         }
     }

@@ -1,5 +1,7 @@
 package com.example.FruitTrees.WeatherConroller;
 
+import com.example.FruitTrees.WeatherProcessor.WeatherProcessors.Bin;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -66,9 +68,18 @@ public class HourlyWeatherProcessRequest {
     private boolean calculateMax;
     private boolean calculateMin;
 
+    private  double lowerBound;
+    private double upperBound;
+    private double threshold;
+
+    List<Bin> bins=new ArrayList<>();
+
+    List<String> dataTypes=new ArrayList<>();
+
     public String getHourlyDataType() {
         return hourlyDataType;
     }
+
 
     public void setHourlyDataType(String hourlyDataType) {
         this.hourlyDataType = hourlyDataType;
@@ -180,5 +191,45 @@ public class HourlyWeatherProcessRequest {
 
     public void setCalculateMedianAverage(boolean calculateMedianAverage) {
         this.calculateMedianAverage = calculateMedianAverage;
+    }
+
+    public double getLowerBound() {
+        return lowerBound;
+    }
+
+    public void setLowerBound(double lowerBound) {
+        this.lowerBound = lowerBound;
+    }
+
+    public double getUpperBound() {
+        return upperBound;
+    }
+
+    public void setUpperBound(double upperBound) {
+        this.upperBound = upperBound;
+    }
+
+    public double getThreshold() {
+        return threshold;
+    }
+
+    public void setThreshold(double threshold) {
+        this.threshold = threshold;
+    }
+
+    public List<Bin> getBins() {
+        return bins;
+    }
+
+    public void setBins(List<Bin> bins) {
+        this.bins = bins;
+    }
+
+    public List<String> getDataTypes() {
+        return dataTypes;
+    }
+
+    public void setDataTypes(List<String> dataTypes) {
+        this.dataTypes = dataTypes;
     }
 }

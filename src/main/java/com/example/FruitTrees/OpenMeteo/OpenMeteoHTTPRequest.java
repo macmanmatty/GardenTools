@@ -19,11 +19,13 @@ import java.util.logging.Logger;
 public class OpenMeteoHTTPRequest {
     @Value("${open-meteo.url}")
    private  String openMeteoUrl;
-   private final  RestTemplate restTemplate = new RestTemplate();
+
+   private final  RestTemplate restTemplate;
     private final  CacheManager cacheManager;
     @Autowired
-    public OpenMeteoHTTPRequest(CacheManager cacheManager) {
+    public OpenMeteoHTTPRequest(CacheManager cacheManager, RestTemplate restTemplate) {
         this.cacheManager = cacheManager;
+        this.restTemplate = restTemplate;
     }
     
     /**
@@ -45,8 +47,10 @@ public class OpenMeteoHTTPRequest {
             fullUrl = fullUrl + "&hourly=" + DataUtilities.toOpenMeteoDatatype(dataType);
         }
         fullUrl = addConversionUnits(fullUrl, weatherRequest);
-        Logger.getLogger("").info("full url " + fullUrl);
+        Logger.getLogger("").info("getting weather data from open-meteo with  url " + fullUrl);
         ResponseEntity<OpenMeteoResponse> response = restTemplate.getForEntity(fullUrl, OpenMeteoResponse.class);
+        Logger.getLogger("").info("obtained weather data from open-meteo ");
+
         OpenMeteoLocationResponse locationResponse=new OpenMeteoLocationResponse();
         locationResponse.setOpenMeteoResponse(response.getBody());
         locationResponse.setLocation(location);

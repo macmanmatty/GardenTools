@@ -19,28 +19,19 @@ public class HoursAboveMonthly extends DailyAndMonthlyWeatherProcessor {
      * the counted hours
      */
     private double hours;
-    /**
-     * the min value
-     */
-    private double minValue;
 
     public HoursAboveMonthly() {
     }
     @Override
     public void before() {
         super.before();
-        if(inputParameters.isEmpty()){
-            throw new IllegalArgumentException(" Params Array Size<1 You Must Include  The Minimum Value In The Array Of Parameters ");
-        }
-
-        super.processorName="Hours Above "+inputParameters.get(0)+" Monthly";
-        this.minValue = Double.parseDouble(inputParameters.get(0));
+        super.processorName="Hours Above "+ threshold +" Monthly";
         clearProcessedTextValues();
     }
 
     @Override
     protected void onMonthEnd(double value, LocalDateTime date) {
-        String text="Monthly Hours Of " +dataType+  " Above "+minValue;
+        String text="Monthly Hours Of " +dataType+  " Above "+ this.threshold;
         monthlyValuesResponse.getValues().put(text, String.valueOf(hours));
            addProcessedTextValue(text + " For " + currentMonthName + "  " + currentYear + " : " + hours);
 
@@ -49,7 +40,7 @@ public class HoursAboveMonthly extends DailyAndMonthlyWeatherProcessor {
     }
     @Override
     protected void processWeatherBetween(double value, LocalDateTime date) {
-        if( value>= minValue) {
+        if( value>= this.threshold) {
             hours++;
         }
     }

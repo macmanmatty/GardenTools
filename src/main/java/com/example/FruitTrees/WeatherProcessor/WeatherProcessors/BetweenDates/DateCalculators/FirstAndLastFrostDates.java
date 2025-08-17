@@ -17,9 +17,7 @@ public class FirstAndLastFrostDates extends DateValueProcessor {
      * the first frost date
      */
     private Optional<LocalDateTime> firstFrost =Optional.empty();
-    /**
-     * the min value
-     */
+
     /**
      * the last frost date
      */
@@ -49,11 +47,9 @@ public class FirstAndLastFrostDates extends DateValueProcessor {
     }
     @Override
     public void before() {
-        if(inputParameters.isEmpty()){
-            throw new IllegalArgumentException("Missing parameter");
-        }
+
         // set mode to above
-        this.processorName="First Date Above "+inputParameters.get(0);
+        this.processorName="First Date Above "+threshold;
         clearProcessedTextValues();
         yearlyDataValues.clear();
 

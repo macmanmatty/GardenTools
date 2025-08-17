@@ -1,5 +1,4 @@
 package com.example.FruitTrees.WeatherProcessor.WeatherProcessors.BetweenDates;
-import com.example.FruitTrees.Utilities.DateUtilities;
 import com.example.FruitTrees.WeatherConroller.WeatherResponse.YearlyValuesResponse;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -20,7 +19,7 @@ public class MaxCalculator extends ProcessWeatherBetweenDates {
             super.yearlyDataValues.add(finalValue);
              addProcessedTextValue(finalValue, year);
             YearlyValuesResponse yearlyValuesResponse = locationWeatherResponse.getYearlyValues(String.valueOf(year));
-            yearlyValuesResponse.getValues().put(processorName +" For "+dataType, String.valueOf(inputParameters));
+            yearlyValuesResponse.getValues().put(processorName +" For "+dataType, String.valueOf(threshold));
             finalValue =Double.MIN_VALUE;
         }
     @Override
