@@ -60,8 +60,8 @@ public class UtahChillCalculator extends ProcessWeatherBetweenDates {
     protected void processWeatherBetween(Number data, LocalDateTime date) {
         double tF = data.doubleValue(); // ensure this is °F upstream
         for (Bin b : bins) {
-            if (tF >= b.min && tF < b.max) {
-                chillUnits += b.weight;
+            if (tF >= b.min() && tF < b.max()) {
+                chillUnits += b.weight();
                 break;
             }
         }
