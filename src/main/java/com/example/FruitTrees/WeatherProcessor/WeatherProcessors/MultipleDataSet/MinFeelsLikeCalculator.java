@@ -13,7 +13,7 @@ import java.util.List;
  *  weather value above a certain value  and between dates
  *
  */
-@Component("MaxFeelsLike")
+@Component("MinFeelsLike")
 @Scope("prototype")
 
 public class MinFeelsLikeCalculator extends ProcessMultipleWeatherDataSetsBetweenDates {
