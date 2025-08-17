@@ -17,21 +17,15 @@ public class FirstDateAboveValue extends DateValueProcessor {
      * the first value date
      */
     private Optional<LocalDateTime> date=Optional.empty();
-    /**
-     * the min value
-     */
-    private double firstValue;
+
     public FirstDateAboveValue() {
         super("First Date Above");
     }
     @Override
     public void before() {
-        if(inputParameters.size()<1){
-            throw new IllegalArgumentException("Missing parameter");
-        }
-        this.firstValue = Double.parseDouble(inputParameters.get(0));
+
         // set mode to above
-        this.processorName="First Date Above "+inputParameters.get(0);
+        this.processorName="First Date Above "+ threshold;
         clearProcessedTextValues();
         yearlyDataValues.clear();
 
@@ -43,7 +37,7 @@ public class FirstDateAboveValue extends DateValueProcessor {
     }
 
     public void onStop(LocalDateTime date) {
-            String text = "First instance of " + dataType + " Above " + firstValue;
+            String text = "First instance of " + dataType + " Above " + threshold;
           addValue(date,this.date, text);
             this.date=Optional.empty();
             stopProcessing();
@@ -52,7 +46,7 @@ public class FirstDateAboveValue extends DateValueProcessor {
     @Override
     public void processWeatherBetween(Number data, LocalDateTime date) {
         double value=data.doubleValue();
-        if(value>=firstValue){
+        if(value>= value){
             this.date=Optional.of(date);
             onStop(date);
         }

@@ -1,7 +1,7 @@
 package com.example.FruitTrees.WeatherProcessor.WeatherProcessors.MultipleDataSet;
 
-import com.example.FruitTrees.WeatherConroller.WeatherResponse.YearlyValuesResponse;
 import com.example.FruitTrees.Utilities.DataUtilities;
+import com.example.FruitTrees.WeatherConroller.WeatherResponse.YearlyValuesResponse;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -13,15 +13,15 @@ import java.util.List;
  *  weather value above a certain value  and between dates
  *
  */
-@Component("FrostLine")
+@Component("FeelsLike")
 @Scope("prototype")
 
-public class FrostLineCalculator extends ProcessMultipleWeatherDataSetsBetweenDates {
+public class FeelsLikeCalculator extends ProcessMultipleWeatherDataSetsBetweenDates {
     /**
      * the min frost line
      */
-   private String frostLine ="No Frost Line";
-    public FrostLineCalculator() {
+    private String frostLine ="No Frost Line";
+    public FeelsLikeCalculator() {
     }
     @Override
     public void before() {

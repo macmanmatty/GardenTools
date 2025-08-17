@@ -18,10 +18,7 @@ public class LastDateAboveValue extends DateValueProcessor {
      * the first value date
      */
     private Optional<LocalDateTime> date=Optional.empty();
-    /**
-     * the min value
-     */
-    private double lastValue;
+
 
 
     public LastDateAboveValue() {
@@ -30,13 +27,7 @@ public class LastDateAboveValue extends DateValueProcessor {
     @Override
     public void before() {
         String mode="below";
-        if(inputParameters.isEmpty()){
-            throw new IllegalArgumentException("Missing parameter");
-        }
-        this.lastValue = Double.parseDouble(inputParameters.get(0));
-        // set mode to above
-
-        this.processorName="Last Date With Value Above "+mode+" "+inputParameters.get(0);
+        this.processorName="Last Date With Value Above "+mode+" "+ threshold;
         clearProcessedTextValues();
         yearlyDataValues.clear();
 
@@ -44,14 +35,14 @@ public class LastDateAboveValue extends DateValueProcessor {
 
     @Override
     public void onEndDate(LocalDateTime date) {
-            String text = "Last instance of " + dataType + " Above " + lastValue;
+            String text = "Last instance of " + dataType + " Above " + threshold;
             addValue(date,this.date, text);
             this.date = Optional.empty();
     }
     @Override
     public void processWeatherBetween(Number data, LocalDateTime date) {
         double value=data.doubleValue();
-        if( value>= lastValue ) {
+        if( value>= value) {
             this.date= Optional.of(date);
         }
     }

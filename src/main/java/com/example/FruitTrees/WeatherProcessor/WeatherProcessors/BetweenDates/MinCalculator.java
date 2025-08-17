@@ -20,7 +20,7 @@ public class MinCalculator extends ProcessWeatherBetweenDates {
         int year= date.getYear();
         super.yearlyDataValues.add(finalValue);
         YearlyValuesResponse yearlyValuesResponse = locationWeatherResponse.getYearlyValues(String.valueOf(year));
-        yearlyValuesResponse.getValues().put(processorName +" For "+dataType, String.valueOf(inputParameters));
+        yearlyValuesResponse.getValues().put(processorName +" For "+dataType, String.valueOf(threshold));
         addProcessedTextValue(finalValue, year);
             finalValue =Double.MAX_VALUE;
         }

@@ -66,6 +66,9 @@ public class HourlyWeatherProcessRequest {
     private boolean calculateMax;
     private boolean calculateMin;
 
+    private  double lowerBound;
+    private double upperBound;
+    private double threshold;
     public String getHourlyDataType() {
         return hourlyDataType;
     }
@@ -180,5 +183,29 @@ public class HourlyWeatherProcessRequest {
 
     public void setCalculateMedianAverage(boolean calculateMedianAverage) {
         this.calculateMedianAverage = calculateMedianAverage;
+    }
+
+    public double getLowerBound() {
+        return lowerBound;
+    }
+
+    public void setLowerBound(double lowerBound) {
+        this.lowerBound = lowerBound;
+    }
+
+    public double getUpperBound() {
+        return upperBound;
+    }
+
+    public void setUpperBound(double upperBound) {
+        this.upperBound = upperBound;
+    }
+
+    public double getThreshold() {
+        return threshold;
+    }
+
+    public void setThreshold(double threshold) {
+        this.threshold = threshold;
     }
 }

@@ -20,10 +20,6 @@ public class DaysBelowYearly extends DailyAndMonthlyWeatherProcessor {
      * the counted hours
      */
     private double hours;
-    /**
-     * the min value
-     */
-    private double valueToCheck;
 
     /**
      * the number of days above a certain value
@@ -37,12 +33,7 @@ public class DaysBelowYearly extends DailyAndMonthlyWeatherProcessor {
     @Override
     public void before() {
         super.before();
-        if(inputParameters.isEmpty()){
-            throw new IllegalArgumentException(" Params Array Size<1 You Must Include  The Minimum Value In The Array Of Parameters ");
-        }
-
-        super.processorName="Days Below "+inputParameters.get(0)+" Yearly";
-        this.valueToCheck = Double.parseDouble(inputParameters.get(0));
+        super.processorName="Days Below "+ threshold +" Yearly";
         clearProcessedTextValues();
     }
 
@@ -65,7 +56,7 @@ public class DaysBelowYearly extends DailyAndMonthlyWeatherProcessor {
 
     @Override
     protected void onEndYear(Number value, LocalDateTime date) {
-        String text="Days " +dataType+  " Below "+ valueToCheck;
+        String text="Days " +dataType+  " Below "+ value;
         currentYearlyValuesResponse.getValues().put(text, String.valueOf(totalDays));
         addProcessedTextValue(text + " For " + currentYear + " : " + totalDays);
 
@@ -75,7 +66,7 @@ public class DaysBelowYearly extends DailyAndMonthlyWeatherProcessor {
 
     @Override
     protected void processWeatherBetween(double value, LocalDateTime date) {
-        if( this.valueToCheck < value) {
+        if( value < value) {
             hours++;
         }
     }

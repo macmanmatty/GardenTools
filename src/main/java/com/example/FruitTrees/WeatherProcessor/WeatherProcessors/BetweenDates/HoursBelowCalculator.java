@@ -1,6 +1,5 @@
 package com.example.FruitTrees.WeatherProcessor.WeatherProcessors.BetweenDates;
 
-import com.example.FruitTrees.Utilities.DateUtilities;
 import com.example.FruitTrees.WeatherConroller.WeatherResponse.YearlyValuesResponse;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -19,20 +18,12 @@ public class HoursBelowCalculator extends ProcessWeatherBetweenDates {
      * the counted hours
      */
     private double hours;
-    /**
-     * the min value
-     */
-    private double maxValue;
 
     public HoursBelowCalculator() {
     }
     @Override
     public void before() {
-        if(inputParameters.isEmpty()){
-            throw new IllegalArgumentException("Missing parameter");
-        }
-        this.maxValue = Double.parseDouble(inputParameters.get(0));
-        this.processorName="hours Below "+inputParameters.get(0);
+        this.processorName="hours Below "+ threshold;
         clearProcessedTextValues();
         yearlyDataValues.clear();
 
@@ -43,7 +34,7 @@ public class HoursBelowCalculator extends ProcessWeatherBetweenDates {
         int year= date.getYear();
         super.yearlyDataValues.add(hours);
         YearlyValuesResponse yearlyValuesResponse = locationWeatherResponse.getYearlyValues(String.valueOf(year));
-        String text="Hours Of " +dataType+  " Below "+maxValue;
+        String text="Hours Of " +dataType+  " Below "+ threshold;
         yearlyValuesResponse.getValues().put(text, String.valueOf(hours));
         addProcessedTextValue(text+ year+" from: "+ startMonth +"/"+startDay+" to "+endMonth+"/" +endDay+ ": "+ hours);
         hours =0;
@@ -51,7 +42,7 @@ public class HoursBelowCalculator extends ProcessWeatherBetweenDates {
     @Override
     protected void processWeatherBetween(Number data, LocalDateTime date) {
         double value=data.doubleValue();
-        if( value<=maxValue) {
+        if( value<= value) {
             hours++;
         }
     }

@@ -35,19 +35,23 @@ public class DynamicUtahChillCalculator extends ProcessWeatherBetweenDates {
 
     private final  List<Double> chillAmounts=new ArrayList<>();
     public DynamicUtahChillCalculator() {
-        super("Chill Hours");
+        super("Dynamic Utah Chill Hours");
+        ragesBottom.add(34d);
+        ragesBottom.add(45d);
+        ragesBottom.add(55d);
+        ragesBottom.add(65d);
+        ragesTop.add(45d);
+        ragesTop.add(55d);
+        ragesTop.add(65d);
+        ragesTop.add(500d);
+        chillAmounts.add(.5d);
+        chillAmounts.add(1d);
+        chillAmounts.add(-.5d);
+        chillAmounts.add(-1d);
+        
     }
     @Override
     public void before() {
-        if(inputParameters.size()%3!=0){
-            throw new IllegalArgumentException("Incorrect Number of Parameters");
-        }
-        int size= inputParameters.size();
-        for(int count=0; count<size; count=count+3){
-            ragesBottom.add(Double.valueOf(inputParameters.get(count)));
-            ragesTop.add(Double.valueOf(inputParameters.get(count+1)));
-            chillAmounts.add(Double.valueOf(inputParameters.get(count+2)));
-        }
         clearProcessedTextValues();
     }
 
