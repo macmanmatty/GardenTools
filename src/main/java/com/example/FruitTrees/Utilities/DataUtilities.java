@@ -1,26 +1,18 @@
 package com.example.FruitTrees.Utilities;
-
 import com.example.FruitTrees.OpenMeteo.OpenMeteoResponse;
-
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.BiConsumer;
-
 public class DataUtilities {
-
     private  DataUtilities() {
     }
-
-
-
     public static Map<String, double[]> getAllHourlyData(OpenMeteoResponse response) {
         OpenMeteoResponse.Hourly data = response.hourly;
         Map<String, List<? extends Number>> rawData = new HashMap<>();
         BiConsumer<String, List<? extends Number>> putIfNotNull =
                 (key, value) -> { if (value != null) rawData.put(key, value); };
-
         putIfNotNull.accept("temperature_2m", data.temperature_2m);
         putIfNotNull.accept("relative_humidity_2m", data.relative_humidity_2m);
         putIfNotNull.accept("dew_point_2m", data.dew_point_2m);
@@ -51,9 +43,6 @@ public class DataUtilities {
         putIfNotNull.accept("soil_temperature_28_to_100cm", data.soil_temperature_28_to_100cm);
         putIfNotNull.accept("soil_moisture_100_to_255cm", data.soil_moisture_100_to_255cm);
         putIfNotNull.accept("soil_temperature_100_to_255cm", data.soil_temperature_100_to_255cm);
-
-
-
         Map<String, double[]> result = new LinkedHashMap<>();
         for (Map.Entry<String, List<? extends Number>> entry : rawData.entrySet()) {
             List<? extends Number> list = entry.getValue();
@@ -66,12 +55,9 @@ public class DataUtilities {
         }
         return result;
     }
-
     public static String toNOAADatatype(String field) {
         if (field == null) return null;
-
         switch (field.trim().toLowerCase()) {
-
             // Temperature
             case "temperature":
             case "temp":
@@ -81,7 +67,6 @@ public class DataUtilities {
             case "2m_temperature":
             case "tmp":
                 return "TMP";
-
             // Dew Point
             case "dew point":
             case "dewpoint":
@@ -91,24 +76,20 @@ public class DataUtilities {
             case "dew":
             case "md1": case "md2": case "md3": case "md4": case "md5": case "md6":
                 return "DEW";
-
             // Sea-Level Pressure
             case "sea level pressure":
             case "sea_level_pressure":
             case "slp":
                 return "SLP";
-
             // Station Pressure
             case "station pressure":
             case "station_pressure":
             case "stp":
                 return "STP";
-
             // Visibility
             case "visibility":
             case "vis":
                 return "VIS";
-
             // Wind Speed
             case "wind":
             case "wind speed":
@@ -118,7 +99,6 @@ public class DataUtilities {
             case "wds":
             case "wnd":
                 return "WDS";
-
             // Wind Direction
             case "wind direction":
             case "wind_dir":
@@ -126,7 +106,6 @@ public class DataUtilities {
             case "wind_direction_10m":
             case "wdf":
                 return "WDF";
-
             // Wind Gusts
             case "gust":
             case "wind gust":
@@ -138,14 +117,12 @@ public class DataUtilities {
             case "ga1":
             case "ga2":
                 return "GUS";
-
             // Ceiling Height
             case "cloud ceiling":
             case "ceiling height":
             case "cloud_ceiling":
             case "clg":
                 return "CLG";
-
             // Sky Cover
             case "sky cover":
             case "cloud cover":
@@ -153,18 +130,15 @@ public class DataUtilities {
             case "cloud_cover":
             case "skc":
                 return "SKC";
-
             // Lightning
             case "lightning":
             case "lgt":
                 return "LGT";
-
             // Pressure Tendency
             case "pressure tendency":
             case "pressure_tendency":
             case "prs":
                 return "PRS";
-
             // Precipitation
             case "rain":
             case "precip":
@@ -175,7 +149,6 @@ public class DataUtilities {
             case "p06i":
             case "aa1": case "aa2": case "aa3": case "aa4":
                 return "P01I";
-
             // Snow
             case "snow":
             case "snow depth":
@@ -183,7 +156,6 @@ public class DataUtilities {
             case "sn1":
             case "sn2":
                 return "SN1";
-
             // Ground Frost
             case "frost":
             case "ground frost":
@@ -191,26 +163,23 @@ public class DataUtilities {
             case "gf1":
             case "gf2":
                 return "GF1";
-
             // Remarks
             case "remarks":
             case "notes":
             case "rem":
                 return "REM";
-
             // Unknown
             default:
                throw new IllegalArgumentException("Invalid field name: " + field);
         }
     }
+    /**
+    converts a string of commonly used data types to open meteo data type.
 
-
-
+     */
     public static String toOpenMeteoDatatype(String field) {
         if (field == null) return null;
-
         switch (field.trim().toLowerCase()) {
-
             // Temperature
             case "tmp":
             case "temp":
@@ -220,7 +189,6 @@ public class DataUtilities {
             case "air_temperature":
             case "t2m":
                 return "temperature_2m";
-
             // Dew point
             case "dew":
             case "dew point":
@@ -230,13 +198,11 @@ public class DataUtilities {
             case "dew_point_2m":
             case "md1": case "md2": case "md3": case "md4": case "md5": case "md6":
                 return "dew_point_2m";
-
             // Apparent temperature
             case "apparent temperature":
             case "apparent_temperature":
             case "feels_like":
                 return "apparent_temperature";
-
             // Precipitation
             case "precip":
             case "precipitation":
@@ -245,74 +211,61 @@ public class DataUtilities {
             case "rain_total":
             case "hourly_precip":
                 return "precipitation";
-
             // Rain
             case "rain":
                 return "rain";
-
             // Snow
             case "snow":
             case "snowfall":
                 return "snowfall";
-
             // Snow depth
             case "snow depth":
             case "snow_depth":
             case "sn1": case "sn2":
                 return "snow_depth";
-
             // Weather
             case "weather":
             case "weather_code":
             case "weathercode":
                 return "weather_code";
-
             // Sea-level pressure
             case "mslp":
             case "slp":
             case "sea level pressure":
             case "sea_level_pressure":
                 return "pressure_msl";
-
             // Surface pressure
             case "stp":
             case "station pressure":
             case "surface pressure":
             case "surface_pressure":
                 return "surface_pressure";
-
             // Cloud cover (total + layers)
             case "sky cover":
             case "cloud cover":
             case "cloud_cover":
             case "skc":
                 return "cloud_cover";
-
             case "cloud cover low":
             case "cloud_cover_low":
                 return "cloud_cover_low";
-
             case "cloud cover mid":
             case "cloud_cover_mid":
                 return "cloud_cover_mid";
-
             case "cloud cover high":
             case "cloud_cover_high":
                 return "cloud_cover_high";
-
             // Evapotranspiration
             case "et0":
             case "et0_fao":
             case "et0_fao_evapotranspiration":
             case "evapotranspiration":
                 return "et0_fao_evapotranspiration";
-
             // VPD
             case "vapour pressure deficit":
             case "vapour_pressure_deficit":
             case "vpd":
                 return "vapour_pressure_deficit";
-
             // Wind speed
             case "wind":
             case "wind speed":
@@ -322,11 +275,9 @@ public class DataUtilities {
             case "wds":
             case "wnd":
                 return "wind_speed_10m";
-
             case "wind_speed_100m":
             case "100m wind":
                 return "wind_speed_100m";
-
             // Wind direction
             case "wind direction":
             case "wind_dir":
@@ -334,10 +285,8 @@ public class DataUtilities {
             case "wind_direction_10m":
             case "wdf":
                 return "wind_direction_10m";
-
             case "wind_direction_100m":
                 return "wind_direction_100m";
-
             // Gusts
             case "gust":
             case "wind gust":
@@ -347,41 +296,32 @@ public class DataUtilities {
             case "gus":
             case "ga1": case "ga2":
                 return "wind_gusts_10m";
-
             // Soil temperature
             case "soiltemp0to7":
             case "soil_temperature_0_to_7cm":
                 return "soil_temperature_0_to_7cm";
-
             case "soiltemp7to28":
             case "soil_temperature_7_to_28cm":
                 return "soil_temperature_7_to_28cm";
-
             case "soiltemp28to100":
             case "soil_temperature_28_to_100cm":
                 return "soil_temperature_28_to_100cm";
-
             case "soiltemp100to255":
             case "soil_temperature_100_to_255cm":
                 return "soil_temperature_100_to_255cm";
-
             // Soil moisture
             case "soilmoist0to7":
             case "soil_moisture_0_to_7cm":
                 return "soil_moisture_0_to_7cm";
-
             case "soilmoist7to28":
             case "soil_moisture_7_to_28cm":
                 return "soil_moisture_7_to_28cm";
-
             case "soilmoist28to100":
             case "soil_moisture_28_to_100cm":
                 return "soil_moisture_28_to_100cm";
-
             case "soilmoist100to255":
             case "soil_moisture_100_to_255cm":
                 return "soil_moisture_100_to_255cm";
-
             // Relative humidity
             case "humidity":
             case "relative_humidity":
@@ -390,17 +330,10 @@ public class DataUtilities {
             case "relative_humidity_2m":
             case "humidity_2m":
                 return "relative_humidity_2m";
-
             default:
                 throw new IllegalArgumentException("Invalid field name: " + field);
         }
     }
-
-
-
-
-
-
 public static String extractValuesForSoil(String fieldName) {
         return switch (fieldName) {
             case "soil_moisture_0_to_7cm", "soil_temperature_0_to_7cm" -> "0 to 7 cm";
@@ -410,9 +343,4 @@ public static String extractValuesForSoil(String fieldName) {
             default -> "Not Soil";
         };
     }
-
-
-
-
-
 }

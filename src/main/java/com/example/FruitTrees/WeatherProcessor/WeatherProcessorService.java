@@ -26,8 +26,6 @@ public class WeatherProcessorService {
     private static final Logger log = LoggerFactory.getLogger(WeatherProcessorService.class);
     WeatherProcessorFactory weatherProcessorFactory;
     OpenMeteoHTTPRequest openMeteoHTTPRequest;
-    @Value("${stream-data}")
-    boolean streamData;
     public WeatherProcessorService(@Autowired WeatherProcessorFactory weatherProcessorFactory, OpenMeteoHTTPRequest openMeteoHTTPRequest) {
         this.weatherProcessorFactory = weatherProcessorFactory;
         this.openMeteoHTTPRequest = openMeteoHTTPRequest;
@@ -77,12 +75,9 @@ public class WeatherProcessorService {
          }
          weatherProcessors.add(weatherProcessor);
      }
-     if (streamData) {
-         streamProcessHoulyWeather(location, weatherRequest, weatherProcessors);
-     }
-     else {
+
          processHourlyWeather(time, weatherProcessors, locationResponse.getData());
-     }
+
      return weatherResponse;
  }
 
@@ -136,16 +131,8 @@ public class WeatherProcessorService {
                     p++;
                     continue;
                 }
-
                 double value = series[hourIndex];
-
-                // If you add date-window logic, check here before processing:
-                // if (!weatherProcessor.dateRule().accepts(localDateFrom(timestamp))) { p++; continue; }
-
                 weatherProcessor.processWeatherExternal(value, timestamp);
-
-                // If you add an "isDone()" flag, you can prune here:
-                // if (weatherProcessor.isDone()) { activeProcessors.remove(p); } else { p++; }
                 p++;
             }
         }

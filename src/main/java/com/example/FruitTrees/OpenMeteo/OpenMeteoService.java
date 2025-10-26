@@ -59,10 +59,9 @@ public class OpenMeteoService {
         boolean populateLocationData= weatherRequest.isPopulateLocationData();
         for (Location location : locations) {
             try {
-                OpenMeteoLocationResponse locationResponse;
-                if(!streamData) {
-                    locationResponse = openMeteoHTTPRequest.makeLocationRequest(location, weatherRequest);
-                }
+                    OpenMeteoLocationResponse locationResponse = openMeteoHTTPRequest.makeLocationRequest(location, weatherRequest);
+                    locationResponses.getLocationResponses().add(locationResponse);
+
                 if(populateLocationData){
                     openStreetLocationService.populateLocationData(location);
                 }
