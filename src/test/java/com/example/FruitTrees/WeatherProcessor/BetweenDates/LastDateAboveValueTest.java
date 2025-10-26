@@ -21,7 +21,7 @@ public class LastDateAboveValueTest {
     @BeforeEach
     void setUp() {
         processor = new LastDateAboveValue();
-        processor.setInputParameters(List.of("80.0")); // freezing threshold
+        processor.setThreshold(80.0); // freezing threshold
         processor.setDataType("Temperature");
         processor.setStartMonthDay(5,1);
         processor.setEndMonthDay(9,30);

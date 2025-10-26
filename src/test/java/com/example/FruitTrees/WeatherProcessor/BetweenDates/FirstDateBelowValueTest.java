@@ -21,7 +21,7 @@ public class FirstDateBelowValueTest {
     @BeforeEach
     void setUp() {
         processor = new FirstDateBelowValue();
-        processor.setInputParameters(List.of("32.0")); // freezing threshold
+        processor.setThreshold(32.0); // freezing threshold
         processor.setDataType("Temperature");
         processor.setStartMonthDay(9,1);
         processor.setEndMonthDay(12,31);

@@ -12,7 +12,7 @@ public class DaysAboveMonthlyTest {
     public void testLastDayOfMonthWith24HoursAboveThreshold() {
         DaysAboveMonthly processor = new DaysAboveMonthly();
         processor.currentYear = 2024;
-        processor.getInputParameters().add("32");
+        processor.setThreshold(32);
         processor.setDataType( "Temperature");
         processor.currentMonthName="FEBRUARY";
         processor.setLocationWeatherResponse(new LocationWeatherResponse());

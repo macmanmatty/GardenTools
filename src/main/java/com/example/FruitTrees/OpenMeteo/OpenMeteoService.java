@@ -18,6 +18,8 @@ public class OpenMeteoService {
    private  final WeatherProcessorService weatherProcessorService;
    private final OpenStreetLocationService openStreetLocationService;
     private final RequestValidation requestValidation;
+    @Value("${stream-data}")
+    boolean streamData;
     @Autowired
     public OpenMeteoService(OpenMeteoHTTPRequest openMeteoHTTPRequest, WeatherProcessorService weatherProcessorService,
    OpenStreetLocationService openStreetLocationService, RequestValidation requestValidation) {
@@ -57,8 +59,9 @@ public class OpenMeteoService {
         boolean populateLocationData= weatherRequest.isPopulateLocationData();
         for (Location location : locations) {
             try {
-                OpenMeteoLocationResponse locationResponse= openMeteoHTTPRequest.makeLocationRequest(location, weatherRequest);
-                locationResponses.getLocationResponses().add(locationResponse);
+                    OpenMeteoLocationResponse locationResponse = openMeteoHTTPRequest.makeLocationRequest(location, weatherRequest);
+                    locationResponses.getLocationResponses().add(locationResponse);
+
                 if(populateLocationData){
                     openStreetLocationService.populateLocationData(location);
                 }
@@ -68,5 +71,8 @@ public class OpenMeteoService {
         }
         return  locationResponses;
     }
+
+
+
 
 }

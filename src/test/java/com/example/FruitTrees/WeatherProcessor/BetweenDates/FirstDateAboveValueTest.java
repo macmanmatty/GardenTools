@@ -24,7 +24,7 @@ public class FirstDateAboveValueTest {
 
         // Required setup values
 
-        processor.setInputParameters(List.of("75.0")); // freezing threshold
+        processor.setThreshold(75.0); // freezing threshold
         processor.setDataType("Temperature");
         processor.setStartMonthDay(4,1);
         processor.setEndMonthDay(9,30);
