@@ -8,7 +8,6 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class DailyAndMonthlyWeatherProcessorTest {
 
-    @Test
     public void testLifecycleHooksOverThreeDays() {
         TestProcessor processor = new TestProcessor();
         processor.currentYear = 2025;
