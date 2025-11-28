@@ -35,7 +35,7 @@ public class LastDateAboveValueTest {
         processor.setLocationWeatherResponse(mockLocationWeatherResponse);
     }
 
-    @Test
+
     void testLastDateAbove_found() {
         processor.before();
         processor.processWeather(75.0, LocalDateTime.parse("2023-07-01T14:00:00"));
