@@ -36,9 +36,9 @@ public class HoursBetweenCalculator extends ProcessWeatherBetweenDates {
         super.yearlyDataValues.add(chillHours);
         YearlyValuesResponse yearlyValuesResponse = locationWeatherResponse.getYearlyValues(String.valueOf(year));
         String text="Chilling Hours";
-        String years= text+ " Above "+ lowerBound +" And Below "+ upperBound;
-        yearlyValuesResponse.getValues().put(years, String.valueOf(chillHours));
-        addProcessedTextValue(years+" For " +year+" from: "+ startMonth +"/"+startDay+" to "+endMonth+"/" +endDay+ ": "+ chillHours);
+        String baseText= text+ " Above "+ lowerBound +" And Below "+ upperBound;
+        yearlyValuesResponse.getValues().put(baseText, String.valueOf(chillHours));
+        addProcessedTextValue(baseText+" For " +year+" from: "+ startMonth +"/"+startDay+" to "+endMonth+"/" +endDay+ ": "+ chillHours);
         chillHours =0;
     }
 

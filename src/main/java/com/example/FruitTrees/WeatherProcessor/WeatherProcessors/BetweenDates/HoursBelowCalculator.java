@@ -36,7 +36,7 @@ public class HoursBelowCalculator extends ProcessWeatherBetweenDates {
         YearlyValuesResponse yearlyValuesResponse = locationWeatherResponse.getYearlyValues(String.valueOf(year));
         String text="Hours Of " +dataType+  " Below "+ threshold;
         yearlyValuesResponse.getValues().put(text, String.valueOf(hours));
-        addProcessedTextValue(text+ year+" from: "+ startMonth +"/"+startDay+" to "+endMonth+"/" +endDay+ ": "+ hours);
+        addProcessedTextValue(text + " in "+ year + " from: " + startMonth + "/" + startDay + " to " + endMonth + "/" + endDay + ": " + hours);
         hours =0;
     }
     @Override
