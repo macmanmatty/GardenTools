@@ -23,7 +23,7 @@ public class HoursBelowCalculator extends ProcessWeatherBetweenDates {
     }
     @Override
     public void before() {
-        this.processorName="hours Below "+ threshold;
+        this.processorName="hours Below "+ threshold+" Of "+dataType;
         clearProcessedTextValues();
         yearlyDataValues.clear();
 
@@ -42,7 +42,7 @@ public class HoursBelowCalculator extends ProcessWeatherBetweenDates {
     @Override
     protected void processWeatherBetween(Number data, LocalDateTime date) {
         double value=data.doubleValue();
-        if( value<= threshold) {
+        if( value<= super.threshold) {
             hours++;
         }
     }
