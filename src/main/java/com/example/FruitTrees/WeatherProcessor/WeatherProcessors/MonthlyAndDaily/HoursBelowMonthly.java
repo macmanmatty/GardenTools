@@ -24,7 +24,7 @@ public class HoursBelowMonthly extends DailyAndMonthlyWeatherProcessor {
     @Override
     public void before() {
         super.before();
-        super.processorName="Hours Below "+ threshold +" Monthly  For "+dataType;
+        super.processorName="Hours Below "+ threshold +" Monthly  Of "+dataType;
         clearProcessedTextValues();
     }
 
