@@ -25,7 +25,7 @@ public class HoursBetweenCalculator extends ProcessWeatherBetweenDates {
     @Override
     public void before() {
 
-        this.processorName="Hours Between "+super.upperBound +" And "+super.lowerBound;
+        this.processorName="Hours Between "+super.upperBound +" And "+super.lowerBound+" for "+dataType;;
         clearProcessedTextValues();
         yearlyDataValues.clear();
 

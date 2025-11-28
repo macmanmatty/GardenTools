@@ -25,7 +25,7 @@ public class HoursBetweenMonthly extends DailyAndMonthlyWeatherProcessor {
     @Override
     public void before() {
         super.before();
-        super.processorName="Hours Between "+super.lowerBound + "And "+super.upperBound + " Monthly";
+        super.processorName="Hours Between "+super.lowerBound + "And "+super.upperBound + " Monthly  For "+dataType;
         clearProcessedTextValues();
     }
 
