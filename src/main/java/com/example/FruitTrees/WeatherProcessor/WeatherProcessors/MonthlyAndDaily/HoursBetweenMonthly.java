@@ -41,7 +41,7 @@ public class HoursBetweenMonthly extends DailyAndMonthlyWeatherProcessor {
     }
     @Override
     protected void processWeatherBetween(double value, LocalDateTime date) {
-        if( value<= upperBound && value>= lowerBound) {
+        if( value<= super.upperBound && value>= super.lowerBound) {
             hours++;
         }
     }

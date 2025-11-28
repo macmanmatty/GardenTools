@@ -40,7 +40,7 @@ public class HoursAboveMonthly extends DailyAndMonthlyWeatherProcessor {
     }
     @Override
     protected void processWeatherBetween(double value, LocalDateTime date) {
-        if( value>= this.threshold) {
+        if( value>= super.threshold) {
             hours++;
         }
     }
