@@ -79,7 +79,14 @@ public class WeatherProcessorService {
 
      return weatherResponse;
  }
-
+    /**
+     * Computes and injects all derived time series (e.g., VPD, Feels-Like, ET0).
+     * Derived arrays are created once and added to the same map as raw series.
+     *
+     * @param weatherRequest   Request containing all needed data types
+     * @param locationResponse Location holding raw series
+     * @return                 Updated map including derived series
+     */
     public Map<String, double[]> buildDerivedSeries(
             WeatherRequest weatherRequest,
             LocationResponse locationResponse
@@ -134,6 +141,14 @@ public class WeatherProcessorService {
 
 
 
+    /**
+     * Executes the full processor lifecycle over a contiguous hourly block.
+     *
+     * @param iso8601Times   Hourly timestamps (UTC)
+     * @param processors    All processors to execute
+     * @param seriesByType  Map of dataType → hourly double array
+     */
+
     public void processHourlyWeather(
             LocalDateTime [] iso8601Times,
             List<WeatherProcessor> processors,
@@ -162,6 +177,13 @@ public class WeatherProcessorService {
         }
     }
 
+    /**
+     * Hot inner loop. Walks each hour once and fans values to all processors.
+     *
+     * @param iso8601Times     Hourly timestamps
+     * @param activeProcessors Active processor instances
+     * @param seriesByType    Map of dataType → hourly series
+     */
     public void processHourlyChunk(
             LocalDateTime [] iso8601Times,
             List<WeatherProcessor> activeProcessors,
@@ -189,7 +211,13 @@ public class WeatherProcessorService {
             }
         }
     }
-
+    /**
+     * Streaming mode: processes data month-by-month to limit memory usage.
+     *
+     * @param location   Location being processed
+     * @param request    WeatherRequest with date range and processors
+     * @param processors Configured processors to run
+     */
     public void streamProcessHoulyWeather(
             Location location,
             WeatherRequest request,

@@ -10,11 +10,11 @@ import java.util.Set;
 public class WeatherRequest {
 
     /**
-     * the hourly data types to retrieve from  the open meteo  API
+     * the hourly data types to retrieve and or calculate  from  the open meteo  API
      */
     public Set<String> hourlyDataTypes = new HashSet<>();
     /**
-     * the daily data types to retrieve from  the open meteo  API
+     * the daily data types to retrieve and or calculate  from  the open meteo  API
      */
     public Set<String> dailyDataTypes = new HashSet<>();
 
