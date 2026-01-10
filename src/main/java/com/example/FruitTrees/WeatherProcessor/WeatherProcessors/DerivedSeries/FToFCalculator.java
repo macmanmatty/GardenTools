@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 
 @Component("vpd_kpa")
-public class CToFCalculator implements DerivedSeriesCalculator {
+public class FToFCalculator implements DerivedSeriesCalculator {
 
     @Override
     public String outputType() {
@@ -16,7 +16,7 @@ public class CToFCalculator implements DerivedSeriesCalculator {
     @Override
     public List<String> requiredInputTypes() {
         // Always need dew point
-        return List.of("temperature_f");
+        return List.of("temperature_c");
     }
 
     @Override
@@ -28,15 +28,15 @@ public class CToFCalculator implements DerivedSeriesCalculator {
     @Override
     public double computeAt(double[] req, double[] opt) {
 
-        double tempF;
+        double tempC;
         if (opt.length > 0) {
             // If leaf temperature exists, it will be first
-            tempF = opt[0];
+            tempC = opt[0];
         } else {
             // Safety fallback (shouldn't happen if temp is always provided)
             throw new IllegalStateException("No temperature available");
         }
 
-        return WeatherUtilities.fahrenheitToCelsius(tempF);
+        return WeatherUtilities.celsiusToFahrenheit(tempC);
     }
 }
