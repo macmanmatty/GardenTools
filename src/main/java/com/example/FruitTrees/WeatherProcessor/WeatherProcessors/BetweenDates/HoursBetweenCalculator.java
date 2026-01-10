@@ -44,12 +44,11 @@ public class HoursBetweenCalculator extends ProcessWeatherBetweenDates {
 
     /**
      *
-     * @param data the value of the weather data at the current date and time
+     * @param value the value of the weather data at the current date and time
      * @param date  the current date and time of the weather  being processed
      */
     @Override
-    protected void processWeatherBetween(Number data, LocalDateTime date) {
-        double value=data.doubleValue();
+    protected void processWeatherBetween(double value, LocalDateTime date) {
         if( value>= super.lowerBound && value<= super.upperBound) {
             chillHours++;
         }

@@ -79,7 +79,7 @@ public abstract  class ProcessWeatherBetweenDates  extends WeatherProcessor {
      * @param date  the current date and time of the weather  being processed
      * @param  data the value of the weather data at the current date and time
      */
-    protected abstract void processWeatherBetween(Number data, LocalDateTime date);
+    protected abstract void processWeatherBetween(double data, LocalDateTime date);
 
 
     @Override

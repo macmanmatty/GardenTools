@@ -42,8 +42,7 @@ public class FirstDateBelowValue extends DateValueProcessor {
 
     }
     @Override
-    public void processWeatherBetween(Number data, LocalDateTime date) {
-        double value=data.doubleValue();
+    public void processWeatherBetween(double value, LocalDateTime date) {
         if( value<= threshold) {
             this.date=Optional.of(date);
           onStop(date);

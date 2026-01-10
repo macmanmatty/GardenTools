@@ -25,8 +25,7 @@ public class TotalCalculator extends ProcessWeatherBetweenDates{
         total =0;
     }
     @Override
-    protected void processWeatherBetween(Number data, LocalDateTime date) {
-        double value=data.doubleValue();
+    protected void processWeatherBetween(double value,LocalDateTime date) {
         this.total = this.total + value;
     }
 }

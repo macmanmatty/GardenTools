@@ -36,6 +36,27 @@ public class WeatherUtilities {
 
 
     /**
+     * --- Vapor Pressure Deficit (VPD) ---
+     *
+     * @param tempC   Air temperature in °C
+     * @param dewPtC  Dew point temperature in °C
+     * @return VPD in kilopascals (kPa)
+     *
+     * VPD represents atmospheric demand for water from plants.
+     * Higher values = higher plant stress.
+     */
+    public static double vaporPressureDeficit(double tempC, double dewPtC) {
+        // Dew point should not exceed air temperature
+        dewPtC = Math.min(dewPtC, tempC);
+
+        double svp = 0.6108 * Math.exp((17.27 * tempC) / (tempC + 237.3));
+        double avp = 0.6108 * Math.exp((17.27 * dewPtC) / (dewPtC + 237.3));
+
+        return Math.max(0.0, svp - avp); // kPa
+    }
+
+
+    /**
      * --- Heat Index (NOAA Rothfusz Regression) ---
      *
      * @param tempF   Air temperature in °F

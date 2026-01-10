@@ -1,6 +1,7 @@
 package com.example.FruitTrees.WeatherProcessor;
 import com.example.FruitTrees.Location.Location;
 import com.example.FruitTrees.OpenMeteo.*;
+import com.example.FruitTrees.WeatherProcessor.WeatherProcessors.DerivedSeries.DerivedSeriesCalculator;
 import com.example.FruitTrees.WeatherProcessor.WeatherProcessors.WeatherProcessor;
 import com.example.FruitTrees.WeatherConroller.HourlyWeatherProcessRequest;
 import com.example.FruitTrees.WeatherConroller.WeatherResponse.LocationWeatherResponse;
@@ -9,16 +10,12 @@ import com.example.FruitTrees.WeatherConroller.WeatherResponse.WeatherResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.YearMonth;
-import java.util.ArrayList;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 
 @Service
@@ -76,10 +73,65 @@ public class WeatherProcessorService {
          weatherProcessors.add(weatherProcessor);
      }
 
+
+        buildDerivedSeries(weatherRequest, locationResponse);
          processHourlyWeather(time, weatherProcessors, locationResponse.getData());
 
      return weatherResponse;
  }
+
+    public Map<String, double[]> buildDerivedSeries(
+            WeatherRequest weatherRequest,
+            LocationResponse locationResponse
+    ) {
+      Set<String> needed= weatherRequest.getHourlyDataTypes();
+         Map<String,  double[]> seriesByType= locationResponse.getData();
+        for (String derivedType : needed) {
+            if (seriesByType.containsKey(derivedType)) continue; // already present
+        DerivedSeriesCalculator calc=  weatherProcessorFactory.createDerivedSeriesCalculator(derivedType);
+            if (calc == null) continue; // not a computed type
+
+            List<String> reqTypes = calc.requiredInputTypes();
+            double[][] reqSeries = new double[reqTypes.size()][];
+            int minLen = Integer.MAX_VALUE;
+
+            boolean ok = true;
+            for (int i = 0; i < reqTypes.size(); i++) {
+                double[] s = seriesByType.get(reqTypes.get(i));
+                if (s == null) { ok = false; break; }
+                reqSeries[i] = s;
+                minLen = Math.min(minLen, s.length);
+            }
+            if (!ok || minLen == Integer.MAX_VALUE) continue;
+
+            // optional inputs (only include those present)
+            List<String> optTypes = calc.optionalInputTypes();
+            java.util.List<double[]> optSeriesList = new java.util.ArrayList<>();
+            for (String ot : optTypes) {
+                double[] s = seriesByType.get(ot);
+                if (s != null) {
+                    optSeriesList.add(s);
+                    minLen = Math.min(minLen, s.length);
+                }
+            }
+            double[][] optSeries = optSeriesList.toArray(new double[0][]);
+
+            double[] out = new double[minLen];
+            double[] reqBuf = new double[reqSeries.length];
+            double[] optBuf = new double[optSeries.length];
+
+            for (int t = 0; t < minLen; t++) {
+                for (int i = 0; i < reqSeries.length; i++) reqBuf[i] = reqSeries[i][t];
+                for (int i = 0; i < optSeries.length; i++) optBuf[i] = optSeries[i][t];
+                out[t] = calc.computeAt(reqBuf, optBuf);
+            }
+
+            seriesByType.put(derivedType, out);
+        }
+        return seriesByType;
+    }
+
+
 
 
     public void processHourlyWeather(

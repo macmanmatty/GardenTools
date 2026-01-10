@@ -2,6 +2,7 @@ package com.example.FruitTrees.WeatherProcessor;
 
 import com.example.FruitTrees.WeatherConroller.HourlyWeatherProcessRequest;
 import com.example.FruitTrees.WeatherConroller.WeatherResponse.LocationWeatherResponse;
+import com.example.FruitTrees.WeatherProcessor.WeatherProcessors.DerivedSeries.DerivedSeriesCalculator;
 import com.example.FruitTrees.WeatherProcessor.WeatherProcessors.WeatherProcessor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -40,5 +41,11 @@ public class WeatherProcessorFactory {
         processor.setBins(config.getBins());
         processor.setDataTypes(config.getDataTypes());
         return processor;
+    }
+
+    public DerivedSeriesCalculator createDerivedSeriesCalculator(String name){
+
+        DerivedSeriesCalculator derivedSeriesCalculator = context.getBean(name,  DerivedSeriesCalculator.class);
+        return derivedSeriesCalculator;
     }
 }
