@@ -16,34 +16,19 @@ import java.util.List;
 @Component("FrostLine")
 @Scope("prototype")
 
-public class FrostLineCalculator extends ProcessMultipleWeatherDataSetsBetweenDates {
+public class FrostLineCalculator  {
     /**
      * the min frost line
      */
    private String frostLine ="No Frost Line";
     public FrostLineCalculator() {
     }
-    @Override
-    public void before() {
 
-        clearProcessedTextValues();
-        yearlyDataValues.clear();
-    }
-
-    @Override
     public void calculateMedianAverageValue() {
 
     }
 
-    @Override
-    protected void onEndDate(LocalDateTime localDateTime) {
-        int year= localDateTime.getYear();
-       YearlyValuesResponse yearlyValuesResponse = locationWeatherResponse.getYearlyValues(String.valueOf(year));
-        String text="Frost Line is below "+ frostLine;
-        yearlyValuesResponse.getValues().put(text, String.valueOf(frostLine));
-        frostLine ="No Frost Line";
-    }
-    @Override
+
     void processWeatherBetween(List<Double> data, List<String> dataType, LocalDateTime date) {
         int size=data.size();
        for(int count=0; count<size; count++){

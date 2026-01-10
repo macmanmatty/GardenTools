@@ -11,9 +11,13 @@ public class DataUtilities {
     public static Map<String, double[]> getAllHourlyData(OpenMeteoResponse response) {
         OpenMeteoResponse.Hourly data = response.hourly;
         Map<String, List<? extends Number>> rawData = new HashMap<>();
+        String tempUnit="c";
+        if(response.hourly_Units.temperature2m.equals("fahrenheit")) {
+            tempUnit="f";
+        }
         BiConsumer<String, List<? extends Number>> putIfNotNull =
                 (key, value) -> { if (value != null) rawData.put(key, value); };
-        putIfNotNull.accept("temperature_2m", data.temperature_2m);
+        putIfNotNull.accept("temperature_2m_"+tempUnit, data.temperature_2m);
         putIfNotNull.accept("relative_humidity_2m", data.relative_humidity_2m);
         putIfNotNull.accept("dew_point_2m", data.dew_point_2m);
         putIfNotNull.accept("apparent_temperature", data.apparent_temperature);
@@ -36,13 +40,13 @@ public class DataUtilities {
         putIfNotNull.accept("wind_direction_100m", data.wind_direction_100m);
         putIfNotNull.accept("wind_gusts_10m", data.wind_gusts_10m);
         putIfNotNull.accept("soil_moisture_0_to_7cm", data.soil_moisture_0_to_7cm);
-        putIfNotNull.accept("soil_temperature_0_to_7cm", data.soil_temperature_0_to_7cm);
-        putIfNotNull.accept("soil_temperature_7_to_28cm", data.soil_temperature_7_to_28cm);
+        putIfNotNull.accept("soil_temperature_0_to_7cm"+tempUnit, data.soil_temperature_0_to_7cm);
+        putIfNotNull.accept("soil_temperature_7_to_28cm"+tempUnit, data.soil_temperature_7_to_28cm);
         putIfNotNull.accept("soil_moisture_7_to_28cm", data.soil_moisture_7_to_28cm);
         putIfNotNull.accept("soil_moisture_28_to_100cm", data.soil_moisture_28_to_100cm);
-        putIfNotNull.accept("soil_temperature_28_to_100cm", data.soil_temperature_28_to_100cm);
+        putIfNotNull.accept("soil_temperature_28_to_100cm"+tempUnit, data.soil_temperature_28_to_100cm);
         putIfNotNull.accept("soil_moisture_100_to_255cm", data.soil_moisture_100_to_255cm);
-        putIfNotNull.accept("soil_temperature_100_to_255cm", data.soil_temperature_100_to_255cm);
+        putIfNotNull.accept("soil_temperature_100_to_255cm"+tempUnit, data.soil_temperature_100_to_255cm);
         Map<String, double[]> result = new LinkedHashMap<>();
         for (Map.Entry<String, List<? extends Number>> entry : rawData.entrySet()) {
             List<? extends Number> list = entry.getValue();

@@ -5,7 +5,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 
-@Component("vpd_kpa")
+@Component("CtoF")
 public class CToFCalculator implements DerivedSeriesCalculator {
 
     @Override

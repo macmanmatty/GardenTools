@@ -93,11 +93,18 @@ public class WeatherProcessorService {
     ) {
       Set<String> needed= weatherRequest.getHourlyDataTypes();
          Map<String,  double[]> seriesByType= locationResponse.getData();
+        if(weatherRequest.getTemperatureUnit().equalsIgnoreCase("fahrenheit")){
+        needed.add("FToC");
+        }
+        else{
+            needed.add("CToF");
+        }
         for (String derivedType : needed) {
             if (seriesByType.containsKey(derivedType)) continue; // already present
-        DerivedSeriesCalculator calc=  weatherProcessorFactory.createDerivedSeriesCalculator(derivedType);
-            if (calc == null) continue; // not a computed type
-
+            DerivedSeriesCalculator calc=  weatherProcessorFactory.createDerivedSeriesCalculator(derivedType);
+            if (calc == null) {
+                continue;
+            } // not a computed type
             List<String> reqTypes = calc.requiredInputTypes();
             double[][] reqSeries = new double[reqTypes.size()][];
             int minLen = Integer.MAX_VALUE;
