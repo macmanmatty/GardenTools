@@ -97,7 +97,7 @@ public class WeatherProcessorService {
         needed.add("FToC");
         }
         else{
-            needed.add("CToF");
+         needed.add("CToF");
         }
         for (String derivedType : needed) {
             if (seriesByType.containsKey(derivedType)) continue; // already present
