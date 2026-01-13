@@ -1,5 +1,4 @@
-package com.example.FruitTrees.WeatherProcessor;
-import org.junit.jupiter.api.Test;
+package com.example.FruitTrees.WeatherProcessors.WeatherProcessor;
 
 import java.time.LocalDateTime;
 import java.util.List;

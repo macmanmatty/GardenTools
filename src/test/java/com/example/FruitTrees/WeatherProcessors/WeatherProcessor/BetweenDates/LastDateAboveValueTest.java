@@ -1,4 +1,4 @@
-package com.example.FruitTrees.WeatherProcessor.BetweenDates;
+package com.example.FruitTrees.WeatherProcessors.WeatherProcessor.BetweenDates;
 
 import com.example.FruitTrees.WeatherConroller.WeatherResponse.LocationWeatherResponse;
 import com.example.FruitTrees.WeatherConroller.WeatherResponse.YearlyValuesResponse;

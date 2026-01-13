@@ -15,28 +15,20 @@ public class VpdCalculator implements DerivedSeriesCalculator {
 
     @Override
     public List<String> requiredInputTypes() {
-        // Always need dew point
-        return List.of("dewpoint_2m");
+        return List.of("temperature_2m_c", "dewpoint_2m_c");
     }
 
     @Override
     public List<String> optionalInputTypes() {
-        // Prefer leaf temp if present, else fall back to air temp
-        return List.of("leaf_temp_c", "temperature_2m");
+        return List.of("leaf_temp_c");
     }
 
     @Override
     public double computeAt(double[] req, double[] opt) {
-        double dewPtC = req[0];
+        double airTempC = req[0];
+        double dewPtC   = req[1];
 
-        double tempC;
-        if (opt.length > 0) {
-            // If leaf temperature exists, it will be first
-            tempC = opt[0];
-        } else {
-            // Safety fallback (shouldn't happen if temp is always provided)
-            throw new IllegalStateException("No temperature available for VPD");
-        }
+        double tempC = (opt.length > 0) ? opt[0] : airTempC;
 
         return WeatherUtilities.vaporPressureDeficit(tempC, dewPtC);
     }

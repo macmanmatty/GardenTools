@@ -1,4 +1,4 @@
-package com.example.FruitTrees.WeatherProcessor.BetweenDates;
+package com.example.FruitTrees.WeatherProcessors.WeatherProcessor.BetweenDates;
 
 import com.example.FruitTrees.WeatherProcessor.WeatherProcessors.BetweenDates.DateCalculators.DateValueProcessor;
 
@@ -23,7 +23,7 @@ public class TestDateValueProcessor extends DateValueProcessor {
     }
 
     @Override
-    protected void processWeatherBetween(Number data, LocalDateTime date) {
+    protected void processWeatherBetween(double data, LocalDateTime date) {
 
     }
 }

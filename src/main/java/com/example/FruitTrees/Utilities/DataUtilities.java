@@ -19,7 +19,7 @@ public class DataUtilities {
                 (key, value) -> { if (value != null) rawData.put(key, value); };
         putIfNotNull.accept("temperature_2m_"+tempUnit, data.temperature_2m);
         putIfNotNull.accept("relative_humidity_2m", data.relative_humidity_2m);
-        putIfNotNull.accept("dew_point_2m", data.dew_point_2m);
+        putIfNotNull.accept("dew_point_2m_"+tempUnit, data.dew_point_2m);
         putIfNotNull.accept("apparent_temperature", data.apparent_temperature);
         putIfNotNull.accept("precipitation", data.precipitation);
         putIfNotNull.accept("rain", data.rain);
