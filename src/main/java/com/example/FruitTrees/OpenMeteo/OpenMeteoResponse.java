@@ -11,7 +11,7 @@ public class OpenMeteoResponse {
     public String timezone;
     public String timezoneAbbreviation;
     public double elevation;
-    public Hourly_Units hourly_Units;
+    public Hourly_Units hourly_units;
     public Daily_Units daily_Units;
 
     public Hourly hourly;
@@ -24,9 +24,9 @@ public class OpenMeteoResponse {
     // Inner classes for nested structures
     public static class Hourly_Units {
         public String time;
-        public String temperature2m;
-        public String relativeHumidity2m;
-        public String dewPoint2m;
+        public String temperature_2m;
+        public String relativeHumidity_2m;
+        public String dewPoint_2m;
         public String apparentTemperature;
         public String precipitation;
         public String rain;

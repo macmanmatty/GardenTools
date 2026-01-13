@@ -2,6 +2,7 @@ package com.example.FruitTrees.OpenMeteo;
 
 import com.example.FruitTrees.Location.Location;
 import com.example.FruitTrees.Utilities.DataUtilities;
+import com.example.FruitTrees.WeatherConroller.WeatherRequest;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import java.time.Instant;

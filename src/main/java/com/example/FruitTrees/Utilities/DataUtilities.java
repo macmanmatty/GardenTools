@@ -12,7 +12,7 @@ public class DataUtilities {
         OpenMeteoResponse.Hourly data = response.hourly;
         Map<String, List<? extends Number>> rawData = new HashMap<>();
         String tempUnit="c";
-        if(response.hourly_Units.temperature2m.equals("fahrenheit")) {
+        if(response.hourly_units.temperature_2m.equals("fahrenheit")) {
             tempUnit="f";
         }
         BiConsumer<String, List<? extends Number>> putIfNotNull =
