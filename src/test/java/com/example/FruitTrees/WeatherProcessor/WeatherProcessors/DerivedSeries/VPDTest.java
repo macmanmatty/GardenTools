@@ -1,8 +1,6 @@
 
- package com.example.FruitTrees.WeatherProcessors.WeatherProcessor.DerivedSeries;
+ package com.example.FruitTrees.WeatherProcessor.WeatherProcessors.DerivedSeries;
 
-import com.example.FruitTrees.WeatherProcessor.WeatherProcessors.DerivedSeries.DerivedSeriesCalculator;
-import com.example.FruitTrees.WeatherProcessor.WeatherProcessors.DerivedSeries.VpdCalculator;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;

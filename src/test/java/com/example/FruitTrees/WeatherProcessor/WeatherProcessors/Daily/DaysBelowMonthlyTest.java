@@ -1,8 +1,6 @@
-package com.example.FruitTrees.WeatherProcessors.WeatherProcessor.Daily;
+package com.example.FruitTrees.WeatherProcessor.WeatherProcessors.Daily;
 
 import com.example.FruitTrees.WeatherConroller.WeatherResponse.LocationWeatherResponse;
-import com.example.FruitTrees.WeatherProcessor.WeatherProcessors.Daily.DaysAboveMonthly;
-import com.example.FruitTrees.WeatherProcessor.WeatherProcessors.Daily.DaysBelowMonthly;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;

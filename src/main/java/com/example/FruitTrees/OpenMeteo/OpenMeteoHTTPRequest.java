@@ -47,7 +47,7 @@ public class OpenMeteoHTTPRequest {
                 "&longitude=" + location.getLongitude() +
                 "&start_date=" + weatherRequest.getStartDate() +
                 "&end_date=" + weatherRequest.getEndDate();
-        Set<String> hourlyDataTypes = weatherRequest.getHourlyDataTypes();
+        Set<String> hourlyDataTypes = weatherRequest.getOpenmeteoRequestHourlyDataTypes();
         for (String dataType : hourlyDataTypes) {
             fullUrl = fullUrl + "&hourly=" + DataUtilities.toOpenMeteoDatatype(dataType);
         }

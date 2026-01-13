@@ -1,4 +1,4 @@
-package com.example.FruitTrees.WeatherProcessors.WeatherProcessor;
+package com.example.FruitTrees.WeatherProcessor.WeatherProcessors;
 
 import java.time.LocalDateTime;
 import java.util.List;

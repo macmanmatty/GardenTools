@@ -13,6 +13,11 @@ public class WeatherRequest {
      * the hourly data types to retrieve and or calculate  from  the open meteo  API
      */
     public Set<String> hourlyDataTypes = new HashSet<>();
+
+    /**
+     * the hourly data types to retrieve from the open meteo  API
+     */
+    public Set<String> openmeteoRequestHourlyDataTypes = new HashSet<>();
     /**
      * the daily data types to retrieve and or calculate  from  the open meteo  API
      */
@@ -81,10 +86,12 @@ public class WeatherRequest {
 
 
     public List<Location> locations = new ArrayList<>();
+    private boolean bestEffort;
 
     public Set<String> getHourlyDataTypes() {
         return hourlyDataTypes;
     }
+
 
 
     public String getStartDate() {
@@ -211,6 +218,22 @@ public class WeatherRequest {
 
     public void setUseNOAA(boolean useNOAA) {
         this.useNOAA = useNOAA;
+    }
+
+    public boolean bestEffort() {
+        return bestEffort;
+    }
+
+    public void setBestEffort(boolean bestEffort) {
+        this.bestEffort = bestEffort;
+    }
+
+    public Set<String> getOpenmeteoRequestHourlyDataTypes() {
+        return openmeteoRequestHourlyDataTypes;
+    }
+
+    public void setOpenmeteoRequestHourlyDataTypes(Set<String> openmeteoRequestHourlyDataTypes) {
+        this.openmeteoRequestHourlyDataTypes = openmeteoRequestHourlyDataTypes;
     }
 }
 

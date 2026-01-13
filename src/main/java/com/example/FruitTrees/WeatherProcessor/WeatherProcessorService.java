@@ -9,6 +9,7 @@ import com.example.FruitTrees.WeatherConroller.WeatherRequest;
 import com.example.FruitTrees.WeatherConroller.WeatherResponse.WeatherResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -91,59 +92,92 @@ public class WeatherProcessorService {
             WeatherRequest weatherRequest,
             LocationResponse locationResponse
     ) {
-      Set<String> needed= weatherRequest.getHourlyDataTypes();
-         Map<String,  double[]> seriesByType= locationResponse.getData();
-        if(weatherRequest.getTemperatureUnit().equalsIgnoreCase("fahrenheit")){
-        needed.add("FToC");
-        }
-        else{
-         needed.add("CToF");
-        }
-        for (String derivedType : needed) {
-            if (seriesByType.containsKey(derivedType)) continue; // already present
-            DerivedSeriesCalculator calc=  weatherProcessorFactory.createDerivedSeriesCalculator(derivedType);
-            if (calc == null) {
-                continue;
-            } // not a computed type
-            List<String> reqTypes = calc.requiredInputTypes();
-            double[][] reqSeries = new double[reqTypes.size()][];
-            int minLen = Integer.MAX_VALUE;
+        // Make a copy so you don't mutate the request's set
+        Set<String> needed = new LinkedHashSet<>(weatherRequest.getHourlyDataTypes());
+        Map<String, double[]> seriesByType = locationResponse.getData();
 
-            boolean ok = true;
-            for (int i = 0; i < reqTypes.size(); i++) {
-                double[] s = seriesByType.get(reqTypes.get(i));
-                if (s == null) { ok = false; break; }
-                reqSeries[i] = s;
-                minLen = Math.min(minLen, s.length);
+
+        // Example: always ensure Celsius canonical series exist for physics.
+        if (weatherRequest.getTemperatureUnit().equalsIgnoreCase("fahrenheit")) {
+            needed.add("temperature_2m_c");
+            needed.add("dewpoint_2m_c");
+        } else {
+            needed.add("temperature_2m_f");
+            needed.add("dewpoint_2m_f");
+        }
+
+        // Multi-pass: compute what you can, then try again now that new series exist
+        boolean progress;
+        int safety = 0;
+
+        do {
+            progress = false;
+            safety++;
+            if (safety > 1000) {
+                throw new IllegalStateException("Derived series computation appears to be stuck in a loop");
             }
-            if (!ok || minLen == Integer.MAX_VALUE) continue;
 
-            // optional inputs (only include those present)
-            List<String> optTypes = calc.optionalInputTypes();
-            java.util.List<double[]> optSeriesList = new java.util.ArrayList<>();
-            for (String ot : optTypes) {
-                double[] s = seriesByType.get(ot);
-                if (s != null) {
-                    optSeriesList.add(s);
-                    minLen = Math.min(minLen, s.length);
+            // Iterate over a snapshot so we can modify seriesByType safely
+            for (String derivedType : new ArrayList<>(needed)) {
+
+                // Skip if already computed/present (raw or derived)
+                if (seriesByType.containsKey(derivedType)) continue;
+
+                DerivedSeriesCalculator calc;
+                try {
+                    calc = weatherProcessorFactory.createDerivedSeriesCalculator(derivedType);
+                } catch (Exception e) {
+                    continue; // not a derived type
                 }
+
+                // Only compute if ALL required inputs exist right now
+                List<String> reqTypes = calc.requiredInputTypes();
+                double[][] reqSeries = new double[reqTypes.size()][];
+                int minLen = Integer.MAX_VALUE;
+
+                boolean ok = true;
+                for (int i = 0; i < reqTypes.size(); i++) {
+                    double[] series = seriesByType.get(reqTypes.get(i));
+                    if (series == null) { ok = false; break; }
+                    reqSeries[i] = series;
+                    minLen = Math.min(minLen, series.length);
+                }
+                if (!ok || minLen == Integer.MAX_VALUE) continue;
+
+                // Optional inputs: include those present (but DON'T shrink minLen because of optional)
+                List<String> optTypes = calc.optionalInputTypes();
+                List<double[]> optSeriesList = new ArrayList<>();
+                for (String ot : optTypes) {
+                    double[] s = seriesByType.get(ot);
+                    if (s != null) {
+                        optSeriesList.add(s);
+                        // IMPORTANT: do not clamp minLen by optional series length
+                    }
+                }
+                double[][] optSeries = optSeriesList.toArray(new double[0][]);
+
+                double[] out = new double[minLen];
+                double[] reqBuf = new double[reqSeries.length];
+                double[] optBuf = new double[optSeries.length];
+
+                for (int t = 0; t < minLen; t++) {
+                    for (int i = 0; i < reqSeries.length; i++) reqBuf[i] = reqSeries[i][t];
+                    for (int i = 0; i < optSeries.length; i++) {
+                        // Optional series might be shorter; treat missing as NaN
+                        double[] os = optSeries[i];
+                        optBuf[i] = (t < os.length) ? os[t] : Double.NaN;
+                    }
+                    out[t] = calc.computeAt(reqBuf, optBuf);
+                }
+                seriesByType.put(derivedType, out);
+                progress = true;
             }
-            double[][] optSeries = optSeriesList.toArray(new double[0][]);
 
-            double[] out = new double[minLen];
-            double[] reqBuf = new double[reqSeries.length];
-            double[] optBuf = new double[optSeries.length];
+        } while (progress);
 
-            for (int t = 0; t < minLen; t++) {
-                for (int i = 0; i < reqSeries.length; i++) reqBuf[i] = reqSeries[i][t];
-                for (int i = 0; i < optSeries.length; i++) optBuf[i] = optSeries[i][t];
-                out[t] = calc.computeAt(reqBuf, optBuf);
-            }
-
-            seriesByType.put(derivedType, out);
-        }
         return seriesByType;
     }
+
 
 
 

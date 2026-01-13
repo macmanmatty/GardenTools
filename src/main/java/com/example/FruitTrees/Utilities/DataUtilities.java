@@ -188,7 +188,11 @@ public class DataUtilities {
             case "tmp":
             case "temp":
             case "temperature":
+            case "temperature_f":
+            case "temperature_c":
             case "temperature_2m":
+            case "temperature_2m_c":
+            case "temperature_2m_f":
             case "2m_temperature":
             case "air_temperature":
             case "t2m":
@@ -200,6 +204,8 @@ public class DataUtilities {
             case "dew_point":
             case "dew_point_temperature":
             case "dew_point_2m":
+            case "dew_point_2m_c":
+            case "dew_point_2m_f":
             case "md1": case "md2": case "md3": case "md4": case "md5": case "md6":
                 return "dew_point_2m";
             // Apparent temperature
@@ -335,7 +341,7 @@ public class DataUtilities {
             case "humidity_2m":
                 return "relative_humidity_2m";
             default:
-                throw new IllegalArgumentException("Invalid field name: " + field);
+                return null;
         }
     }
 public static String extractValuesForSoil(String fieldName) {

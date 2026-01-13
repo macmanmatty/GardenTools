@@ -1,4 +1,4 @@
-package com.example.FruitTrees.WeatherProcessors.WeatherProcessor.BetweenDates;
+package com.example.FruitTrees.WeatherProcessor.WeatherProcessors.BetweenDates;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
