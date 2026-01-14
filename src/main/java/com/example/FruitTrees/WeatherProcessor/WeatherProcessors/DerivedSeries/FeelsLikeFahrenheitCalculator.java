@@ -9,12 +9,12 @@ public class FeelsLikeFahrenheitCalculator implements DerivedSeriesCalculator {
 
     @Override
     public String outputType() {
-        return "feels_like_f";
+        return "feels_like_2m";
     }
 
     @Override
     public List<String> requiredInputTypes() {
-        return List.of("temperature_f", "dewpoint_f");
+        return List.of("temperature_2m", "dewpoint_2m");
     }
 
     @Override

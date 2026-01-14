@@ -1,5 +1,6 @@
 package com.example.FruitTrees.WeatherProcessor;
 
+import com.example.FruitTrees.Utilities.DataUtilities;
 import com.example.FruitTrees.WeatherConroller.HourlyWeatherProcessRequest;
 import com.example.FruitTrees.WeatherConroller.WeatherResponse.LocationWeatherResponse;
 import com.example.FruitTrees.WeatherProcessor.WeatherProcessors.DerivedSeries.DerivedSeriesCalculator;
@@ -18,16 +19,20 @@ public class WeatherProcessorFactory {
         this.context = context;
     }
 
-    public WeatherProcessor createProcessor(
+    public WeatherProcessor createHourlyProcessor(
                                             HourlyWeatherProcessRequest config,
                                             LocationWeatherResponse locationWeatherResponse) {
 
         WeatherProcessor processor = context.getBean(config.getProcessorName(),  WeatherProcessor.class);
-
+        String dataType= DataUtilities.toInternalDatatype(config.getHourlyDataType());
+        // unknown datatype exit
+        if(dataType==null){
+            return null;
+        }
         // Apply common configuration
         processor.setStartMonthDay(config.getStartProcessMonth(), config.getStartProcessDay());
         processor.setEndMonthDay(config.getEndProcessMonth(), config.getEndProcessDay());
-        processor.setDataType(config.getHourlyDataType());
+        processor.setDataType(dataType);
         processor.setLocationWeatherResponse(locationWeatherResponse);
         processor.setCalculateMeanAverage(config.isCalculateMeanAverage());
         processor.setCalculateMedianAverage(config.isCalculateMedianAverage());

@@ -9,7 +9,6 @@ import com.example.FruitTrees.WeatherConroller.WeatherRequest;
 import com.example.FruitTrees.WeatherConroller.WeatherResponse.WeatherResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -64,19 +63,29 @@ public class WeatherProcessorService {
      LocalDateTime [] time = locationResponse.getTime();
      List<WeatherProcessor> weatherProcessors = new ArrayList<>();
      for (HourlyWeatherProcessRequest hourlyWeatherProcessRequest : hourlyWeatherProcessRequests) {
-           WeatherProcessor weatherProcessor=  weatherProcessorFactory.createProcessor(hourlyWeatherProcessRequest, locationWeatherResponse);
-         log.info(" started processing of {}", weatherProcessor.getProcessorName() +" for "+locationResponse.getLocation().getName());
+           WeatherProcessor weatherProcessor=  weatherProcessorFactory.createHourlyProcessor(hourlyWeatherProcessRequest, locationWeatherResponse);
+           if(weatherProcessor==null){
+               log.info("{} is an  invalid data type not adding processor ", hourlyWeatherProcessRequest.getProcessorName());
+               continue;
+           }
          List<HourlyWeatherProcessRequest> dependentWeatherProcessors=weatherProcessor.getHourlyWeatherProcessRequests();
+           List<WeatherProcessor> createdDependentWeatherProcessors = new ArrayList<>();
          for(HourlyWeatherProcessRequest dependentWeatherProcessorRequest:dependentWeatherProcessors){
-             WeatherProcessor dependentWeatherProcessor=  weatherProcessorFactory.createProcessor(dependentWeatherProcessorRequest, locationWeatherResponse);
-             weatherProcessors.add(dependentWeatherProcessor);
+             WeatherProcessor dependentWeatherProcessor=  weatherProcessorFactory.createHourlyProcessor(dependentWeatherProcessorRequest, locationWeatherResponse);
+             if(dependentWeatherProcessor==null){
+                 log.info("{} is an  invalid data type not adding dependent  processor  removing {} parent processor as well ", dependentWeatherProcessorRequest.getProcessorName(), weatherProcessor.getProcessorName());
+                 weatherProcessors.remove(weatherProcessor);
+                 break;
+             }
+             createdDependentWeatherProcessors.add(dependentWeatherProcessor);
          }
+         weatherProcessors.addAll(createdDependentWeatherProcessors);
          weatherProcessors.add(weatherProcessor);
      }
 
 
         buildDerivedSeries(weatherRequest, locationResponse);
-         processHourlyWeather(time, weatherProcessors, locationResponse.getData());
+         processHourlyWeather(time, weatherProcessors, locationResponse.getData(), locationResponse.getLocation().getName());
 
      return weatherResponse;
  }
@@ -98,13 +107,7 @@ public class WeatherProcessorService {
 
 
         // Example: always ensure Celsius canonical series exist for physics.
-        if (weatherRequest.getTemperatureUnit().equalsIgnoreCase("fahrenheit")) {
-            needed.add("temperature_2m_c");
-            needed.add("dewpoint_2m_c");
-        } else {
-            needed.add("temperature_2m_f");
-            needed.add("dewpoint_2m_f");
-        }
+
 
         // Multi-pass: compute what you can, then try again now that new series exist
         boolean progress;
@@ -193,14 +196,16 @@ public class WeatherProcessorService {
     public void processHourlyWeather(
             LocalDateTime [] iso8601Times,
             List<WeatherProcessor> processors,
-            Map<String, double []> seriesByType
+            Map<String, double []> seriesByType,
+             String locationName
     ) {
-        final int sampleCount = iso8601Times.length;
         // De-dup & keep order stable
         List<WeatherProcessor> activeProcessors = new ArrayList<>(new LinkedHashSet<>(processors));
 
         // Run before() once per processor
         for (WeatherProcessor weatherProcessor : activeProcessors) {
+            log.info(" started processing of {}", weatherProcessor.getProcessorName() +" for "+locationName);
+
             weatherProcessor.before();
         }
         processHourlyChunk(iso8601Times, activeProcessors, seriesByType);

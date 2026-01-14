@@ -10,7 +10,6 @@ import com.example.FruitTrees.WeatherConroller.WeatherRequest;
 import com.example.FruitTrees.WeatherConroller.WeatherResponse.WeatherResponse;
 import com.example.FruitTrees.WeatherProcessor.WeatherProcessors.DerivedSeries.DerivedSeriesCalculator;
 import com.example.FruitTrees.WeatherProcessor.WeatherProcessors.DerivedSeries.DerivedSeriesRegistry;
-import jdk.jfr.DataAmount;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -52,7 +51,7 @@ public class OpenMeteoService {
         for(HourlyWeatherProcessRequest hourlyWeatherProcessRequest:hourlyWeatherProcessRequests){
             weatherRequest.getHourlyDataTypes().add(hourlyWeatherProcessRequest.getHourlyDataType());
         }
-      weatherRequest.setOpenmeteoRequestHourlyDataTypes(plan(weatherRequest.getHourlyDataTypes(), weatherRequest.bestEffort()).fetchVars);
+      weatherRequest.setOpenmeteoRequestHourlyDataTypes(plan(weatherRequest.getHourlyDataTypes(), weatherRequest.bestEffort()).fetchVars());
     }
 
     public record Plan(Set<String> fetchVars, Set<String> derivedKeys) {}
@@ -100,13 +99,17 @@ public class OpenMeteoService {
 
         while (!stack.isEmpty()) {
             String key = stack.pop();
-            if (!out.add(key)) continue;
-
+            if (!out.add(key)){
+                continue;
+            }
             DerivedSeriesCalculator calc = derivedSeriesRegistry.getCalculatorOrNull(key);
-            if (calc == null) continue;
-
+            if (calc == null){
+                continue;
+            }
             stack.addAll(calc.requiredInputTypes());
-            if (bestEffort) stack.addAll(calc.optionalInputTypes());
+            if (bestEffort) {
+                stack.addAll(calc.optionalInputTypes());
+            }
         }
         return out;
     }

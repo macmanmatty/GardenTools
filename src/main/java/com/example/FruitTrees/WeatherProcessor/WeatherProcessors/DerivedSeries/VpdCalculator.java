@@ -15,7 +15,7 @@ public class VpdCalculator implements DerivedSeriesCalculator {
 
     @Override
     public List<String> requiredInputTypes() {
-        return List.of("temperature_2m_c", "dewpoint_2m_c");
+        return List.of("temperature_2m", "dewpoint_2m");
     }
 
     @Override

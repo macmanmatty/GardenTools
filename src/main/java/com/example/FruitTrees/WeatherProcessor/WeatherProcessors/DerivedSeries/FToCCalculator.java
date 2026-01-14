@@ -16,7 +16,7 @@ public class FToCCalculator implements DerivedSeriesCalculator {
     @Override
     public List<String> requiredInputTypes() {
         // Always need dew point
-        return List.of("temperature_f");
+        return List.of("temperature_2m");
     }
 
     @Override
