@@ -1,6 +1,8 @@
 package com.example.FruitTrees.WeatherConroller.WeatherResponse;
 
 import com.example.FruitTrees.Location.Location;
+import com.example.FruitTrees.WeatherProcessor.WeatherProcessors.Observation.Observation;
+import com.example.FruitTrees.WeatherProcessor.WeatherProcessors.Observation.ObservationCollector;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -10,7 +12,7 @@ import java.util.Map;
 /**
  * the response for the processed weather data for a passed in location
  */
-public class LocationWeatherResponse {
+public class LocationWeatherResponse  {
     /**
      * the map of yearly weather responses
      * key= location name
@@ -28,6 +30,7 @@ public class LocationWeatherResponse {
      */
         private Location location;
         private List<String> locationResponses = new ArrayList<>();
+        private List<Observation> observations= new ArrayList<>();
 
 
     public Map<String, YearlyValuesResponse> getYearlyWeatherValuesMap() {
@@ -71,4 +74,6 @@ public class LocationWeatherResponse {
     public void setLocationResponses(List<String> locationResponses) {
         this.locationResponses = locationResponses;
     }
+
+
 }

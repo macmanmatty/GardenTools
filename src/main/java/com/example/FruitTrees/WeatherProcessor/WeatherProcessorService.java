@@ -2,6 +2,9 @@ package com.example.FruitTrees.WeatherProcessor;
 import com.example.FruitTrees.Location.Location;
 import com.example.FruitTrees.OpenMeteo.*;
 import com.example.FruitTrees.WeatherProcessor.WeatherProcessors.DerivedSeries.DerivedSeriesCalculator;
+import com.example.FruitTrees.WeatherProcessor.WeatherProcessors.Observation.InMemoryObservationCollector;
+import com.example.FruitTrees.WeatherProcessor.WeatherProcessors.Observation.ObservationCollector;
+import com.example.FruitTrees.WeatherProcessor.WeatherProcessors.Observation.WeatherRunContext;
 import com.example.FruitTrees.WeatherProcessor.WeatherProcessors.WeatherProcessor;
 import com.example.FruitTrees.WeatherConroller.HourlyWeatherProcessRequest;
 import com.example.FruitTrees.WeatherConroller.WeatherResponse.LocationWeatherResponse;
@@ -12,12 +15,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.YearMonth;
 import java.util.*;
-
 
 @Service
 public class WeatherProcessorService {
@@ -39,13 +40,13 @@ public class WeatherProcessorService {
      */
     public WeatherResponse processHourlyData( WeatherRequest weatherRequest, LocationResponses openMeteoResponses) {
         List<LocationResponse> locationResponses=openMeteoResponses.getLocationResponses();
+        List<WeatherRunContext> weatherRunContexts = new ArrayList<>();
         WeatherResponse weatherResponse = new WeatherResponse();
         for(LocationResponse locationResponse: locationResponses) {
-          processLocationData(locationResponse, weatherRequest, weatherResponse);
+          processLocationData(locationResponse, weatherRequest, weatherResponse, weatherRunContexts);
         }
         return weatherResponse;
     }
-
     /**
      * processes the data for each individual location specified in the WeatherRequest Object
      * @param locationResponse the location response object holding the location object and
@@ -54,9 +55,11 @@ public class WeatherProcessorService {
      * @param weatherResponse  The WeatherResponse object to add all of  processed data from the processors to
      * @return WeatherResponse object containing all the processed data from the processors
      */
- private WeatherResponse   processLocationData(LocationResponse locationResponse, WeatherRequest weatherRequest, WeatherResponse weatherResponse){
+ private WeatherResponse   processLocationData(LocationResponse locationResponse, WeatherRequest weatherRequest, WeatherResponse weatherResponse, List<WeatherRunContext> weatherRunContexts) {
      Location location =locationResponse.getLocation();
-    LocationWeatherResponse locationWeatherResponse= new LocationWeatherResponse();
+     WeatherRunContext weatherRunContext= new WeatherRunContext(location, new InMemoryObservationCollector(), calcVersion);
+     weatherRunContexts.add(weatherRunContext);
+     LocationWeatherResponse locationWeatherResponse= new LocationWeatherResponse();
      locationWeatherResponse.setLocation(location);
      String name = locationResponse.getLocation().getName()+" At: "+"Lat: " + locationResponse.getLocation().getLatitude()+" Lon: " +locationResponse.getLocation().getLongitude();
      weatherResponse.getLocationWeatherResponses().put(name,locationWeatherResponse);
@@ -73,23 +76,22 @@ public class WeatherProcessorService {
            }
          List<HourlyWeatherProcessRequest> dependentWeatherProcessors=weatherProcessor.getHourlyWeatherProcessRequests();
            List<WeatherProcessor> createdDependentWeatherProcessors = new ArrayList<>();
+         boolean ok = true;
          for(HourlyWeatherProcessRequest dependentWeatherProcessorRequest:dependentWeatherProcessors){
              WeatherProcessor dependentWeatherProcessor=  weatherProcessorFactory.createHourlyProcessor(dependentWeatherProcessorRequest, locationWeatherResponse);
              if(dependentWeatherProcessor==null){
                  log.info("{} is an  invalid data type not adding dependent  processor  removing {} parent processor as well ", dependentWeatherProcessorRequest.getProcessorName(), weatherProcessor.getProcessorName());
-                 weatherProcessors.remove(weatherProcessor);
-                 break;
+                 ok = false; break;
              }
              createdDependentWeatherProcessors.add(dependentWeatherProcessor);
          }
          weatherProcessors.addAll(createdDependentWeatherProcessors);
+         if (!ok){ continue;} // skip adding parent
          weatherProcessors.add(weatherProcessor);
      }
 
-
         buildDerivedSeries(weatherRequest, locationResponse);
-         processHourlyWeather(time, weatherProcessors, locationResponse.getData(), locationResponse.getLocation().getName());
-
+         processHourlyWeather(time, weatherProcessors, locationResponse.getData(), locationResponse.getLocation().getName(), weatherRunContext.collector());
      return weatherResponse;
  }
     /**
@@ -108,39 +110,31 @@ public class WeatherProcessorService {
         Set<String> needed = new LinkedHashSet<>(weatherRequest.getHourlyDataTypes());
         Map<String, double[]> seriesByType = locationResponse.getData();
 
-
         // Example: always ensure Celsius canonical series exist for physics.
-
 
         // Multi-pass: compute what you can, then try again now that new series exist
         boolean progress;
         int safety = 0;
-
         do {
             progress = false;
             safety++;
             if (safety > 1000) {
                 throw new IllegalStateException("Derived series computation appears to be stuck in a loop");
             }
-
             // Iterate over a snapshot so we can modify seriesByType safely
             for (String derivedType : new ArrayList<>(needed)) {
-
                 // Skip if already computed/present (raw or derived)
                 if (seriesByType.containsKey(derivedType)) continue;
-
                 DerivedSeriesCalculator calc;
                 try {
                     calc = weatherProcessorFactory.createDerivedSeriesCalculator(derivedType);
                 } catch (Exception e) {
                     continue; // not a derived type
                 }
-
                 // Only compute if ALL required inputs exist right now
                 List<String> reqTypes = calc.requiredInputTypes();
                 double[][] reqSeries = new double[reqTypes.size()][];
                 int minLen = Integer.MAX_VALUE;
-
                 boolean ok = true;
                 for (int i = 0; i < reqTypes.size(); i++) {
                     double[] series = seriesByType.get(reqTypes.get(i));
@@ -149,7 +143,6 @@ public class WeatherProcessorService {
                     minLen = Math.min(minLen, series.length);
                 }
                 if (!ok || minLen == Integer.MAX_VALUE) continue;
-
                 // Optional inputs: include those present (but DON'T shrink minLen because of optional)
                 List<String> optTypes = calc.optionalInputTypes();
                 List<double[]> optSeriesList = new ArrayList<>();
@@ -161,11 +154,9 @@ public class WeatherProcessorService {
                     }
                 }
                 double[][] optSeries = optSeriesList.toArray(new double[0][]);
-
                 double[] out = new double[minLen];
                 double[] reqBuf = new double[reqSeries.length];
                 double[] optBuf = new double[optSeries.length];
-
                 for (int t = 0; t < minLen; t++) {
                     for (int i = 0; i < reqSeries.length; i++) reqBuf[i] = reqSeries[i][t];
                     for (int i = 0; i < optSeries.length; i++) {
@@ -178,14 +169,9 @@ public class WeatherProcessorService {
                 seriesByType.put(derivedType, out);
                 progress = true;
             }
-
         } while (progress);
-
         return seriesByType;
     }
-
-
-
 
 
     /**
@@ -195,23 +181,21 @@ public class WeatherProcessorService {
      * @param processors    All processors to execute
      * @param seriesByType  Map of dataType → hourly double array
      */
-
     public void processHourlyWeather(
             LocalDateTime [] iso8601Times,
             List<WeatherProcessor> processors,
             Map<String, double []> seriesByType,
-             String locationName
+             String locationName, ObservationCollector observationCollector
     ) {
         // De-dup & keep order stable
         List<WeatherProcessor> activeProcessors = new ArrayList<>(new LinkedHashSet<>(processors));
-
         // Run before() once per processor
         for (WeatherProcessor weatherProcessor : activeProcessors) {
+            weatherProcessor.setObservationCollector(observationCollector);
             log.info(" started processing of {}", weatherProcessor.getProcessorName() +" for "+locationName);
             weatherProcessor.before();
         }
         processHourlyChunk(iso8601Times, activeProcessors, seriesByType);
-
         // Finalize once per processor
         for (WeatherProcessor processor : activeProcessors) {
             processor.after();
@@ -219,12 +203,10 @@ public class WeatherProcessorService {
             if (processor.isCalculateMedianAverage()) processor.calculateMedianAverageValue();
             if (processor.isCalculateMin())           processor.calculateMinValue();
             if (processor.isCalculateMax())           processor.calculateMaxValue();
-
             List<String> text = processor.getProcessedTextValues();
             processor.getLocationWeatherResponse().getLocationResponses().addAll(text);
         }
     }
-
     /**
      * Hot inner loop. Walks each hour once and fans values to all processors.
      *
@@ -239,14 +221,11 @@ public class WeatherProcessorService {
     ) {
         final int sampleCount = iso8601Times.length;
         // De-dup & keep order stable
-
         // Walk hours once; fan out to processors
         for (int hourIndex = 0; hourIndex < sampleCount && !activeProcessors.isEmpty(); hourIndex++) {
             final LocalDateTime timestamp = iso8601Times[hourIndex];
-
             for (int p = 0; p < activeProcessors.size(); ) {
                 WeatherProcessor weatherProcessor = activeProcessors.get(p);
-
                 // Pull this processor's series; skip if missing or ragged
                 double[] series = seriesByType.get(weatherProcessor.getDataType());
                 if (series == null || hourIndex >= series.length) {
@@ -274,19 +253,16 @@ public class WeatherProcessorService {
         // 1) lifecycle once
         List<WeatherProcessor> activeWeatherProcessors = new ArrayList<>(new LinkedHashSet<>(processors));
         for (WeatherProcessor p : activeWeatherProcessors) p.before();
-
         // 2) month-by-month over [startDate, endDate]
         LocalDate start = LocalDate.parse(request.getStartDate()); // "yyyy-MM-dd"
         LocalDate end   = LocalDate.parse(request.getEndDate());
         YearMonth yearMonthStart    = YearMonth.from(start);
         YearMonth yearMonthEnd  = YearMonth.from(end);
-
         while (!yearMonthStart.isAfter(yearMonthEnd)) {
             LocalDate sliceStart = yearMonthStart.atDay(1);
             LocalDate sliceEnd   = yearMonthStart.atEndOfMonth();
             if (sliceStart.isBefore(start)) sliceStart = start;
             if (sliceEnd.isAfter(end))      sliceEnd   = end;
-
             // 3) fetch one month (your cached method)
             OpenMeteoLocationResponse openMeteoLocationResponse =openMeteoHTTPRequest.makeLocationRequest(
                     location,
@@ -294,19 +270,15 @@ public class WeatherProcessorService {
                     sliceEnd.toString(),
                     request
             );
-
             if (openMeteoLocationResponse != null && openMeteoLocationResponse.getOpenMeteoResponse().hourly != null && openMeteoLocationResponse.getOpenMeteoResponse().hourly.time != null && !openMeteoLocationResponse.getOpenMeteoResponse().hourly.time.isEmpty()) {
                 // 4) normalize to primitives (UTC)
                 LocalDateTime[] timesUtc = openMeteoLocationResponse.getTime();
                 Map<String,double[]> series = openMeteoLocationResponse.getData();
-
                 // 5) fan-out this month’s hours (pure CPU)
                 processHourlyChunk(timesUtc, activeWeatherProcessors, series);
             }
-
             yearMonthStart = yearMonthStart.plusMonths(1);
         }
-
         // 6) finalize once
         for (WeatherProcessor p : activeWeatherProcessors) {
             p.after();
@@ -317,5 +289,4 @@ public class WeatherProcessorService {
             p.getLocationWeatherResponse().getLocationResponses().addAll(p.getProcessedTextValues());
         }
     }
-
     }
