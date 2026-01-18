@@ -1,5 +1,7 @@
 package com.example.FruitTrees.Location;
 
+import java.util.UUID;
+
 /**
  * class the represents a location
  */
@@ -7,7 +9,7 @@ public class Location {
     /**
      * the id of the location
      */
-    private long id;
+    private String id;
     /**
      * the name of the location
      */
@@ -46,6 +48,10 @@ public class Location {
     private String propertyClass;
     private boolean populated=false;
    private LocationArea locationArea= new LocationArea();
+
+    public Location() {
+        id = UUID.randomUUID().toString();    }
+
     public String getName() {
         return name;
     }
@@ -70,10 +76,10 @@ public class Location {
     public void setStationId(String stationId) {
         this.stationId = stationId;
     }
-    public long getId() {
+    public String getId() {
         return id;
     }
-    public void setId(long id) {
+    public void setId(String id) {
         this.id = id;
     }
     public String getCounty() {

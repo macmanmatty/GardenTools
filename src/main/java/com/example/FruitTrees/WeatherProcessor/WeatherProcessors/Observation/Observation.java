@@ -8,7 +8,7 @@ import java.util.Map;
 
 public record Observation(
   String locationId,   // UUID, stable internal identity
-  int year,
+Integer year,
   Integer month,
   String metricId,
  Value value,

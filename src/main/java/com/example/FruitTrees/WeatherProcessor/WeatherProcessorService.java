@@ -10,6 +10,7 @@ import com.example.FruitTrees.WeatherConroller.WeatherResponse.WeatherResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -23,6 +24,8 @@ public class WeatherProcessorService {
     private static final Logger log = LoggerFactory.getLogger(WeatherProcessorService.class);
     WeatherProcessorFactory weatherProcessorFactory;
     OpenMeteoHTTPRequest openMeteoHTTPRequest;
+    @Value("${calc.version}")
+    int calcVersion;
     public WeatherProcessorService(@Autowired WeatherProcessorFactory weatherProcessorFactory, OpenMeteoHTTPRequest openMeteoHTTPRequest) {
         this.weatherProcessorFactory = weatherProcessorFactory;
         this.openMeteoHTTPRequest = openMeteoHTTPRequest;
@@ -205,7 +208,6 @@ public class WeatherProcessorService {
         // Run before() once per processor
         for (WeatherProcessor weatherProcessor : activeProcessors) {
             log.info(" started processing of {}", weatherProcessor.getProcessorName() +" for "+locationName);
-
             weatherProcessor.before();
         }
         processHourlyChunk(iso8601Times, activeProcessors, seriesByType);
