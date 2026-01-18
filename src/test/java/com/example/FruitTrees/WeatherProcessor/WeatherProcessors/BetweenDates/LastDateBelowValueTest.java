@@ -26,7 +26,7 @@ public class LastDateBelowValueTest {
         processor.setDataType("Temperature");
         processor.setStartMonthDay(9,1);
         processor.setEndMonthDay(12,1);
-        processor.startProcessing();
+        processor.isInWindow();
 
 
         // Mock weather response objects
@@ -61,7 +61,7 @@ public class LastDateBelowValueTest {
         processor.processWeatherBetween(35.0, LocalDateTime.parse("2023-12-31T23:00:00"));
 
         processor.onEndDate(LocalDateTime.parse("2023-12-31T00:00:00"));
-        processor.startProcessing();
+        processor.isInWindow();
 
         // Verify fallback message
         assertEquals("value never reached", mockYearlyValuesResponse.getValues().get("Last instance of Temperature Below 32.0"));

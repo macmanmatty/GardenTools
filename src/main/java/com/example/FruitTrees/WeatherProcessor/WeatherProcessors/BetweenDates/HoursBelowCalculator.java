@@ -1,6 +1,7 @@
 package com.example.FruitTrees.WeatherProcessor.WeatherProcessors.BetweenDates;
 
 import com.example.FruitTrees.WeatherConroller.WeatherResponse.YearlyValuesResponse;
+import com.example.FruitTrees.WeatherProcessor.WeatherProcessors.Observation.Values;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -37,6 +38,8 @@ public class HoursBelowCalculator extends ProcessWeatherBetweenDates {
         String text="Hours Of " +dataType+  " Below "+ threshold;
         yearlyValuesResponse.getValues().put(text, String.valueOf(hours));
         addProcessedTextValue(text + " in "+ year + " from: " + startMonth + "/" + startDay + " to " + endMonth + "/" + endDay + ": " + hours);
+        generateObservation(Values.number(hours));
+
         hours =0;
     }
     @Override

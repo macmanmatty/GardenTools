@@ -1,9 +1,14 @@
 package com.example.FruitTrees.WeatherProcessor.WeatherProcessors.MonthlyAndDaily;
 
+import com.example.FruitTrees.WeatherProcessor.WeatherProcessors.Observation.NumberValue;
+import com.example.FruitTrees.WeatherProcessor.WeatherProcessors.Observation.Observation;
+import com.example.FruitTrees.WeatherProcessor.WeatherProcessors.Observation.Value;
+import com.example.FruitTrees.WeatherProcessor.WeatherProcessors.Observation.Values;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
+import java.util.Map;
 
 /**
  *  A weather processor that calculates the total amount of some
@@ -36,7 +41,12 @@ public class HoursBelowMonthly extends DailyAndMonthlyWeatherProcessor {
             addProcessedTextValue(text + " For " + currentMonthName + " " + currentYear + " : " + hours);
 
         monthlyValues.get(currentMonthName).add(hours);
-        hours =0;
+
+        generateObservation(Values.number(value));
+
+
+    hours = 0;
+
     }
     @Override
     protected void processWeatherBetween(double value, LocalDateTime date) {

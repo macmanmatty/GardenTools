@@ -1,13 +1,13 @@
 package com.example.FruitTrees.WeatherProcessor.WeatherProcessors.BetweenDates;
-
 import com.example.FruitTrees.Utilities.ArrayUtilities;
 import com.example.FruitTrees.Utilities.DateUtilities;
+import com.example.FruitTrees.WeatherProcessor.Period;
+import com.example.FruitTrees.WeatherProcessor.Stat;
+import com.example.FruitTrees.WeatherProcessor.WeatherProcessors.Observation.Values;
 import com.example.FruitTrees.WeatherProcessor.WeatherProcessors.WeatherProcessor;
-
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-
 /**
  *  base class for weather data processor that process data between dates yearly or semi-yearly weather between dates
  */
@@ -16,19 +16,19 @@ public abstract  class ProcessWeatherBetweenDates  extends WeatherProcessor {
      * the processed values for each year or semi year
      */
     protected List<Double>  yearlyDataValues=new ArrayList<>();
-
     /**
      *  this is true if  the weather falls between the given dates
      *  and the weather data is currently processing
      */
-    private boolean processing;
+    private boolean inWindow;
+
+    private boolean sawStart;
     public ProcessWeatherBetweenDates(String name) {
         super(name);
     }
-
     protected ProcessWeatherBetweenDates() {
+        period= Period.YEARLY;
     }
-
     @Override
     public void before() {
         clearProcessedTextValues();
@@ -44,15 +44,21 @@ public abstract  class ProcessWeatherBetweenDates  extends WeatherProcessor {
     public final  void processWeather(double value, LocalDateTime date) {
         switch(DateUtilities.checkDate(date, startDay, startMonth, endDay, endMonth)){
                 case START_PROCESSING -> {
-                    processing =true;
+                    inWindow =true;
+                    currentYear = date.getYear();
                     onStartDate(date);
+                    sawStart=true;
                 }
                 case END_PROCESSING -> {
-                    processing =false;
+                    if(!sawStart){
+                        generateObservation(Values.text("Incomplete Data Set!"));
+                    }
+                    sawStart=false;
+                    inWindow =false;
                     onEndDate(date);
                 }
             }
-            if(processing){
+            if(inWindow){
                 processWeatherBetween(value, date);
             }
         }
@@ -63,7 +69,8 @@ public abstract  class ProcessWeatherBetweenDates  extends WeatherProcessor {
      * @param date  the current date and time of the weather  being processed
      * 
      */
-    protected  void onStartDate(LocalDateTime date){}
+    protected  void onStartDate(LocalDateTime date){
+    }
     /**
      *  method  for
      * preforming actions on weather end date
@@ -71,7 +78,6 @@ public abstract  class ProcessWeatherBetweenDates  extends WeatherProcessor {
      * @param date  the current date and time of the weather  being processed
      */
     protected void onEndDate(LocalDateTime date){
-
     }
     /**
      * subclass implemented method  for
@@ -80,8 +86,6 @@ public abstract  class ProcessWeatherBetweenDates  extends WeatherProcessor {
      * @param  data the value of the weather data at the current date and time
      */
     protected abstract void processWeatherBetween(double data, LocalDateTime date);
-
-
     @Override
     public void calculateMeanAverageValue() {
         double total=0;
@@ -89,29 +93,18 @@ public abstract  class ProcessWeatherBetweenDates  extends WeatherProcessor {
           total= doubleNum+total;
         }
        double average=Math.round(total/yearlyDataValues.size());
-       addAverageValue("Mean Average For "+ processorName +" "+average);
+        generateObservation(Values.number(average), Stat.MEAN);
+        addAverageValue("Mean Average For "+ processorName +" "+average);
     }
     @Override
     public void calculateMedianAverageValue() {
         double average=ArrayUtilities.medianOfList(yearlyDataValues);
+        generateObservation(Values.number(average), Stat.MEDIAN);
         addAverageValue(" Median Average For "+ processorName +" "+average);
-
     }
 
-
-
-    /**
-     * stops all processing of data
-     */
-    @Override
-    public void stopProcessing(){
-        processing=false;
+    public boolean isInWindow(){
+        return inWindow;
     }
-    @Override
-    public void startProcessing(){
-        processing=true;
-    }
-
-
 }
     

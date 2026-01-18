@@ -44,7 +44,7 @@ public class LastDateAboveValueTest {
         processor.processWeather(35.0, LocalDateTime.parse("2023-09-30T23:00:00"));
 
         processor.onEndDate(LocalDateTime.parse("2023-09-30T23:00:00"));
-        processor.startProcessing();
+        processor.isInWindow();
 
         String key = "Last instance of Temperature Above 80.0";
         assertEquals("2023-08-05T16:00", yearlyValues.getValues().get(key));

@@ -1,4 +1,5 @@
 package com.example.FruitTrees.WeatherProcessor.WeatherProcessors.BetweenDates;
+import com.example.FruitTrees.WeatherProcessor.WeatherProcessors.Observation.Values;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import java.time.LocalDateTime;
@@ -22,6 +23,8 @@ public class TotalCalculator extends ProcessWeatherBetweenDates{
 
         super.yearlyDataValues.add(total);
         addProcessedTextValue(total, date.getYear() );
+        generateObservation(Values.number(total));
+
         total =0;
     }
     @Override

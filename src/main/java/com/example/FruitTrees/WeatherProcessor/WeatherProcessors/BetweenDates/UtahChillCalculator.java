@@ -2,6 +2,7 @@ package com.example.FruitTrees.WeatherProcessor.WeatherProcessors.BetweenDates;
 
 import com.example.FruitTrees.WeatherConroller.WeatherResponse.YearlyValuesResponse;
 import com.example.FruitTrees.WeatherProcessor.WeatherProcessors.Bin;
+import com.example.FruitTrees.WeatherProcessor.WeatherProcessors.Observation.Values;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -52,6 +53,7 @@ public class UtahChillCalculator extends ProcessWeatherBetweenDates {
         String years= text+ "  Utah Calculation Method ";
         yearlyValuesResponse.getValues().put(years, String.valueOf(chillUnits));
         addProcessedTextValue(years+" For " +year+" from: "+ startMonth +"/"+startDay+" to "+endMonth+"/" +endDay+ ": "+ chillUnits);
+        generateObservation(Values.number(chillUnits));
         chillUnits =0;
     }
 

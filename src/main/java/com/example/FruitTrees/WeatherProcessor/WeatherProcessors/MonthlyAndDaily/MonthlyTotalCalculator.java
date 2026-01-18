@@ -1,4 +1,5 @@
 package com.example.FruitTrees.WeatherProcessor.WeatherProcessors.MonthlyAndDaily;
+import com.example.FruitTrees.WeatherProcessor.WeatherProcessors.Observation.Values;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import java.time.LocalDateTime;
@@ -23,6 +24,8 @@ public class MonthlyTotalCalculator extends DailyAndMonthlyWeatherProcessor {
         monthlyValuesResponse.getValues().put(processorName +" For "+dataType, String.valueOf(finalValue));
             addProcessedTextValue(finalValue, localDateTime.getYear(), localDateTime.getMonth().name());
         monthlyValues.get(currentMonthName).add(finalValue);
+        generateObservation(Values.number(value));
+
         finalValue =0;
     }
     @Override

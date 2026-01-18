@@ -1,5 +1,6 @@
 package com.example.FruitTrees.WeatherProcessor.WeatherProcessors.MonthlyAndDaily;
 
+import com.example.FruitTrees.WeatherProcessor.WeatherProcessors.Observation.Values;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -37,6 +38,8 @@ public class HoursBetweenMonthly extends DailyAndMonthlyWeatherProcessor {
             addProcessedTextValue(text + " For " + currentMonthName + " " + currentYear + " : " + hours);
 
         monthlyValues.get(currentMonthName).add(hours);
+        generateObservation(Values.number(value));
+
         hours =0;
     }
     @Override

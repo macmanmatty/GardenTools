@@ -1,5 +1,6 @@
 package com.example.FruitTrees.WeatherProcessor.WeatherProcessors.MonthlyAndDaily;
 
+import com.example.FruitTrees.WeatherProcessor.WeatherProcessors.Observation.Values;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -27,6 +28,8 @@ public class MonthlyAverageCalculator extends DailyAndMonthlyWeatherProcessor {
         finalValue=(finalValue/hours);
         addProcessedTextValue(finalValue, localDateTime.getYear(), localDateTime.getMonth().name());
         monthlyValues.get(currentMonthName).add(finalValue);
+        generateObservation(Values.number(value));
+
         finalValue =0;
         hours=0;
     }

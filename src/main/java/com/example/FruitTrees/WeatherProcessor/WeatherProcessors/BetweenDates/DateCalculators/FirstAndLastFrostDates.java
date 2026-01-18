@@ -1,5 +1,6 @@
 package com.example.FruitTrees.WeatherProcessor.WeatherProcessors.BetweenDates.DateCalculators;
 
+import com.example.FruitTrees.WeatherProcessor.WeatherProcessors.Observation.Values;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -57,14 +58,17 @@ public class FirstAndLastFrostDates extends DateValueProcessor {
 
     @Override
     protected void onEndDate(LocalDateTime date) {
-        startProcessing();
+        this.isInWindow();
     }
 
     public void onStop(LocalDateTime date) {
-            String text = "First instance of " + dataType + " Above " + lastFrost;
+            String text = "First instance of " + dataType + " Above " + firstFrost;
           addValue(date,this.firstFrost, text);
-            this.firstFrost =Optional.empty();
-            stopProcessing();
+
+        generateObservation(Values.time(firstFrost.get()));
+
+        this.firstFrost =Optional.empty();
+            isInWindow();
             calculateFirstFrost=true;
             endDay=31;
             endMonth=12;

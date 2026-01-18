@@ -1,5 +1,6 @@
 package com.example.FruitTrees.WeatherProcessor.WeatherProcessors.BetweenDates.DateCalculators;
 
+import com.example.FruitTrees.WeatherProcessor.WeatherProcessors.Observation.Values;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -40,7 +41,11 @@ public class LastDateBelowValue extends DateValueProcessor{
     public void onEndDate(LocalDateTime date) {
             String text = "Last instance of " + dataType + " Below " + threshold;
             addValue(date,this.date, text);
-            this.date = Optional.empty();
+        if(this.date.isPresent()){
+            generateObservation(Values.time(this.date.get()));
+        }
+
+        this.date = Optional.empty();
     }
     @Override
     public void processWeatherBetween(double value, LocalDateTime date) {

@@ -1,14 +1,22 @@
 package com.example.FruitTrees.WeatherProcessor.WeatherProcessors;
+import com.example.FruitTrees.Location.Location;
 import com.example.FruitTrees.WeatherConroller.HourlyWeatherProcessRequest;
 import com.example.FruitTrees.WeatherConroller.WeatherResponse.DailyValuesResponse;
 import com.example.FruitTrees.WeatherConroller.WeatherResponse.LocationWeatherResponse;
 import com.example.FruitTrees.WeatherConroller.WeatherResponse.MonthlyValuesResponse;
 import com.example.FruitTrees.WeatherConroller.WeatherResponse.YearlyValuesResponse;
+import com.example.FruitTrees.WeatherProcessor.Period;
+import com.example.FruitTrees.WeatherProcessor.Stat;
+import com.example.FruitTrees.WeatherProcessor.WeatherProcessors.Observation.Observation;
+import com.example.FruitTrees.WeatherProcessor.WeatherProcessors.Observation.ObservationCollector;
+import com.example.FruitTrees.WeatherProcessor.WeatherProcessors.Observation.Value;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+
 /**
  *a base  abstract class for implementing a weather processor
  * identified by the component name in the map of weather processors
@@ -104,10 +112,55 @@ public abstract class WeatherProcessor {
      *
      */
         String stationId;
+
+    /**
+     * the location id used for openmeteo
+     *
+     */
+    protected String locationId;
     /**
      * external processors required by this one
      */
     public List<HourlyWeatherProcessRequest> hourlyWeatherProcessRequests = new ArrayList<>();
+
+    /**
+     *
+     * the period of measure monthly daily, yearly
+     */
+
+    protected Period period;
+
+    /**
+     *
+     * the  calculated stat mean median etc.
+     */
+
+    protected Stat stat;
+
+    /**
+     *
+     * the location object
+     */
+
+    /**
+     * the current year of weather being processed
+     */
+    protected Integer currentYear;
+    /**
+     * the current numeric value  of the month  for weather being processed
+     */
+    protected Integer  currentMonth;
+    /**
+     * the current month name  of weather being processed
+    /**
+     * the current month name  of weather being processed
+     */
+   protected String currentMonthName="";
+    protected Location location;
+
+    protected ObservationCollector observationCollector;
+
+
     public WeatherProcessor(String processorName) {
         this.processorName = processorName;
     }
@@ -186,6 +239,81 @@ public abstract class WeatherProcessor {
         monthAndDay[1]=day;
         return  monthAndDay;
     }
+
+    protected void generateObservation( Value value) {
+    generateObservation(value, Stat.BASE);
+    }
+    protected void generateObservation( Value value, Stat stat){
+        observationCollector.add(new Observation(
+                locationId,
+                currentYear,
+                currentMonth,
+                "temp.hours_below_monthly",     // pick a stable metricId
+                value,
+                "hours",
+                stat,
+                period,
+                Map.of(
+                        "dataType", dataType,
+                        "threshold", threshold,
+                        "upperBound", upperBound,
+                        "lowerBound", lowerBound,
+                        "bins", bins,
+                        "cmp", "lte",
+                        "period", period.label(),
+                        "stat", stat,
+                        "location", location
+                )
+        ));
+
+    }
+
+
+    /**
+     * checks to see if date / time is  the 0 hour of the first day of the month
+     * or the last day of the month or new years day or new years eve
+     * if so sets the current years and month and returns a enum used to call
+     * the correct abstract processing method
+     * @param localDate the current date and time being processed
+     * @return true if the day / time is the 0 hour of the first day of the month
+     * otherwise returns false
+     */
+    protected DateRecord analyzeDate(LocalDateTime localDate) {
+
+        // Determine hour type
+        DateType hourType = switch (localDate.getHour()) {
+            case 0 -> DateType.START_DAY;
+            case 23 -> DateType.END_DAY;
+            default -> DateType.NORMAL_HOUR;
+        };
+
+        // Determine day type
+        int day = localDate.getDayOfMonth();
+        int month = localDate.getMonthValue();
+        int maxDay = localDate.toLocalDate().lengthOfMonth();
+        DateType dayType = DateType.STANDARD_DAY;
+
+        if (day == 31 && localDate.getHour() == 23 && month == 12) {
+            dayType = DateType.NEW_YEARS_EVE;
+        } else if (day == 1 && localDate.getHour() == 0 && month == 1) {
+            currentYear = localDate.getYear();
+            currentMonth = 1;
+            currentMonthName = localDate.getMonth().name();
+            currentYearlyValuesResponse = locationWeatherResponse.getYearlyValues(String.valueOf(currentYear));
+            monthlyValuesResponse = currentYearlyValuesResponse.getMonthlyValues(currentMonthName);
+            dayType = DateType.NEW_YEARS_DAY;
+        } else if (day == maxDay && localDate.getHour() == 23) {
+            dayType = DateType.LAST_DAY_OF_MONTH;
+        } else if (day == 1 && localDate.getHour() == 0) {
+            currentMonth = month;
+            currentMonthName = localDate.getMonth().name();
+            monthlyValuesResponse = currentYearlyValuesResponse.getMonthlyValues(currentMonthName);
+            dayType = DateType.FIRST_DAY_OF_MONTH;
+        }
+
+        return new DateRecord(hourType, dayType);
+    }
+
     /**
      * overridden method  used to calculate the average
      * of the processed weather values
@@ -250,10 +378,8 @@ public abstract class WeatherProcessor {
     public void setOnlyCalculateAverage(boolean onlyCalculateAverage) {
         this.onlyCalculateAverage = onlyCalculateAverage;
     }
+
     public void stopProcessing(){
-        stopProcessing=true;
-    }
-    public void startProcessing(){
         stopProcessing=false;
     }
     public void clearProcessedTextValues() {
@@ -277,9 +403,7 @@ public abstract class WeatherProcessor {
     public void setCalculateMeanAverage(boolean calculateAverage) {
         this.calculateMeanAverage = calculateAverage;
     }
-    public List<String> getDataTypes() {
-        return dataTypes;
-    }
+
     public void setDataTypes(List<String> dataTypes) {
         this.dataTypes = dataTypes;
     }
@@ -332,5 +456,37 @@ public abstract class WeatherProcessor {
 
     public void setBins(List<Bin> bins) {
         this.bins = bins;
+    }
+
+    public ObservationCollector getObservationCollector() {
+        return observationCollector;
+    }
+
+    public void setObservationCollector(ObservationCollector observationCollector) {
+        this.observationCollector = observationCollector;
+    }
+
+    public String getLocationId() {
+        return locationId;
+    }
+
+    public void setLocationId(String locationId) {
+        this.locationId = locationId;
+    }
+
+    public Period getPeriod() {
+        return period;
+    }
+
+    public void setPeriod(Period period) {
+        this.period = period;
+    }
+
+    public Stat getStat() {
+        return stat;
+    }
+
+    public void setStat(Stat stat) {
+        this.stat = stat;
     }
 }

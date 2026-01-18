@@ -1,4 +1,5 @@
 package com.example.FruitTrees.WeatherProcessor.WeatherProcessors.MonthlyAndDaily;
+import com.example.FruitTrees.WeatherProcessor.WeatherProcessors.Observation.Values;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import java.time.LocalDateTime;
@@ -25,6 +26,8 @@ public class MonthlyMaxCalculator extends DailyAndMonthlyWeatherProcessor {
 
             addProcessedTextValue(finalValue, localDateTime.getYear(), localDateTime.getMonth().name());
         monthlyValues.get(currentMonthName).add(finalValue);
+        generateObservation(Values.number(value));
+
         finalValue =Double.MIN_VALUE;
     }
     @Override

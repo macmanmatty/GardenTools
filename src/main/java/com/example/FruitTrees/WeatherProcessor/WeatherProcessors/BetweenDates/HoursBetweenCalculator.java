@@ -1,5 +1,6 @@
 package com.example.FruitTrees.WeatherProcessor.WeatherProcessors.BetweenDates;
 import com.example.FruitTrees.WeatherConroller.WeatherResponse.YearlyValuesResponse;
+import com.example.FruitTrees.WeatherProcessor.WeatherProcessors.Observation.Values;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -18,7 +19,7 @@ public class HoursBetweenCalculator extends ProcessWeatherBetweenDates {
     /**
      * the counted hours
      */
-    private double chillHours;
+    private double hours;
 
     public HoursBetweenCalculator() {
     }
@@ -33,13 +34,15 @@ public class HoursBetweenCalculator extends ProcessWeatherBetweenDates {
     @Override
     protected void onEndDate(LocalDateTime date) {
         int year= date.getYear();
-        super.yearlyDataValues.add(chillHours);
+        super.yearlyDataValues.add(hours);
         YearlyValuesResponse yearlyValuesResponse = locationWeatherResponse.getYearlyValues(String.valueOf(year));
         String text="Chilling Hours";
         String baseText= text+ " Above "+ lowerBound +" And Below "+ upperBound;
-        yearlyValuesResponse.getValues().put(baseText, String.valueOf(chillHours));
-        addProcessedTextValue(baseText+" For " +year+" from: "+ startMonth +"/"+startDay+" to "+endMonth+"/" +endDay+ ": "+ chillHours);
-        chillHours =0;
+        yearlyValuesResponse.getValues().put(baseText, String.valueOf(hours));
+        addProcessedTextValue(baseText+" For " +year+" from: "+ startMonth +"/"+startDay+" to "+endMonth+"/" +endDay+ ": "+ hours);
+        generateObservation(Values.number(hours));
+
+        hours =0;
     }
 
     /**
@@ -50,7 +53,7 @@ public class HoursBetweenCalculator extends ProcessWeatherBetweenDates {
     @Override
     protected void processWeatherBetween(double value, LocalDateTime date) {
         if( value>= super.lowerBound && value<= super.upperBound) {
-            chillHours++;
+            hours++;
         }
     }
 }

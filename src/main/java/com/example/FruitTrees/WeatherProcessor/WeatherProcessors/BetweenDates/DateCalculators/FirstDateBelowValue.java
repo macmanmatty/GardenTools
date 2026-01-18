@@ -1,4 +1,5 @@
 package com.example.FruitTrees.WeatherProcessor.WeatherProcessors.BetweenDates.DateCalculators;
+import com.example.FruitTrees.WeatherProcessor.WeatherProcessors.Observation.Values;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -30,14 +31,18 @@ public class FirstDateBelowValue extends DateValueProcessor {
     }
     @Override
     protected void onEndDate(LocalDateTime date) {
-        startProcessing();
+        this.isInWindow();
     }
 
     public void onStop(LocalDateTime date) {
         String text = "First instance of " + dataType + " Below " + threshold;
         addValue(date,this.date, text);
+        if(this.date.isPresent()){
+            generateObservation(Values.time(this.date.get()));
+        }
+
         this.date = Optional.empty();
-        stopProcessing();
+        isInWindow();
 
 
     }
