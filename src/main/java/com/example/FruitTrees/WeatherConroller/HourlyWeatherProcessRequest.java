@@ -1,5 +1,6 @@
 package com.example.FruitTrees.WeatherConroller;
 
+import com.example.FruitTrees.Metrics.Unit;
 import com.example.FruitTrees.WeatherProcessor.WeatherProcessors.Bin;
 
 import java.util.ArrayList;
@@ -76,6 +77,8 @@ public class HourlyWeatherProcessRequest {
     List<Bin> bins=new ArrayList<>();
 
     List<String> dataTypes=new ArrayList<>();
+
+    public Unit unit;
 
     public String getHourlyDataType() {
         return hourlyDataType;
@@ -233,5 +236,13 @@ public class HourlyWeatherProcessRequest {
 
     public void setDataTypes(List<String> dataTypes) {
         this.dataTypes = dataTypes;
+    }
+
+    public Unit getUnit() {
+        return unit;
+    }
+
+    public void setUnit(Unit unit) {
+        this.unit = unit;
     }
 }
