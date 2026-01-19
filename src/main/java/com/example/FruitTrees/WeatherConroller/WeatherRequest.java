@@ -42,6 +42,10 @@ public class WeatherRequest {
      * the unit of measurement for snow and rain and precipitation (both snow and rain)
      */
     public String precipitationUnit="";
+
+    public String pressureUnit;
+
+
     /**
      * the time zone to use EST EDT CST etc.
      */
@@ -234,6 +238,14 @@ public class WeatherRequest {
 
     public void setOpenmeteoRequestHourlyDataTypes(Set<String> openmeteoRequestHourlyDataTypes) {
         this.openmeteoRequestHourlyDataTypes = openmeteoRequestHourlyDataTypes;
+    }
+
+    public String getPressureUnit() {
+        return pressureUnit;
+    }
+
+    public void setPressureUnit(String pressureUnit) {
+        this.pressureUnit = pressureUnit;
     }
 }
 

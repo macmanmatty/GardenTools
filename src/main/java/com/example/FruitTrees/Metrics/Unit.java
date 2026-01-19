@@ -110,4 +110,73 @@ public enum Unit {
         }
         throw new IllegalArgumentException("Unknown unit: " + s);
     }
+
+    /**
+     * Convert common aliases and symbols to canonical Unit.
+     * Accepts things like:
+     *   "C", "°C", "celsius"  -> DEG_C
+     *   "F", "°F", "fahrenheit" -> DEG_F
+     *   "mps", "m/sec" -> M_PER_S
+     *   "mph", "mi/h"  -> MPH
+     *   "mb", "millibar" -> HPA
+     *   "inches", "inHg" -> INHG
+     *   "percent", "%" -> PERCENT
+     */
+    public static Unit fromCommonName(String s) {
+        if (s == null) throw new IllegalArgumentException("Unit string is null");
+
+        String u = s.trim().toLowerCase();
+
+        return switch (u) {
+
+            // ---- Temperature ----
+            case "c", "°c", "celsius", "degc" -> DEG_C;
+            case "f", "°f", "fahrenheit", "degf" -> DEG_F;
+            case "k", "kelvin" -> K;
+
+            // ---- Wind speed ----
+            case "m/s", "mps", "m/sec", "meters per second" -> M_PER_S;
+            case "km/h", "kph", "kmph", "kilometers per hour" -> KM_PER_H;
+            case "mph", "mi/h", "miles per hour" -> MPH;
+
+            // ---- Pressure ----
+            case "pa", "pascal", "pascals" -> PA;
+            case "hpa", "mb", "millibar", "millibars" -> HPA;
+            case "kpa" -> KPA;
+            case "inhg", "in hg", "inches of mercury" -> INHG;
+            case "psi" -> PSI;
+
+            // ---- Length / Depth ----
+            case "mm", "millimeter", "millimeters" -> MM;
+            case "cm", "centimeter", "centimeters" -> CM;
+            case "m", "meter", "meters" -> M;
+            case "in", "inch", "inches" -> IN;
+            case "ft", "foot", "feet" -> FT;
+
+            // ---- Rates ----
+            case "mm/h", "mmhr", "mm per hour" -> MM_PER_H;
+
+            // ---- Radiation ----
+            case "w/m2", "w per m2", "watts per square meter" -> W_PER_M2;
+            case "mj/m2/day", "mj per m2 per day" -> MJ_PER_M2_DAY;
+
+            // ---- Soil / Volumetric ----
+            case "m3/m3", "vwc", "volumetric water content" -> M3_PER_M3;
+
+            // ---- Probability / Humidity ----
+            case "%", "percent", "percentage" -> PERCENT;
+
+            // ---- Time ----
+            case "h", "hr", "hour", "hours" -> HOUR;
+            case "d", "day", "days" -> DAY;
+
+            // ---- Dimensionless ----
+            case "", "unitless", "dimensionless" -> DIMENSIONLESS;
+
+            // ---- Codes ----
+            case "code", "wmo", "weather code" -> CODE;
+
+            default -> throw new IllegalArgumentException("Unknown unit alias: " + s);
+        };
+    }
 }

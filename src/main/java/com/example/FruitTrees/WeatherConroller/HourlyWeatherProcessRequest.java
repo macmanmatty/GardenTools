@@ -68,9 +68,10 @@ public class HourlyWeatherProcessRequest {
     private boolean calculateMax;
     private boolean calculateMin;
 
-    private  double lowerBound;
-    private double upperBound;
-    private double threshold;
+    // Optional numeric constraints (null = not configured)
+    private Double lowerBound;
+    private Double upperBound;
+    private Double threshold;
 
     List<Bin> bins=new ArrayList<>();
 
@@ -193,29 +194,30 @@ public class HourlyWeatherProcessRequest {
         this.calculateMedianAverage = calculateMedianAverage;
     }
 
-    public double getLowerBound() {
+    public Double getLowerBound() {
         return lowerBound;
     }
 
-    public void setLowerBound(double lowerBound) {
+    public void setLowerBound(Double lowerBound) {
         this.lowerBound = lowerBound;
     }
 
-    public double getUpperBound() {
+    public Double getUpperBound() {
         return upperBound;
     }
 
-    public void setUpperBound(double upperBound) {
+    public void setUpperBound(Double upperBound) {
         this.upperBound = upperBound;
     }
 
-    public double getThreshold() {
+    public Double getThreshold() {
         return threshold;
     }
 
-    public void setThreshold(double threshold) {
+    public void setThreshold(Double threshold) {
         this.threshold = threshold;
     }
+
 
     public List<Bin> getBins() {
         return bins;
