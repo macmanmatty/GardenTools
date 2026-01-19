@@ -1,5 +1,5 @@
 package com.example.FruitTrees.WeatherProcessor.WeatherProcessors;
-import com.example.FruitTrees.Location.Location;
+import com.example.FruitTrees.Metrics.Unit;
 import com.example.FruitTrees.WeatherConroller.HourlyWeatherProcessRequest;
 import com.example.FruitTrees.WeatherConroller.WeatherResponse.DailyValuesResponse;
 import com.example.FruitTrees.WeatherConroller.WeatherResponse.LocationWeatherResponse;
@@ -10,8 +10,6 @@ import com.example.FruitTrees.WeatherProcessor.Stat;
 import com.example.FruitTrees.WeatherProcessor.WeatherProcessors.Observation.Observation;
 import com.example.FruitTrees.WeatherProcessor.WeatherProcessors.Observation.ObservationCollector;
 import com.example.FruitTrees.WeatherProcessor.WeatherProcessors.Observation.Value;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import java.time.LocalDateTime;
@@ -69,7 +67,7 @@ public abstract class WeatherProcessor {
     /**
      * the current of measurement for the data being processed
      */
-    protected String dataUnit="";
+    protected Unit dataUnit;
     protected List<String> dataTypes= new ArrayList<>();
     protected List<String> dataUnits= new ArrayList<>();
     /**
@@ -229,7 +227,7 @@ public abstract class WeatherProcessor {
         monthAndDay[1]=day;
         return  monthAndDay;
     }
-    protected void generateObservation( Value value) {
+    protected void generateObservation(Value value) {
     generateObservation(value, Stat.BASE);
     }
     protected void generateObservation( Value value, Stat stat){
@@ -239,7 +237,7 @@ public abstract class WeatherProcessor {
                 currentMonth,
                 "temp.hours_below_monthly",     // pick a stable metricId
                 value,
-                "hours",
+                dataUnit.symbol(),
                 stat,
                 period,
                 Map.of(
@@ -340,13 +338,18 @@ public abstract class WeatherProcessor {
     }
     public void setDataType(String dataType) {
         this.dataType = dataType;
+
     }
-    public String getDataUnit() {
-        return dataUnit;
-    }
-    public void setDataUnit(String dataUnit) {
+
+
+    public void setDataUnit(Unit dataUnit) {
         this.dataUnit = dataUnit;
     }
+
+    public Unit getDataUnit() {
+        return dataUnit;
+    }
+
     public LocationWeatherResponse getLocationWeatherResponse() {
         return locationWeatherResponse;
     }

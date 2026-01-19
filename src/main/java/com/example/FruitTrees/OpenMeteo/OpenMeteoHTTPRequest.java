@@ -1,8 +1,12 @@
 package com.example.FruitTrees.OpenMeteo;
 import com.example.FruitTrees.Location.Location;
 import com.example.FruitTrees.Utilities.DataUtilities;
+import com.example.FruitTrees.WeatherConroller.WeatherProcessorController;
 import com.example.FruitTrees.WeatherConroller.WeatherRequest;
 import com.example.FruitTrees.WeatherConroller.WeatherResponse.WeatherResponse;
+import org.apache.commons.logging.Log;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.CacheManager;
@@ -14,11 +18,22 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.IOException;
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
-import java.util.logging.Logger;
+
 /**
- * service class for making Open-Meteo requests
+ * Service class responsible for making Open-Meteo HTTP requests.
+ *
+ * IMPORTANT ARCHITECTURE RULE:
+ *  - We request Open-Meteo in DEFAULT (scientific) units.
+ *  - We do NOT append any unit conversion params to the API call.
+ *  - User unit preferences are applied only at the boundaries:
+ *      - normalize request thresholds/bounds to canonical before processing
+ *      - convert results to user units for presentation/export
+ *
+ * This keeps the core engine unit-clean and avoids conversion bugs.
  */
 @Service
 public class OpenMeteoHTTPRequest {
@@ -26,97 +41,96 @@ public class OpenMeteoHTTPRequest {
    private  String openMeteoUrl;
 
    private final  RestTemplate restTemplate;
-    private final  CacheManager cacheManager;
+    private static final Logger log = LoggerFactory.getLogger(OpenMeteoHTTPRequest.class);
+
     @Autowired
-    public OpenMeteoHTTPRequest(CacheManager cacheManager, RestTemplate restTemplate) {
-        this.cacheManager = cacheManager;
+    public OpenMeteoHTTPRequest( RestTemplate restTemplate) {
         this.restTemplate = restTemplate;
     }
-    
-    /**
-     * calls the open-meteo service to get the data for specified location(s)
-     * in the weather request one open-meteo request is required per location
-     * @param weatherRequest the weather request object
-     * @return The LocationResponse containing the  OpenMeteoResponse and the Location Object
-     * @throws IOException
-     */
-    @Cacheable(value = "openMeteoDataCache",
-      key = "#location.getLatitude() + ':' + #location.getLongitude() + ':' + #weatherRequest.getHourlyDataTypes.hashCode() + ':' + #weatherRequest.getStartDate() + ':' + #weatherRequest.getEndDate()")
-    public OpenMeteoLocationResponse makeLocationRequest(Location location, WeatherRequest weatherRequest){
-        String fullUrl = openMeteoUrl + "?latitude=" + location.getLatitude() +
-                "&longitude=" + location.getLongitude() +
-                "&start_date=" + weatherRequest.getStartDate() +
-                "&end_date=" + weatherRequest.getEndDate();
-        Set<String> hourlyDataTypes = weatherRequest.getOpenmeteoRequestHourlyDataTypes();
-        for (String dataType : hourlyDataTypes) {
-            fullUrl = fullUrl + "&hourly=" + DataUtilities.toOpenMeteoDatatype(dataType);
-        }
-        fullUrl = addConversionUnits(fullUrl, weatherRequest);
-        Logger.getLogger("").info("getting weather data from open-meteo with  url " + fullUrl);
-        ResponseEntity<OpenMeteoResponse> response = restTemplate.getForEntity(fullUrl, OpenMeteoResponse.class);
-        Logger.getLogger("").info("obtained weather data from open-meteo ");
-
-        OpenMeteoLocationResponse locationResponse=new OpenMeteoLocationResponse();
-        locationResponse.setOpenMeteoResponse(response.getBody());
-        locationResponse.setLocation(location);
-            return locationResponse;
-    }
 
     /**
-     * calls the open-meteo service to get the data for specified location(s)
-     * in the weather request one open-meteo request is required per location
-     * @param weatherRequest the weather request object
-     * @return The LocationResponse containing the  OpenMeteoResponse and the Location Object
-     * @throws IOException
+     * Calls Open-Meteo for a single location over the request date range.
+     *
+     * Open-Meteo requires one request per location.
+     *
+     * NOTE: This method requests DEFAULT units only (no unit parameters).
      */
-    @Cacheable(value = "openMeteoDataCache",
-            key = "#location.getLatitude() + ':' + #location.getLongitude() + ':' + #weatherRequest.getHourlyDataTypes.hashCode() + ':' + #weatherRequest.getStartDate() + ':' + #weatherRequest.getEndDate()")
-    public OpenMeteoLocationResponse makeLocationRequest(
-            Location location,
-            String startDate,
-            String endDate,
-            WeatherRequest weatherRequest
-    ) {
-        // Build a stable, comma-separated hourly param (sorted so cache keys are deterministic)
-        List<String> hourly = weatherRequest.getHourlyDataTypes() == null
-                ? List.of()
-                : weatherRequest.getHourlyDataTypes().stream()
-                .map(DataUtilities::toOpenMeteoDatatype)
-                .distinct()
-                .sorted()
-                .toList();
+    @Cacheable(
+            value = "openMeteoDataCache",
+            key = "T(java.lang.String).valueOf(#location.latitude) + ':' + " +
+                    "T(java.lang.String).valueOf(#location.longitude) + ':' + " +
+                    "#weatherRequest.startDate + ':' + #weatherRequest.endDate + ':' + " +
+                    "T(java.util.Objects).hash(#root.target.buildHourlyParam(#weatherRequest))"
+    )
+    public OpenMeteoLocationResponse makeLocationRequest(Location location, WeatherRequest weatherRequest) {
 
-        UriComponentsBuilder b = UriComponentsBuilder.fromHttpUrl(openMeteoUrl)
+        // Build hourly parameter as a stable, comma-separated string
+        // (sorted so caching doesn't break due to ordering differences)
+        String hourlyParam = buildHourlyParam(weatherRequest);
+
+        UriComponentsBuilder b = UriComponentsBuilder.fromUriString(openMeteoUrl)
                 .queryParam("latitude", location.getLatitude())
                 .queryParam("longitude", location.getLongitude())
-                .queryParam("start_date", startDate)
-                .queryParam("end_date", endDate);
+                .queryParam("start_date", weatherRequest.getStartDate())
+                .queryParam("end_date", weatherRequest.getEndDate());
 
-        if (!hourly.isEmpty()) {
-            b.queryParam("hourly", String.join(",", hourly)); // single param
+        if (!hourlyParam.isEmpty()) {
+            // Open-Meteo expects ONE hourly param with comma-separated variables
+            b.queryParam("hourly", hourlyParam);
         }
-        // Units (adapt this to how your addConversionUnits worked; shown inline here)
-        if ("fahrenheit".equalsIgnoreCase(weatherRequest.getTemperatureUnit())) {
-            b.queryParam("temperature_unit", "fahrenheit");
-        }
-        if ("inch".equalsIgnoreCase(weatherRequest.getPrecipitationUnit())) {
-            b.queryParam("precipitation_unit", "inch");
-        }
+
+        // IMPORTANT: We intentionally do NOT add temperature_unit/wind_speed_unit/etc.
 
         URI uri = b.build(true).toUri();
 
+        log.info("Getting weather data from Open-Meteo: " + uri);
+
         ResponseEntity<OpenMeteoResponse> response = restTemplate.getForEntity(uri, OpenMeteoResponse.class);
         OpenMeteoResponse body = response.getBody();
+
         if (body == null) {
             throw new IllegalStateException("Null Open-Meteo response for " + uri);
         }
-        OpenMeteoLocationResponse locationResponse=new OpenMeteoLocationResponse();
-        locationResponse.setOpenMeteoResponse(response.getBody());
-        if (locationResponse.getLocation() == null) {
-            locationResponse.setLocation(location);
-        }
+
+        OpenMeteoLocationResponse locationResponse = new OpenMeteoLocationResponse();
+        locationResponse.setOpenMeteoResponse(body);
+        locationResponse.setLocation(location);
+
+        log.info("Obtained weather data from Open-Meteo");
+
         return locationResponse;
     }
+
+    /**
+     * Builds a stable, comma-separated "hourly" parameter value.
+     *
+     * We:
+     *  - map internal/request metric ids to Open-Meteo variable names
+     *  - de-duplicate
+     *  - sort for deterministic caching
+     *
+     * Java 8 friendly (no List.of(), no stream().toList()).
+     */
+    String buildHourlyParam(WeatherRequest weatherRequest) {
+        Set<String> hourlyDataTypes = weatherRequest.getOpenmeteoRequestHourlyDataTypes();
+        if (hourlyDataTypes == null || hourlyDataTypes.isEmpty()) {
+            return "";
+        }
+
+        List<String> vars = new ArrayList<>(hourlyDataTypes.size());
+        for (String dt : hourlyDataTypes) {
+            String v = DataUtilities.toOpenMeteoDatatype(dt);
+            if (v != null && !v.trim().isEmpty() && !vars.contains(v)) {
+                vars.add(v);
+            }
+        }
+
+        Collections.sort(vars);
+
+        return String.join(",", vars);
+    }
+
+
     /**
      *  adds additional params to the url to specify the units
      * you wish to have data sent back in Fahrenheit, Celsius, Inches , Meters Etc.
