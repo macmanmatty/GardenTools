@@ -138,7 +138,7 @@ public abstract class WeatherProcessor {
     /**
      * the current year of weather being processed
      */
-    protected Integer currentYear;
+    public Integer currentYear;
     /**
      * the current numeric value  of the month  for weather being processed
      */
@@ -148,7 +148,7 @@ public abstract class WeatherProcessor {
     /**
      * the current month name  of weather being processed
      */
-   protected String currentMonthName="";
+    public String currentMonthName="";
 
     protected ObservationCollector observationCollector;
     public WeatherProcessor(String processorName) {

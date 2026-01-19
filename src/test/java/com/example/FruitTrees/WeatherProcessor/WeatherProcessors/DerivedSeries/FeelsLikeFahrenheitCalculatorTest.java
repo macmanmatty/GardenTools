@@ -37,7 +37,7 @@ class FeelsLikeFahrenheitCalculatorTest {
         double tempF = 92.0;
         double dewF  = 75.0;
 
-        double expected = WeatherUtilities.feelsLikeTemperatureF(tempF, dewF);
+        double expected = WeatherUtilities.feelsLikeTemperatureF(tempF, dewF, null);
 
         double actual = calc.computeAt(new double[]{tempF, dewF}, new double[0]);
 
