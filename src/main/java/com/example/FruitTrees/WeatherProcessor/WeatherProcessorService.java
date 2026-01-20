@@ -69,7 +69,7 @@ public class WeatherProcessorService {
      LocalDateTime [] time = locationResponse.getTime();
      List<WeatherProcessor> weatherProcessors = new ArrayList<>();
      for (HourlyWeatherProcessRequest hourlyWeatherProcessRequest : hourlyWeatherProcessRequests) {
-           WeatherProcessor weatherProcessor=  weatherProcessorFactory.createHourlyProcessor(hourlyWeatherProcessRequest, locationWeatherResponse);
+           WeatherProcessor weatherProcessor=  weatherProcessorFactory.createHourlyProcessor(hourlyWeatherProcessRequest, locationWeatherResponse, weatherRequest);
            if(weatherProcessor==null){
                log.info("{} is an  invalid data type not adding processor ", hourlyWeatherProcessRequest.getProcessorName());
                continue;
@@ -78,7 +78,7 @@ public class WeatherProcessorService {
            List<WeatherProcessor> createdDependentWeatherProcessors = new ArrayList<>();
          boolean ok = true;
          for(HourlyWeatherProcessRequest dependentWeatherProcessorRequest:dependentWeatherProcessors){
-             WeatherProcessor dependentWeatherProcessor=  weatherProcessorFactory.createHourlyProcessor(dependentWeatherProcessorRequest, locationWeatherResponse);
+             WeatherProcessor dependentWeatherProcessor=  weatherProcessorFactory.createHourlyProcessor(dependentWeatherProcessorRequest, locationWeatherResponse, weatherRequest);
              if(dependentWeatherProcessor==null){
                  log.info("{} is an  invalid data type not adding dependent  processor  removing {} parent processor as well ", dependentWeatherProcessorRequest.getProcessorName(), weatherProcessor.getProcessorName());
                  ok = false; break;
