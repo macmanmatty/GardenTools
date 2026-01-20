@@ -3,9 +3,9 @@ package com.example.FruitTrees.Metrics;
 import com.example.FruitTrees.Utilities.DataUtilities;
 import com.example.FruitTrees.WeatherConroller.HourlyWeatherProcessRequest;
 import com.example.FruitTrees.WeatherConroller.WeatherRequest;
-import com.example.FruitTrees.WeatherProcessor.WeatherProcessors.Observation.NumberValue;
-import com.example.FruitTrees.WeatherProcessor.WeatherProcessors.Observation.Observation;
-import com.example.FruitTrees.WeatherProcessor.WeatherProcessors.Observation.Value;
+import com.example.FruitTrees.Metrics.Observation.NumberValue;
+import com.example.FruitTrees.Metrics.Observation.Observation;
+import com.example.FruitTrees.Metrics.Observation.Value;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -82,6 +82,23 @@ public final class RequestUnitNormalizer {
             double v = Units.convert(internalQuantityType, cfg.getThreshold(), userUnit, internalUnit);
             cfg.setThreshold(v);
         }
+
+        if (cfg.getBins() != null && !cfg.getBins().isEmpty()) {
+            List<Bin> converted = new ArrayList<>(cfg.getBins().size());
+            for (Bin bin : cfg.getBins()) {
+                if (bin == null) continue;
+
+                Double lo = bin.min();
+                Double hi = bin.max();
+
+                if (lo != null) lo = Units.convert(internalQuantityType, lo, userUnit, internalUnit);
+                if (hi != null) hi = Units.convert(internalQuantityType, hi, userUnit, internalUnit);
+
+                converted.add(new Bin(lo, hi, bin.weight())); // adapt constructor/fields
+            }
+            cfg.setBins(converted);
+        }
+
         cfg.setUnit(internalUnit);
 
         // OPTIONAL: If you have bins with numeric edges, normalize those too.
@@ -94,7 +111,7 @@ public final class RequestUnitNormalizer {
      *
      * This is the ONLY place that decides "which user unit applies to this quantity".
      */
-    private static Unit userUnitForQuantity(WeatherRequest req, QuantityType quantityType) {
+    public static Unit userUnitForQuantity(WeatherRequest req, QuantityType quantityType) {
         // These parse aliases like "F", "°F", "fahrenheit", "mph", "kph", etc.
         // If you only accept canonical symbols, use Unit.fromString(...) instead.
         return switch (quantityType) {
@@ -134,7 +151,7 @@ public final class RequestUnitNormalizer {
      * @param canonicalValue numeric value in canonical units
      * @return value converted to the user's preferred units for that quantity
      */
-    public static double toUserUnits(WeatherRequest weatherRequest, String dataType, double canonicalValue) {
+    public static double toUserUnits(WeatherRequest weatherRequest, String dataType, Unit unit,  QuantityType quantityType,  double canonicalValue) {
 
         // Convert to canonical internal metric id
         String internalType = DataUtilities.toInternalDatatype(dataType);
@@ -144,10 +161,9 @@ public final class RequestUnitNormalizer {
         }
 
         MetricDef internalMetric = MetricRegistry.defFor(internalType);
-        QuantityType qt = internalMetric.type();
         Unit canonicalUnit = internalMetric.canonicalUnit();
 
-        Unit userUnit = userUnitForQuantity(weatherRequest, qt);
+        Unit userUnit = userUnitForQuantity(weatherRequest, quantityType);
 
         // If user/canonical are unknown, do not guess; return as-is
         if (userUnit == Unit.UNKNOWN || canonicalUnit == Unit.UNKNOWN) {
@@ -159,10 +175,9 @@ public final class RequestUnitNormalizer {
             return canonicalValue;
         }
 
-        return Units.convert(qt, canonicalValue, canonicalUnit, userUnit);
+        return Units.convert(quantityType, canonicalValue, canonicalUnit, userUnit);
     }
 
-    // ... your existing methods remain ...
 
     /**
      * Convert a list of canonical Observations into user-unit Observations (presentation view).
@@ -184,47 +199,111 @@ public final class RequestUnitNormalizer {
 
     /**
      * Convert one canonical Observation into user units (if numeric + convertible).
+     *
+     * This is presentation-layer conversion only:
+     *  - Observations are stored/processed in canonical units.
+     *  - Before export/UI, convert numeric values to the user's preferred units.
+     *
+     * Non-numeric observations are returned unchanged.
      */
-    public static Observation toUserUnits(WeatherRequest req, Observation obs) {
-        if (req == null || obs == null) return obs;
+    public static Observation toUserUnits(WeatherRequest weatherRequest, Observation observation) {
+        if (weatherRequest == null || observation == null) return observation;
 
-        // Only convert numeric values
-        Double numeric = asDoubleOrNull(obs.value());
+        // Only convert numeric values (NumberValue or Value.raw() instanceof Number)
+        Double numeric = asDoubleOrNull(observation.value());
         if (numeric == null) {
-            return obs;
+            return observation;
         }
 
-        // Resolve what this metric "means" and what units it uses internally.
-        // NOTE: This requires that obs.metricId() maps to a MetricDef in your registry.
-        // If your Observation.metricId values are like "temp.hours_below", you’ll want
-        // a registry for those (or a mapping layer). See note below.
-        MetricDef def = MetricRegistry.defFor(obs.metricId());
+        // Determine quantity type so we know which user preference applies (temp vs wind vs pressure, etc.)
+        // NOTE: this assumes metricId() can be resolved to a MetricDef.
+        // If not, you should add a dedicated registry for observation metricIds.
+        MetricDef def = MetricRegistry.defFor(observation.dataType());
         QuantityType qt = def.type();
 
-        Unit canonicalUnit = def.canonicalUnit();
-        Unit userUnit = userUnitForQuantity(req, qt);
+        // Canonical unit is what the observation is currently stored in.
+        // With your new Observation shape, this is the MOST reliable source of truth.
+        Unit canonicalUnit = observation.condition().unit();
 
-        // If we can't convert (unknown or not meaningful), keep as-is.
+        // Determine the unit the USER wants to see for this quantity.
+        Unit userUnit = userUnitForQuantity(weatherRequest, qt);
+
+        // If we can't convert (unknown, not applicable, or already in desired units), keep as-is.
         if (canonicalUnit == Unit.UNKNOWN || userUnit == Unit.UNKNOWN || canonicalUnit == userUnit) {
-            return obs;
+            return observation;
         }
 
-        double converted = Units.convert(qt, numeric, canonicalUnit, userUnit);
+        // Convert the numeric value from canonical -> user units
+        double convertedValue = Units.convert(qt, numeric, canonicalUnit, userUnit);
 
-        // Return a NEW observation with the converted value + updated unit string.
+        // OPTIONAL (recommended for readability):
+        // If this observation carries a Condition whose thresholds are in canonical units,
+        // you may also want to convert the Condition bounds so "Condition" displays in user units.
+        //
+        // Condition convertedCondition = convertConditionToUserUnits(obs.condition(), qt, canonicalUnit, userUnit);
+        //
+        // If you choose NOT to do that, keep the original condition unchanged.
+        Condition convertedCondition =convertConditionToUserUnits(observation.condition(),qt,  canonicalUnit, userUnit);
+
+        // Return a NEW Observation with converted value + updated unit.
+        // Everything else stays the same (identity + computation context).
         return new Observation(
-                obs.locationId(),
-                obs.year(),
-                obs.month(),
-                obs.metricId(),
-                new NumberValue(converted),
-                userUnit.symbol(),     // update presentation unit
-                obs.stat(),
-                obs.period(),
-                obs.meta()
+                observation.locationId(),
+                observation.year(),
+                observation.month(),
+                observation.metricId(),
+                observation.dataType(),
+                new NumberValue(convertedValue),
+                userUnit.symbol(),                 // Unit enum (not symbol string)
+                observation.stat(),
+                observation.period(),
+                convertedCondition,
+                observation.spec(),
+                observation.meta()
         );
     }
+    /**
+     * Convert a Condition's thresholds/bounds from canonical -> user units.
+     *
+     * This is presentation-only. The engine should keep canonical internally.
+     */
+    private static Condition convertConditionToUserUnits(
+            Condition c,
+            QuantityType qt,
+            Unit canonicalUnit,
+            Unit userUnit
+    ) {
+        if (c == null) return null;
 
+        // If the condition has no unit (or a unit not matching the observation),
+        // you may choose to leave it unchanged to avoid incorrect conversions.
+        if (c.unit() == null || c.unit() == Unit.UNKNOWN) {
+            return c;
+        }
+
+        // Only convert if the condition unit matches the canonical unit we expect.
+        // (Prevents converting "hours" as if it were "degC", etc.)
+        if (c.unit() != canonicalUnit) {
+            return c;
+        }
+
+        Double threshold = c.threshold();
+        Double lower = c.lowerBound();
+        Double upper = c.upperBound();
+
+        if (threshold != null) threshold = Units.convert(qt, threshold, canonicalUnit, userUnit);
+        if (lower != null) lower = Units.convert(qt, lower, canonicalUnit, userUnit);
+        if (upper != null) upper = Units.convert(qt, upper, canonicalUnit, userUnit);
+
+        return new Condition(
+                c.type(),
+                c.comparison(),
+                threshold,
+                lower,
+                upper,
+                userUnit
+        );
+    }
     /**
      * Try to extract a double from your Value abstraction.
      * Converts only for numeric types.

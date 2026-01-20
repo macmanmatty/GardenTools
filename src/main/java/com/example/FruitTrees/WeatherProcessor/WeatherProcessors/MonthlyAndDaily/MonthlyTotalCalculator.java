@@ -1,5 +1,5 @@
 package com.example.FruitTrees.WeatherProcessor.WeatherProcessors.MonthlyAndDaily;
-import com.example.FruitTrees.WeatherProcessor.WeatherProcessors.Observation.Values;
+import com.example.FruitTrees.Metrics.Observation.Values;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import java.time.LocalDateTime;

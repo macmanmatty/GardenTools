@@ -1,7 +1,10 @@
 package com.example.FruitTrees.WeatherProcessor;
 
+import com.example.FruitTrees.Metrics.MetricRegistry;
+import com.example.FruitTrees.Metrics.RequestUnitNormalizer;
 import com.example.FruitTrees.Utilities.DataUtilities;
 import com.example.FruitTrees.WeatherConroller.HourlyWeatherProcessRequest;
+import com.example.FruitTrees.WeatherConroller.WeatherRequest;
 import com.example.FruitTrees.WeatherConroller.WeatherResponse.LocationWeatherResponse;
 import com.example.FruitTrees.WeatherProcessor.WeatherProcessors.DerivedSeries.DerivedSeriesCalculator;
 import com.example.FruitTrees.WeatherProcessor.WeatherProcessors.WeatherProcessor;
@@ -20,8 +23,8 @@ public class WeatherProcessorFactory {
     }
 
     public WeatherProcessor createHourlyProcessor(
-                                            HourlyWeatherProcessRequest config,
-                                            LocationWeatherResponse locationWeatherResponse) {
+            HourlyWeatherProcessRequest config,
+            LocationWeatherResponse locationWeatherResponse, WeatherRequest weatherRequest) {
 
         WeatherProcessor processor = context.getBean(config.getProcessorName(),  WeatherProcessor.class);
         String dataType= DataUtilities.toInternalDatatype(config.getHourlyDataType());
@@ -45,7 +48,8 @@ public class WeatherProcessorFactory {
         processor.setThreshold(config.getThreshold());
         processor.setBins(config.getBins());
         processor.setDataTypes(config.getDataTypes());
-        processor.setDataUnit(config.getUnit());
+        processor.setOutputQuantityType(MetricRegistry.defFor(dataType).type());
+        processor.setOutputUnit(RequestUnitNormalizer.userUnitForQuantity(weatherRequest, processor.getOutputQuantityType()));
         return processor;
     }
 

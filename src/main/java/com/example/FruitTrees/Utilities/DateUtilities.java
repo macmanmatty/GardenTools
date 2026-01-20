@@ -1,6 +1,6 @@
 package com.example.FruitTrees.Utilities;
 
-import com.example.FruitTrees.WeatherProcessor.WeatherProcessors.DateType;
+import com.example.FruitTrees.Metrics.DateType;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;

@@ -1,8 +1,7 @@
 package com.example.FruitTrees.WeatherConroller.WeatherResponse;
 
 import com.example.FruitTrees.Location.Location;
-import com.example.FruitTrees.WeatherProcessor.WeatherProcessors.Observation.Observation;
-import com.example.FruitTrees.WeatherProcessor.WeatherProcessors.Observation.ObservationCollector;
+import com.example.FruitTrees.Metrics.Observation.Observation;
 
 import java.util.ArrayList;
 import java.util.HashMap;

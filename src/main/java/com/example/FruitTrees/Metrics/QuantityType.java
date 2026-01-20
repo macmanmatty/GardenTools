@@ -21,5 +21,5 @@ public enum QuantityType {
     DURATION,
     COUNT,
     DATE,
-    OTHER
+    CHILL, DEGREE_DAYS, OTHER
 }

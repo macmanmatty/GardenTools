@@ -1,6 +1,7 @@
 package com.example.FruitTrees.WeatherProcessor.WeatherProcessors.Daily;
 
-import com.example.FruitTrees.WeatherProcessor.Period;
+import com.example.FruitTrees.Metrics.QuantityType;
+import com.example.FruitTrees.Metrics.Unit;
 import com.example.FruitTrees.WeatherProcessor.WeatherProcessors.MonthlyAndDaily.DailyAndMonthlyWeatherProcessor;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -29,6 +30,8 @@ public class DaysAboveMonthly extends DailyAndMonthlyWeatherProcessor  {
 
     public DaysAboveMonthly() {
         super("Days Above");
+        outputQuantityType=QuantityType.DURATION;
+        outputUnit= Unit.DAY;
     }
     @Override
     public void before() {

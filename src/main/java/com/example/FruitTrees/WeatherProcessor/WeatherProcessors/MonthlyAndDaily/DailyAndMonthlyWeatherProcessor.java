@@ -1,8 +1,7 @@
 package com.example.FruitTrees.WeatherProcessor.WeatherProcessors.MonthlyAndDaily;
 import com.example.FruitTrees.Utilities.ArrayUtilities;
-import com.example.FruitTrees.WeatherProcessor.Period;
-import com.example.FruitTrees.WeatherProcessor.WeatherProcessors.DateRecord;
-import com.example.FruitTrees.WeatherProcessor.WeatherProcessors.DateType;
+import com.example.FruitTrees.Metrics.Period;
+import com.example.FruitTrees.Metrics.DateRecord;
 import com.example.FruitTrees.WeatherProcessor.WeatherProcessors.WeatherProcessor;
 import java.time.LocalDateTime;
 import java.util.*;

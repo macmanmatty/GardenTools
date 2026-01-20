@@ -1,7 +1,7 @@
 package com.example.FruitTrees.WeatherConroller;
 
 import com.example.FruitTrees.Metrics.Unit;
-import com.example.FruitTrees.WeatherProcessor.WeatherProcessors.Bin;
+import com.example.FruitTrees.Metrics.Bin;
 
 import java.util.ArrayList;
 import java.util.List;

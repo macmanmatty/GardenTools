@@ -1,9 +1,9 @@
 package com.example.FruitTrees.WeatherProcessor.WeatherProcessors.BetweenDates;
 import com.example.FruitTrees.Utilities.ArrayUtilities;
 import com.example.FruitTrees.Utilities.DateUtilities;
-import com.example.FruitTrees.WeatherProcessor.Period;
-import com.example.FruitTrees.WeatherProcessor.Stat;
-import com.example.FruitTrees.WeatherProcessor.WeatherProcessors.Observation.Values;
+import com.example.FruitTrees.Metrics.Period;
+import com.example.FruitTrees.Metrics.Stat;
+import com.example.FruitTrees.Metrics.Observation.Values;
 import com.example.FruitTrees.WeatherProcessor.WeatherProcessors.WeatherProcessor;
 import java.time.LocalDateTime;
 import java.util.ArrayList;

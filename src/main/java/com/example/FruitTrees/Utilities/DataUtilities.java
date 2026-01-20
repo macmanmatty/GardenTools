@@ -1,4 +1,5 @@
 package com.example.FruitTrees.Utilities;
+import com.example.FruitTrees.Metrics.Condition;
 import com.example.FruitTrees.OpenMeteo.OpenMeteoResponse;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -531,5 +532,7 @@ public static String extractValuesForSoil(String fieldName) {
             Map.entry("pressure_msl", PhysicalQuantity.PRESSURE),
             Map.entry("relative_humidity_2m", PhysicalQuantity.HUMIDITY)
     );
+
+
 
 }

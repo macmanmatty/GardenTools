@@ -1,4 +1,4 @@
-package com.example.FruitTrees.WeatherProcessor.WeatherProcessors.Observation;
+package com.example.FruitTrees.Metrics.Observation;
 import java.util.ArrayList;
 import java.util.List;
 

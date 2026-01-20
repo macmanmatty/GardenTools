@@ -2,9 +2,9 @@ package com.example.FruitTrees.WeatherProcessor;
 import com.example.FruitTrees.Location.Location;
 import com.example.FruitTrees.OpenMeteo.*;
 import com.example.FruitTrees.WeatherProcessor.WeatherProcessors.DerivedSeries.DerivedSeriesCalculator;
-import com.example.FruitTrees.WeatherProcessor.WeatherProcessors.Observation.InMemoryObservationCollector;
-import com.example.FruitTrees.WeatherProcessor.WeatherProcessors.Observation.ObservationCollector;
-import com.example.FruitTrees.WeatherProcessor.WeatherProcessors.Observation.WeatherRunContext;
+import com.example.FruitTrees.Metrics.Observation.InMemoryObservationCollector;
+import com.example.FruitTrees.Metrics.Observation.ObservationCollector;
+import com.example.FruitTrees.Metrics.Observation.WeatherRunContext;
 import com.example.FruitTrees.WeatherProcessor.WeatherProcessors.WeatherProcessor;
 import com.example.FruitTrees.WeatherConroller.HourlyWeatherProcessRequest;
 import com.example.FruitTrees.WeatherConroller.WeatherResponse.LocationWeatherResponse;
@@ -266,8 +266,8 @@ public class WeatherProcessorService {
             // 3) fetch one month (your cached method)
             OpenMeteoLocationResponse openMeteoLocationResponse =openMeteoHTTPRequest.makeLocationRequest(
                     location,
-                    sliceStart.toString(),   // "yyyy-MM-dd"
-                    sliceEnd.toString(),
+                    //sliceStart.toString(),   // "yyyy-MM-dd"
+                    //sliceEnd.toString(),
                     request
             );
             if (openMeteoLocationResponse != null && openMeteoLocationResponse.getOpenMeteoResponse().hourly != null && openMeteoLocationResponse.getOpenMeteoResponse().hourly.time != null && !openMeteoLocationResponse.getOpenMeteoResponse().hourly.time.isEmpty()) {

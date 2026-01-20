@@ -1,7 +1,7 @@
 package com.example.FruitTrees.WeatherProcessor.WeatherProcessors.BetweenDates;
 
 import com.example.FruitTrees.WeatherConroller.WeatherResponse.YearlyValuesResponse;
-import com.example.FruitTrees.WeatherProcessor.WeatherProcessors.Observation.Values;
+import com.example.FruitTrees.Metrics.Observation.Values;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 

@@ -1,15 +1,15 @@
 package com.example.FruitTrees.WeatherProcessor.WeatherProcessors;
-import com.example.FruitTrees.Metrics.Unit;
+import com.example.FruitTrees.Metrics.*;
 import com.example.FruitTrees.WeatherConroller.HourlyWeatherProcessRequest;
 import com.example.FruitTrees.WeatherConroller.WeatherResponse.DailyValuesResponse;
 import com.example.FruitTrees.WeatherConroller.WeatherResponse.LocationWeatherResponse;
 import com.example.FruitTrees.WeatherConroller.WeatherResponse.MonthlyValuesResponse;
 import com.example.FruitTrees.WeatherConroller.WeatherResponse.YearlyValuesResponse;
-import com.example.FruitTrees.WeatherProcessor.Period;
-import com.example.FruitTrees.WeatherProcessor.Stat;
-import com.example.FruitTrees.WeatherProcessor.WeatherProcessors.Observation.Observation;
-import com.example.FruitTrees.WeatherProcessor.WeatherProcessors.Observation.ObservationCollector;
-import com.example.FruitTrees.WeatherProcessor.WeatherProcessors.Observation.Value;
+import com.example.FruitTrees.Metrics.Period;
+import com.example.FruitTrees.Metrics.Stat;
+import com.example.FruitTrees.Metrics.Observation.Observation;
+import com.example.FruitTrees.Metrics.Observation.ObservationCollector;
+import com.example.FruitTrees.Metrics.Observation.Value;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import java.time.LocalDateTime;
@@ -67,7 +67,7 @@ public abstract class WeatherProcessor {
     /**
      * the current of measurement for the data being processed
      */
-    protected Unit dataUnit;
+    protected Unit outputUnit;
     protected List<String> dataTypes= new ArrayList<>();
     protected List<String> dataUnits= new ArrayList<>();
     /**
@@ -147,6 +147,10 @@ public abstract class WeatherProcessor {
      * the current month name  of weather being processed
      */
     public String currentMonthName="";
+
+    protected ConditionType conditionType;
+    protected Comparison comparison;
+    protected QuantityType outputQuantityType;
 
     protected ObservationCollector observationCollector;
     public WeatherProcessor(String processorName) {
@@ -235,11 +239,14 @@ public abstract class WeatherProcessor {
                 locationId,
                 currentYear,
                 currentMonth,
-                "temp.hours_below_monthly",     // pick a stable metricId
+                outputUnit +" "+conditionType,
+                dataType,
                 value,
-                dataUnit.symbol(),
+                outputUnit.symbol(),
                 stat,
                 period,
+                new Condition(conditionType,comparison, threshold, lowerBound, upperBound, outputUnit),
+                new ComputationSpec(processorName, null, bins),
                 Map.of(
                         "dataType", dataType,
                         "threshold", threshold,
@@ -342,12 +349,12 @@ public abstract class WeatherProcessor {
     }
 
 
-    public void setDataUnit(Unit dataUnit) {
-        this.dataUnit = dataUnit;
+    public void setOutputUnit(Unit outputUnit) {
+        this.outputUnit = outputUnit;
     }
 
-    public Unit getDataUnit() {
-        return dataUnit;
+    public Unit getOutputUnit() {
+        return outputUnit;
     }
 
     public LocationWeatherResponse getLocationWeatherResponse() {
@@ -462,4 +469,11 @@ public abstract class WeatherProcessor {
         this.stat = stat;
     }
 
+    public QuantityType getOutputQuantityType() {
+        return outputQuantityType;
+    }
+
+    public void setOutputQuantityType(QuantityType outputQuantityType) {
+        this.outputQuantityType = outputQuantityType;
+    }
 }
