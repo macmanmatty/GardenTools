@@ -1,9 +1,6 @@
 package com.example.FruitTrees.Metrics.Observation;
 
-import com.example.FruitTrees.Metrics.ComputationSpec;
-import com.example.FruitTrees.Metrics.Condition;
-import com.example.FruitTrees.Metrics.Period;
-import com.example.FruitTrees.Metrics.Stat;
+import com.example.FruitTrees.Metrics.*;
 
 import java.util.Map;
 
@@ -81,16 +78,18 @@ public record Observation(
         Value value,
 
         /**
-         * Physical unit associated with the value.
+         * Physical canonicalUnit associated with the value.
          *
-         * This represents the unit of the RESULT (not thresholds).
+         * This represents the canonicalUnit of the RESULT (not thresholds).
          * Examples:
          *  - "hours"
          *  - "degC"
          *  - "mm"
          *  - "count"
          */
-        String unit,
+        Unit canonicalUnit,
+
+
 
         /**
          * Statistical meaning of the value.

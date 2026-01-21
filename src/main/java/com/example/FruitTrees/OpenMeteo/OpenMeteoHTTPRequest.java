@@ -28,12 +28,12 @@ import java.util.Set;
  *
  * IMPORTANT ARCHITECTURE RULE:
  *  - We request Open-Meteo in DEFAULT (scientific) units.
- *  - We do NOT append any unit conversion params to the API call.
- *  - User unit preferences are applied only at the boundaries:
+ *  - We do NOT append any canonicalUnit conversion params to the API call.
+ *  - User canonicalUnit preferences are applied only at the boundaries:
  *      - normalize request thresholds/bounds to canonical before processing
  *      - convert results to user units for presentation/export
  *
- * This keeps the core engine unit-clean and avoids conversion bugs.
+ * This keeps the core engine canonicalUnit-clean and avoids conversion bugs.
  */
 @Service
 public class OpenMeteoHTTPRequest {
@@ -53,7 +53,7 @@ public class OpenMeteoHTTPRequest {
      *
      * Open-Meteo requires one request per location.
      *
-     * NOTE: This method requests DEFAULT units only (no unit parameters).
+     * NOTE: This method requests DEFAULT units only (no canonicalUnit parameters).
      */
     @Cacheable(
             value = "openMeteoDataCache",

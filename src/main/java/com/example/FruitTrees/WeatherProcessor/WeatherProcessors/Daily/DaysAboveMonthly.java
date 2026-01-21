@@ -30,13 +30,10 @@ public class DaysAboveMonthly extends DailyAndMonthlyWeatherProcessor  {
 
     public DaysAboveMonthly() {
         super("Days Above");
-        outputQuantityType=QuantityType.DURATION;
-        outputUnit= Unit.DAY;
     }
     @Override
     public void before() {
         super.before();
-
         super.processorName=" Days Above "+ threshold +" Monthly";
         clearProcessedTextValues();
     }

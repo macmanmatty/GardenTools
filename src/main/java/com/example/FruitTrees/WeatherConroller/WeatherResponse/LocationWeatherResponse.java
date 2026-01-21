@@ -74,5 +74,11 @@ public class LocationWeatherResponse  {
         this.locationResponses = locationResponses;
     }
 
+    public List<Observation> getObservations() {
+        return observations;
+    }
 
+    public void setObservations(List<Observation> observations) {
+        this.observations = observations;
+    }
 }

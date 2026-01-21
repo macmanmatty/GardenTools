@@ -1,3 +1,3 @@
 package com.example.FruitTrees.Metrics;
 
-public record MetricDef(String dataType, QuantityType type, Unit canonicalUnit) {}
+public record MetricDef(String dataType,  Unit canonicalUnit) {}

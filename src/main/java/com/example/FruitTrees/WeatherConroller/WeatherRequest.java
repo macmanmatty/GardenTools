@@ -29,17 +29,17 @@ public class WeatherRequest {
     public List<HourlyWeatherProcessRequest> hourlyWeatherProcessRequests = new ArrayList<>();
 
     /**
-     * the unit of measurement for temperature
+     * the canonicalUnit of measurement for temperature
      * either Fahrenheit
      * or empty string  for Celsius
      */
     public String temperatureUnit="";
     /**
-     * the unit of measurement for wind speed
+     * the canonicalUnit of measurement for wind speed
      */
     public String windSpeedUnit="";
     /**
-     * the unit of measurement for snow and rain and precipitation (both snow and rain)
+     * the canonicalUnit of measurement for snow and rain and precipitation (both snow and rain)
      */
     public String precipitationUnit="";
 

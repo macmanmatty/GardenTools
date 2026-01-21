@@ -67,6 +67,10 @@ public abstract class WeatherProcessor {
     /**
      * the current of measurement for the data being processed
      */
+    protected Unit canonicalUnit;
+    /**
+     * the current of measurement for the data being processed
+     */
     protected Unit outputUnit;
     protected List<String> dataTypes= new ArrayList<>();
     protected List<String> dataUnits= new ArrayList<>();
@@ -150,7 +154,6 @@ public abstract class WeatherProcessor {
 
     protected ConditionType conditionType;
     protected Comparison comparison;
-    protected QuantityType outputQuantityType;
 
     protected ObservationCollector observationCollector;
     public WeatherProcessor(String processorName) {
@@ -239,13 +242,13 @@ public abstract class WeatherProcessor {
                 locationId,
                 currentYear,
                 currentMonth,
-                outputUnit +" "+conditionType,
+                canonicalUnit +" "+conditionType,
                 dataType,
                 value,
-                outputUnit.symbol(),
+                outputUnit,
                 stat,
                 period,
-                new Condition(conditionType,comparison, threshold, lowerBound, upperBound, outputUnit),
+                new Condition(conditionType,comparison, threshold, lowerBound, upperBound, canonicalUnit),
                 new ComputationSpec(processorName, null, bins),
                 Map.of(
                         "dataType", dataType,
@@ -349,12 +352,12 @@ public abstract class WeatherProcessor {
     }
 
 
-    public void setOutputUnit(Unit outputUnit) {
-        this.outputUnit = outputUnit;
+    public void setCanonicalUnit(Unit canonicalUnit) {
+        this.canonicalUnit = canonicalUnit;
     }
 
-    public Unit getOutputUnit() {
-        return outputUnit;
+    public Unit getCanonicalUnit() {
+        return canonicalUnit;
     }
 
     public LocationWeatherResponse getLocationWeatherResponse() {
@@ -469,11 +472,14 @@ public abstract class WeatherProcessor {
         this.stat = stat;
     }
 
-    public QuantityType getOutputQuantityType() {
-        return outputQuantityType;
+
+
+
+    public Unit getOutputUnit() {
+        return outputUnit;
     }
 
-    public void setOutputQuantityType(QuantityType outputQuantityType) {
-        this.outputQuantityType = outputQuantityType;
+    public void setOutputUnit(Unit outputUnit) {
+        this.outputUnit = outputUnit;
     }
 }

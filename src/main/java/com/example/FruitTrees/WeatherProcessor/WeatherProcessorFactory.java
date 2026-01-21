@@ -1,7 +1,6 @@
 package com.example.FruitTrees.WeatherProcessor;
 
 import com.example.FruitTrees.Metrics.MetricRegistry;
-import com.example.FruitTrees.Metrics.RequestUnitNormalizer;
 import com.example.FruitTrees.Utilities.DataUtilities;
 import com.example.FruitTrees.WeatherConroller.HourlyWeatherProcessRequest;
 import com.example.FruitTrees.WeatherConroller.WeatherRequest;
@@ -48,8 +47,7 @@ public class WeatherProcessorFactory {
         processor.setThreshold(config.getThreshold());
         processor.setBins(config.getBins());
         processor.setDataTypes(config.getDataTypes());
-        processor.setOutputQuantityType(MetricRegistry.defFor(dataType).type());
-        processor.setOutputUnit(RequestUnitNormalizer.userUnitForQuantity(weatherRequest, processor.getOutputQuantityType()));
+        processor.setCanonicalUnit(config.getUnit());
         return processor;
     }
 

@@ -9,7 +9,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class BuildDerivedSeriesTest {
 
-    // ---- Minimal fake request/response types for unit testing ----
+    // ---- Minimal fake request/response types for canonicalUnit testing ----
 
     static class FakeWeatherRequest {
         private final Set<String> hourlyDataTypes = new LinkedHashSet<>();

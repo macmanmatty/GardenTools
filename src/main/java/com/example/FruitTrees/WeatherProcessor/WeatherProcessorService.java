@@ -1,5 +1,7 @@
 package com.example.FruitTrees.WeatherProcessor;
 import com.example.FruitTrees.Location.Location;
+import com.example.FruitTrees.Metrics.Observation.Observation;
+import com.example.FruitTrees.Metrics.RequestUnitNormalizer;
 import com.example.FruitTrees.OpenMeteo.*;
 import com.example.FruitTrees.WeatherProcessor.WeatherProcessors.DerivedSeries.DerivedSeriesCalculator;
 import com.example.FruitTrees.Metrics.Observation.InMemoryObservationCollector;
@@ -45,6 +47,7 @@ public class WeatherProcessorService {
         for(LocationResponse locationResponse: locationResponses) {
           processLocationData(locationResponse, weatherRequest, weatherResponse, weatherRunContexts);
         }
+
         return weatherResponse;
     }
     /**
@@ -92,8 +95,15 @@ public class WeatherProcessorService {
 
         buildDerivedSeries(weatherRequest, locationResponse);
          processHourlyWeather(time, weatherProcessors, locationResponse.getData(), locationResponse.getLocation().getName(), weatherRunContext.collector());
+
      return weatherResponse;
  }
+    public void  normalizeObservations(WeatherRequest weatherRequest, WeatherRunContext weatherRunContext){
+     List<Observation> observations=weatherRunContext.collector().getAll();
+     List<Observation> normalizedObservations = RequestUnitNormalizer.toUserUnits(weatherRequest, observations);
+
+    }
+
     /**
      * Computes and injects all derived time series (e.g., VPD, Feels-Like, ET0).
      * Derived arrays are created once and added to the same map as raw series.
@@ -206,6 +216,7 @@ public class WeatherProcessorService {
             List<String> text = processor.getProcessedTextValues();
             processor.getLocationWeatherResponse().getLocationResponses().addAll(text);
         }
+
     }
     /**
      * Hot inner loop. Walks each hour once and fans values to all processors.

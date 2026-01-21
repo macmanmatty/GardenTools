@@ -1,5 +1,7 @@
 package com.example.FruitTrees.WeatherConroller.WeatherResponse;
 
+import com.example.FruitTrees.Metrics.Observation.WeatherRunContext;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -19,6 +21,7 @@ public class WeatherResponse {
      *  value= LocationWeatherResponses
      */
     private Map<String,LocationWeatherResponse> locationWeatherResponses= new HashMap<>();
+    private List<WeatherRunContext> weatherRunContext= new ArrayList<>();
     public List<String> getResponses() {
         return responses;
     }
@@ -34,5 +37,13 @@ public class WeatherResponse {
 
     public void setLocationWeatherResponses(Map<String, LocationWeatherResponse> locationWeatherResponses) {
         this.locationWeatherResponses = locationWeatherResponses;
+    }
+
+    public List<WeatherRunContext> getWeatherRunContext() {
+        return weatherRunContext;
+    }
+
+    public void setWeatherRunContext(List<WeatherRunContext> weatherRunContext) {
+        this.weatherRunContext = weatherRunContext;
     }
 }

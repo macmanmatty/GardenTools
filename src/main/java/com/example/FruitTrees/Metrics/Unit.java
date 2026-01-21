@@ -6,99 +6,79 @@ package com.example.FruitTrees.Metrics;
  * This enum is the single source of truth for:
  *  - display symbols
  *  - parsing from API / user strings
- *  - safe, typed unit handling inside the engine
+ *  - safe, typed canonicalUnit handling inside the engine
  *
  * Strings are allowed only at the edges; internally everything should use Unit.
  */
 public enum Unit {
 
-    // ---------------- Temperature ----------------
 
-    DEG_C("degC"),        // Degrees Celsius (SI meteorological standard)
-    DEG_F("degF"),        // Degrees Fahrenheit (US display standard)
-    K("K"),               // Kelvin (absolute temperature, physics formulas)
-    DEG_C_DAY("degC*d"),  // Degree-days (e.g., Growing Degree Days)
+        DEG_C("degC", Dimension.TEMPERATURE),
+        DEG_F("degF", Dimension.TEMPERATURE),
+        K("K", Dimension.TEMPERATURE),
+        DEG_C_DAY("degC*d", Dimension.TEMPERATURE), // see note below
 
-    // ---------------- Wind Speed ----------------
+        M_PER_S("m/s", Dimension.WIND_SPEED),
+        KM_PER_H("km/h", Dimension.WIND_SPEED),
+        MPH("mph", Dimension.WIND_SPEED),
 
-    M_PER_S("m/s"),       // Meters per second (model / physics standard)
-    KM_PER_H("km/h"),     // Kilometers per hour (international display)
-    MPH("mph"),           // Miles per hour (US display)
+        DEG("deg", Dimension.ANGLE),
 
-    // ---------------- Angle ----------------
+        PA("Pa", Dimension.PRESSURE),
+        HPA("hPa", Dimension.PRESSURE),
+        KPA("kPa", Dimension.PRESSURE),
+        INHG("inHg", Dimension.PRESSURE),
+        PSI("psi", Dimension.PRESSURE),
 
-    DEG("deg"),           // Degrees (wind direction, solar angles)
+        MM("mm", Dimension.LENGTH),
+        CM("cm", Dimension.LENGTH),
+        M("m", Dimension.LENGTH),
+        IN("in", Dimension.LENGTH),
+        FT("ft", Dimension.LENGTH),
 
-    // ---------------- Pressure ----------------
+        MM_PER_H("mm/h", Dimension.RATE),
 
-    PA("Pa"),             // Pascals (SI base unit)
-    HPA("hPa"),           // Hectopascals (millibars; weather standard)
-    KPA("kPa"),           // Kilopascals (used in VPD, ET, psychrometrics)
-    INHG("inHg"),         // Inches of mercury (US barometer)
-    PSI("psi"),           // Pounds per square inch (engineering crossover)
+        W_PER_M2("W/m2", Dimension.RADIATION),
+        MJ_PER_M2_DAY("MJ/m2/day", Dimension.RADIATION),
 
-    // ---------------- Depth / Length ----------------
+        M3_PER_M3("m3/m3", Dimension.VOLUMETRIC_FRACTION),
 
-    MM("mm"),             // Millimeters (precip, ET, snow water equivalent)
-    CM("cm"),             // Centimeters (snow depth, hail size)
-    M("m"),               // Meters (cloud base, visibility, height)
-    IN("in"),             // Inches (US precip, snow depth)
-    FT("ft"),             // Feet (cloud ceiling, aviation)
+        PERCENT("%", Dimension.PERCENT),
 
-    // ---------------- Rates ----------------
+        HOUR("h", Dimension.TIME),
+        DAY("d", Dimension.TIME),
 
-    MM_PER_H("mm/h"),     // Precipitation rate
+        DIMENSIONLESS("", Dimension.DIMENSIONLESS),
+        CODE("code", Dimension.CODE),
 
-    // ---------------- Radiation / Energy ----------------
-
-    W_PER_M2("W/m2"),         // Instantaneous radiation flux
-    MJ_PER_M2_DAY("MJ/m2/day"), // Daily integrated solar energy
-
-    // ---------------- Soil / Volumetric ----------------
-
-    M3_PER_M3("m3/m3"),   // Volumetric soil moisture (fraction)
-
-    // ---------------- Humidity / Probability ----------------
-
-    PERCENT("%"),         // Relative humidity, cloud cover, probabilities
-
-    // ---------------- Time ----------------
-
-    HOUR("h"),            // Hours (chill hours, leaf wetness duration)
-    DAY("d"),             // Days (aggregation, degree-days denominator)
-
-    // ---------------- Dimensionless / Codes ----------------
-
-    DIMENSIONLESS(""),   // Unitless indices (UV index, stability indices)
-    CODE("code"),        // Encoded categorical values (WMO weather codes)
-
-    // ---------------- Fallback ----------------
-
-    UNKNOWN("?");        // Placeholder for unclassified or missing units
-
+        UNKNOWN("?", Dimension.UNKNOWN),
+        NONE("", Dimension.UNKNOWN); // see note below
     /**
      * Canonical display / parsing symbol.
      * This is what appears in APIs, registries, and output.
      */
     private final String symbol;
+    private final Dimension dimension;
 
-    Unit(String symbol) {
+    Unit(String symbol, Dimension dimension) {
         this.symbol = symbol;
+        this.dimension=dimension;
     }
 
     /**
-     * @return Canonical textual symbol for this unit (e.g. "degC", "m/s", "hPa")
+     * @return Canonical textual symbol for this canonicalUnit (e.g. "degC", "m/s", "hPa")
      */
     public String symbol() {
         return symbol;
     }
+    public Dimension dimension() {return dimension;  }
 
     /**
-     * Parse a unit from a string in a safe, case-insensitive, whitespace-tolerant way.
+     * Parse a canonicalUnit from a string in a safe, case-insensitive, whitespace-tolerant way.
      *
-     * @param s Input unit string (e.g. " degC ", "MPH", "kPa")
+     * @param s Input canonicalUnit string (e.g. " degC ", "MPH", "kPa")
      * @return  Matching Unit enum
-     * @throws IllegalArgumentException if the unit is unknown
+     * @throws IllegalArgumentException if the canonicalUnit is unknown
      */
     public static Unit fromString(String s) {
         if (s == null) throw new IllegalArgumentException("Unit string is null");
@@ -108,7 +88,7 @@ public enum Unit {
                 return u;
             }
         }
-        throw new IllegalArgumentException("Unknown unit: " + s);
+        throw new IllegalArgumentException("Unknown canonicalUnit: " + s);
     }
 
     /**
@@ -176,7 +156,7 @@ public enum Unit {
             // ---- Codes ----
             case "code", "wmo", "weather code" -> CODE;
 
-            default -> throw new IllegalArgumentException("Unknown unit alias: " + s);
+            default -> throw new IllegalArgumentException("Unknown canonicalUnit alias: " + s);
         };
     }
 }

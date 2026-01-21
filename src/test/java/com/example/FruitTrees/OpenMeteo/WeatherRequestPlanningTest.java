@@ -51,7 +51,7 @@ class WeatherRequestPlanningTest {
         public record Plan(Set<String> fetchVars, Set<String> derivedKeys) {}
 
         // ---- Copy of your plan() with two small tweaks:
-        // 1) calls local DataUtilitiesShim instead of your real DataUtilities (so unit test controls mapping)
+        // 1) calls local DataUtilitiesShim instead of your real DataUtilities (so canonicalUnit test controls mapping)
         // 2) derivedSeriesRegistry is the fake above
 
         public Plan plan(Set<String> requestedKeys, boolean bestEffort) {
@@ -127,7 +127,7 @@ class WeatherRequestPlanningTest {
     }
 
     /**
-     * Shim for DataUtilities.toOpenMeteoDatatype so unit tests control mapping.
+     * Shim for DataUtilities.toOpenMeteoDatatype so canonicalUnit tests control mapping.
      * Replace with your real DataUtilities in integration tests.
      */
     static class DataUtilitiesShim {

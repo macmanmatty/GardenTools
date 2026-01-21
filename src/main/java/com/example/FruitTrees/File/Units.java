@@ -33,7 +33,7 @@ public final class Units {
         if (from.equalsIgnoreCase("degF") && to.equalsIgnoreCase("degC"))
             return WeatherUtilities.fahrenheitToCelsius(v);
 
-        throw new IllegalArgumentException("Temp unit not supported: " + from + " -> " + to);
+        throw new IllegalArgumentException("Temp canonicalUnit not supported: " + from + " -> " + to);
     }
 
     private static double convertWind(String from, String to, double v) {
@@ -55,7 +55,7 @@ public final class Units {
         if (from.equalsIgnoreCase("km/h") && to.equalsIgnoreCase("mph"))
             return WeatherUtilities.kilometersPerHourToMilesPerHour(v);
 
-        throw new IllegalArgumentException("Wind unit not supported: " + from + " -> " + to);
+        throw new IllegalArgumentException("Wind canonicalUnit not supported: " + from + " -> " + to);
     }
 
     private static double convertPressure(String from, String to, double v) {
@@ -101,7 +101,7 @@ public final class Units {
         if (from.equalsIgnoreCase("psi") && to.equalsIgnoreCase("hPa"))
             return WeatherUtilities.psiToHectoPascals(v);
 
-        throw new IllegalArgumentException("Pressure unit not supported: " + from + " -> " + to);
+        throw new IllegalArgumentException("Pressure canonicalUnit not supported: " + from + " -> " + to);
     }
 
     private static double convertDepth(String from, String to, double v) {
@@ -111,7 +111,7 @@ public final class Units {
         if (from.equalsIgnoreCase("in") && to.equalsIgnoreCase("mm"))
             return v * 25.4;
 
-        throw new IllegalArgumentException("Depth unit not supported: " + from + " -> " + to);
+        throw new IllegalArgumentException("Depth canonicalUnit not supported: " + from + " -> " + to);
     }
 
     private Units() {}

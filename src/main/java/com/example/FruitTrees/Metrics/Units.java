@@ -2,23 +2,28 @@ package com.example.FruitTrees.Metrics;
 
 import com.example.FruitTrees.Utilities.WeatherUtilities;
 
+import java.sql.Time;
+
 /**
- * Central physical unit conversion utility.
+ * Central physical canonicalUnit conversion utility.
  * Uses strongly-typed Unit enums internally (no magic strings).
  */
 public final class Units {
 
-    public static double convert(QuantityType type, double value, Unit from, Unit to) {
+    public static double convert(double value, Unit from, Unit to) {
         if (from == to) return value;
+        if (from == Unit.UNKNOWN || to == Unit.UNKNOWN) return value; // or throw, your call
 
-        return switch (type) {
-            case TEMPERATURE  -> convertTemperature(value, from, to);
-            case WIND_SPEED   -> convertWindSpeed(value, from, to);
-            case PRESSURE     -> convertPressure(value, from, to);
-            case PRECIP_DEPTH -> convertDepth(value, from, to);
-            default -> throw new IllegalArgumentException(
-                    "No converter for quantity type " + type + " (" + from + " -> " + to + ")"
-            );
+        if (from.dimension() != to.dimension()) {
+            throw new IllegalArgumentException("Incompatible conversion: " + from + " -> " + to);
+        }
+
+        return switch (from.dimension()) {
+            case TEMPERATURE -> convertTemperature(value, from, to);
+            case WIND_SPEED -> convertWindSpeed(value, from, to);
+            case PRESSURE -> convertPressure(value, from, to);
+            case LENGTH -> convertDepth(value, from, to);
+            default-> value; // identity families
         };
     }
 
@@ -34,7 +39,7 @@ public final class Units {
         if (from == Unit.DEG_F && to == Unit.K) return WeatherUtilities.fahrenheitToKelvin(v);
         if (from == Unit.K && to == Unit.DEG_F) return WeatherUtilities.kelvinToFahrenheit(v);
 
-        throw new IllegalArgumentException("Temperature unit not supported: " + from + " -> " + to);
+        throw new IllegalArgumentException("Temperature canonicalUnit not supported: " + from + " -> " + to);
     }
 
     // ---------------- Wind Speed ----------------
@@ -49,7 +54,7 @@ public final class Units {
         if (from == Unit.MPH && to == Unit.KM_PER_H) return WeatherUtilities.milesPerHourToKilometersPerHour(v);
         if (from == Unit.KM_PER_H && to == Unit.MPH) return WeatherUtilities.kilometersPerHourToMilesPerHour(v);
 
-        throw new IllegalArgumentException("Wind speed unit not supported: " + from + " -> " + to);
+        throw new IllegalArgumentException("Wind speed canonicalUnit not supported: " + from + " -> " + to);
     }
 
     // ---------------- Pressure ----------------
@@ -76,7 +81,7 @@ public final class Units {
         if (from == Unit.HPA && to == Unit.PSI) return WeatherUtilities.hectoPascalsToPsi(v);
         if (from == Unit.PSI && to == Unit.HPA) return WeatherUtilities.psiToHectoPascals(v);
 
-        throw new IllegalArgumentException("Pressure unit not supported: " + from + " -> " + to);
+        throw new IllegalArgumentException("Pressure canonicalUnit not supported: " + from + " -> " + to);
     }
 
     // ---------------- Depth ----------------
@@ -85,7 +90,7 @@ public final class Units {
         if (from == Unit.MM && to == Unit.IN) return v / 25.4;
         if (from == Unit.IN && to == Unit.MM) return v * 25.4;
 
-        throw new IllegalArgumentException("Depth unit not supported: " + from + " -> " + to);
+        throw new IllegalArgumentException("Depth canonicalUnit not supported: " + from + " -> " + to);
     }
 
     private Units() {}
