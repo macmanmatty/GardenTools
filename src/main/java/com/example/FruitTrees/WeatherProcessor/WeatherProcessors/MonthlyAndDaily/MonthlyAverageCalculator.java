@@ -1,6 +1,7 @@
 package com.example.FruitTrees.WeatherProcessor.WeatherProcessors.MonthlyAndDaily;
 
 import com.example.FruitTrees.Metrics.Observation.Values;
+import com.example.FruitTrees.Metrics.Unit;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -14,6 +15,7 @@ public class MonthlyAverageCalculator extends DailyAndMonthlyWeatherProcessor {
     private int hours;
     public MonthlyAverageCalculator() {
         super("Monthly Average");
+
     }
     @Override
     public void before() {

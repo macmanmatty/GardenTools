@@ -1,5 +1,7 @@
 package com.example.FruitTrees.WeatherProcessor.WeatherProcessors.BetweenDates;
 
+import com.example.FruitTrees.Metrics.ConditionType;
+import com.example.FruitTrees.Metrics.Unit;
 import com.example.FruitTrees.WeatherConroller.WeatherResponse.YearlyValuesResponse;
 import com.example.FruitTrees.Metrics.Observation.Values;
 import org.springframework.context.annotation.Scope;
@@ -21,6 +23,10 @@ public class HoursBelowCalculator extends ProcessWeatherBetweenDates {
     private double hours;
 
     public HoursBelowCalculator() {
+        canonicalUnit= Unit.HOUR;
+        conditionType= ConditionType.HOURS_WHERE;
+
+
     }
     @Override
     public void before() {

@@ -95,14 +95,31 @@ public abstract  class ProcessWeatherBetweenDates  extends WeatherProcessor {
        double average=Math.round(total/yearlyDataValues.size());
         generateObservation(Values.number(average), Stat.MEAN);
         addAverageValue("Mean Average For "+ processorName +" "+average);
+        generateObservation(Values.number(average), Stat.MEDIAN);
+
+
     }
     @Override
     public void calculateMedianAverageValue() {
         double average=ArrayUtilities.medianOfList(yearlyDataValues);
         generateObservation(Values.number(average), Stat.MEDIAN);
         addAverageValue(" Median Average For "+ processorName +" "+average);
+        generateObservation(Values.number(average), Stat.MEDIAN);
     }
-
+    @Override
+    public void calculateMaxValue() {
+        double max=ArrayUtilities.maxOfList(yearlyDataValues);
+        generateObservation(Values.number(max), Stat.MAX);
+        addAverageValue(" Median Average For "+ processorName +" "+max);
+        generateObservation(Values.number(max), Stat.MEDIAN);
+    }
+    @Override
+    public void calculateMinValue() {
+        double min=ArrayUtilities.maxOfList(yearlyDataValues);
+        generateObservation(Values.number(min), Stat.MIN);
+        addAverageValue(" Median Average For "+ processorName +" "+min);
+        generateObservation(Values.number(min), Stat.MEDIAN);
+    }
     public boolean isInWindow(){
         return inWindow;
     }

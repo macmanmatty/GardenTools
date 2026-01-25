@@ -47,7 +47,9 @@ public class WeatherProcessorFactory {
         processor.setThreshold(config.getThreshold());
         processor.setBins(config.getBins());
         processor.setDataTypes(config.getDataTypes());
-        processor.setCanonicalUnit(config.getUnit());
+        if(processor.getCanonicalUnit()==null) {
+            processor.setCanonicalUnit(config.getUnit());
+        }
         return processor;
     }
 

@@ -1,5 +1,7 @@
 package com.example.FruitTrees.WeatherProcessor.WeatherProcessors.BetweenDates;
 
+import com.example.FruitTrees.Metrics.ConditionType;
+import com.example.FruitTrees.Metrics.Unit;
 import com.example.FruitTrees.WeatherConroller.WeatherResponse.YearlyValuesResponse;
 import com.example.FruitTrees.Metrics.Bin;
 import com.example.FruitTrees.Metrics.Observation.Values;
@@ -25,6 +27,10 @@ public class UtahChillCalculator extends ProcessWeatherBetweenDates {
     // immutable bins: [minInclusive, maxExclusive, weight]
     public UtahChillCalculator() {
         super(" Utah Chill Hours");
+        canonicalUnit= Unit.HOUR;
+        conditionType= ConditionType.RANGE;
+
+
 
     }
     @Override

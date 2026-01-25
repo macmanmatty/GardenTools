@@ -1,6 +1,9 @@
 package com.example.FruitTrees.WeatherProcessor.WeatherProcessors.MonthlyAndDaily;
 
+import com.example.FruitTrees.Metrics.ConditionType;
 import com.example.FruitTrees.Metrics.Observation.Values;
+import com.example.FruitTrees.Metrics.Unit;
+import com.example.FruitTrees.Metrics.Units;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -21,7 +24,8 @@ public class HoursBelowMonthly extends DailyAndMonthlyWeatherProcessor {
     private double hours;
 
     public HoursBelowMonthly() {
-    }
+        canonicalUnit= Unit.HOUR;
+        conditionType= ConditionType.HOURS_WHERE;    }
     @Override
     public void before() {
         super.before();

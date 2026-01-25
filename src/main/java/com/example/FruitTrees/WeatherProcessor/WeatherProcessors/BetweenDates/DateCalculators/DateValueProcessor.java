@@ -1,4 +1,5 @@
 package com.example.FruitTrees.WeatherProcessor.WeatherProcessors.BetweenDates.DateCalculators;
+import com.example.FruitTrees.Metrics.Unit;
 import com.example.FruitTrees.Utilities.ArrayUtilities;
 import com.example.FruitTrees.Utilities.DateUtilities;
 import com.example.FruitTrees.WeatherConroller.WeatherResponse.YearlyValuesResponse;
@@ -16,6 +17,7 @@ public abstract class DateValueProcessor extends ProcessWeatherBetweenDates {
 
     public DateValueProcessor(String name) {
         super(name);
+        canonicalUnit= Unit.NONE;
     }
 
     @Override

@@ -22,7 +22,33 @@ public class ArrayUtilities {
         }
         return average;
     }
+    public static double minOfList(List<Double> numbers) {
+        if (numbers == null || numbers.isEmpty()) {
+            throw new IllegalArgumentException("List must not be null or empty");
+        }
 
+        double min = Double.POSITIVE_INFINITY;
+        for (double v : numbers) {
+            if (v < min) {
+                min = v;
+            }
+        }
+        return min;
+    }
+
+    public static double maxOfList(List<Double> numbers) {
+        if (numbers == null || numbers.isEmpty()) {
+            throw new IllegalArgumentException("List must not be null or empty");
+        }
+
+        double max = Double.NEGATIVE_INFINITY;
+        for (double v : numbers) {
+            if (v > max) {
+                max = v;
+            }
+        }
+        return max;
+    }
     public static LocalDateTime medianOfDateTimes(List<LocalDateTime> dateTimes) {
         // Convert to epoch seconds (or millis), sort, and get median
         List<Long> epochSeconds = dateTimes.stream()

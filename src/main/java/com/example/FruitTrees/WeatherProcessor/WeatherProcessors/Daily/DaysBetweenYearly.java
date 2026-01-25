@@ -1,5 +1,7 @@
 package com.example.FruitTrees.WeatherProcessor.WeatherProcessors.Daily;
 
+import com.example.FruitTrees.Metrics.ConditionType;
+import com.example.FruitTrees.Metrics.Unit;
 import com.example.FruitTrees.WeatherProcessor.WeatherProcessors.MonthlyAndDaily.DailyAndMonthlyWeatherProcessor;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -28,6 +30,10 @@ public class DaysBetweenYearly extends DailyAndMonthlyWeatherProcessor {
 
     public DaysBetweenYearly() {
         super("Days Above");
+        canonicalUnit= Unit.DAY;
+        conditionType= ConditionType.DAYS_WHERE;
+
+
     }
     @Override
     public void before() {
