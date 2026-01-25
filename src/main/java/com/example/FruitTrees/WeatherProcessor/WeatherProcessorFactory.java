@@ -1,18 +1,21 @@
 package com.example.FruitTrees.WeatherProcessor;
 
-import com.example.FruitTrees.Metrics.MetricRegistry;
+import com.example.FruitTrees.Metrics.Unit;
 import com.example.FruitTrees.Utilities.DataUtilities;
 import com.example.FruitTrees.WeatherConroller.HourlyWeatherProcessRequest;
 import com.example.FruitTrees.WeatherConroller.WeatherRequest;
 import com.example.FruitTrees.WeatherConroller.WeatherResponse.LocationWeatherResponse;
 import com.example.FruitTrees.WeatherProcessor.WeatherProcessors.DerivedSeries.DerivedSeriesCalculator;
 import com.example.FruitTrees.WeatherProcessor.WeatherProcessors.WeatherProcessor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
 @Component
 public class WeatherProcessorFactory {
+    private static final Logger log = LoggerFactory.getLogger(WeatherProcessorFactory.class);
 
     private final ApplicationContext context;
 
@@ -29,7 +32,8 @@ public class WeatherProcessorFactory {
         String dataType= DataUtilities.toInternalDatatype(config.getHourlyDataType());
         // unknown datatype exit
         if(dataType==null){
-            return null;
+            log.info("Skipping processor {}: unknown hourlyDataType={}", config.getProcessorName(), config.getHourlyDataType());
+            throw new IllegalArgumentException("Unknown hourlyDataType: " + config.getHourlyDataType());
         }
         // Apply common configuration
         processor.setStartMonthDay(config.getStartProcessMonth(), config.getStartProcessDay());
@@ -47,8 +51,9 @@ public class WeatherProcessorFactory {
         processor.setThreshold(config.getThreshold());
         processor.setBins(config.getBins());
         processor.setDataTypes(config.getDataTypes());
-        if(processor.getCanonicalUnit()==null) {
-            processor.setCanonicalUnit(config.getUnit());
+        processor.setCanonicalUnit(config.getUnit());
+        if(processor.getOutputUnit()== Unit.SAME_AS_INPUT) {
+            processor.setOutputUnit(config.getUnit());
         }
         return processor;
     }

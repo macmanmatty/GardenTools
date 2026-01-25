@@ -24,7 +24,7 @@ public class HoursAboveCalculator extends ProcessWeatherBetweenDates {
     private double hours;
 
     public HoursAboveCalculator() {
-        canonicalUnit= Unit.HOUR;
+        outputUnit = Unit.HOUR;
         conditionType= ConditionType.HOURS_WHERE;
     }
     @Override

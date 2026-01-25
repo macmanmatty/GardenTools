@@ -67,11 +67,11 @@ public abstract class WeatherProcessor {
     /**
      * the current of measurement for the data being processed
      */
-    protected Unit canonicalUnit;
+    protected Unit outputUnit=Unit.SAME_AS_INPUT;
     /**
      * the current of measurement for the data being processed
      */
-    protected Unit outputUnit;
+    protected Unit canonicalUnit;
     protected List<String> dataTypes= new ArrayList<>();
     protected List<String> dataUnits= new ArrayList<>();
     /**
@@ -154,7 +154,6 @@ public abstract class WeatherProcessor {
 
     protected ConditionType conditionType;
     protected Comparison comparison;
-
     protected ObservationCollector observationCollector;
     public WeatherProcessor(String processorName) {
         this.processorName = processorName;
@@ -242,13 +241,13 @@ public abstract class WeatherProcessor {
                 locationId,
                 currentYear,
                 currentMonth,
-                canonicalUnit +" "+conditionType,
+                outputUnit +" "+conditionType,
                 dataType,
                 value,
                 outputUnit,
                 stat,
                 period,
-                new Condition(conditionType,comparison, threshold, lowerBound, upperBound, canonicalUnit),
+                new Condition(conditionType,comparison, threshold, lowerBound, upperBound, outputUnit),
                 new ComputationSpec(processorName, null, bins),
                 Map.of(
                         "dataType", dataType,
@@ -352,12 +351,12 @@ public abstract class WeatherProcessor {
     }
 
 
-    public void setCanonicalUnit(Unit canonicalUnit) {
-        this.canonicalUnit = canonicalUnit;
-    }
-
     public Unit getCanonicalUnit() {
         return canonicalUnit;
+    }
+
+    public void setCanonicalUnit(Unit canonicalUnit) {
+        this.canonicalUnit = canonicalUnit;
     }
 
     public LocationWeatherResponse getLocationWeatherResponse() {
@@ -482,4 +481,6 @@ public abstract class WeatherProcessor {
     public void setOutputUnit(Unit outputUnit) {
         this.outputUnit = outputUnit;
     }
+
+
 }

@@ -27,7 +27,7 @@ public class UtahChillCalculator extends ProcessWeatherBetweenDates {
     // immutable bins: [minInclusive, maxExclusive, weight]
     public UtahChillCalculator() {
         super(" Utah Chill Hours");
-        canonicalUnit= Unit.HOUR;
+        outputUnit = Unit.HOUR;
         conditionType= ConditionType.RANGE;
 
 

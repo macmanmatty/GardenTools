@@ -1,6 +1,8 @@
-package com.example.FruitTrees.WeatherProcessor.WeatherProcessors.DerivedSeries;
+package com.example.FruitTrees.WeatherProcessor.WeatherProcessors.DerivedSeries.DerivedSeriesCalculators;
 
+import com.example.FruitTrees.Metrics.Unit;
 import com.example.FruitTrees.Utilities.WeatherUtilities;
+import com.example.FruitTrees.WeatherProcessor.WeatherProcessors.DerivedSeries.DerivedSeriesCalculator;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -17,6 +19,11 @@ public class CToFCalculator implements DerivedSeriesCalculator {
     public List<String> requiredInputTypes() {
         // Always need dew point
         return List.of("temperature_c");
+    }
+
+    @Override
+    public List<Unit> preferredUnits() {
+        return List.of();
     }
 
     @Override

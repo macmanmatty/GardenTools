@@ -18,7 +18,7 @@ class UnitsTest {
     @Test
     void convert_temperature_degF_to_K() {
         // 32F = 273.15K
-        double out = Units.convert(32.0, Unit.DEG_F, Unit.K);
+        double out = Units.convert(32.0, Unit.DEG_F, Unit.DEG_K);
         assertEquals(273.15, out, 1e-6);
     }
 

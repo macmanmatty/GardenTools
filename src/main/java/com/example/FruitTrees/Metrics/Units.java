@@ -2,8 +2,6 @@ package com.example.FruitTrees.Metrics;
 
 import com.example.FruitTrees.Utilities.WeatherUtilities;
 
-import java.sql.Time;
-
 /**
  * Central physical canonicalUnit conversion utility.
  * Uses strongly-typed Unit enums internally (no magic strings).
@@ -33,11 +31,11 @@ public final class Units {
         if (from == Unit.DEG_C && to == Unit.DEG_F) return WeatherUtilities.celsiusToFahrenheit(v);
         if (from == Unit.DEG_F && to == Unit.DEG_C) return WeatherUtilities.fahrenheitToCelsius(v);
 
-        if (from == Unit.DEG_C && to == Unit.K) return WeatherUtilities.celsiusToKelvin(v);
-        if (from == Unit.K && to == Unit.DEG_C) return WeatherUtilities.kelvinToCelsius(v);
+        if (from == Unit.DEG_C && to == Unit.DEG_K) return WeatherUtilities.celsiusToKelvin(v);
+        if (from == Unit.DEG_K && to == Unit.DEG_C) return WeatherUtilities.kelvinToCelsius(v);
 
-        if (from == Unit.DEG_F && to == Unit.K) return WeatherUtilities.fahrenheitToKelvin(v);
-        if (from == Unit.K && to == Unit.DEG_F) return WeatherUtilities.kelvinToFahrenheit(v);
+        if (from == Unit.DEG_F && to == Unit.DEG_K) return WeatherUtilities.fahrenheitToKelvin(v);
+        if (from == Unit.DEG_K && to == Unit.DEG_F) return WeatherUtilities.kelvinToFahrenheit(v);
 
         throw new IllegalArgumentException("Temperature canonicalUnit not supported: " + from + " -> " + to);
     }

@@ -31,7 +31,7 @@ public class DaysBelowYearly extends DailyAndMonthlyWeatherProcessor {
 
     public DaysBelowYearly() {
         super("Days Above");
-        canonicalUnit= Unit.DAY;
+        outputUnit = Unit.DAY;
         conditionType= ConditionType.DAYS_WHERE;
 
 

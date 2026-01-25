@@ -1,4 +1,6 @@
 package com.example.FruitTrees.WeatherProcessor.WeatherProcessors.MonthlyAndDaily;
+import com.example.FruitTrees.Metrics.Observation.Values;
+import com.example.FruitTrees.Metrics.Stat;
 import com.example.FruitTrees.Utilities.ArrayUtilities;
 import com.example.FruitTrees.Metrics.Period;
 import com.example.FruitTrees.Metrics.DateRecord;
@@ -28,7 +30,7 @@ public abstract  class DailyAndMonthlyWeatherProcessor extends WeatherProcessor 
      * value=  yearly data for month for the processed weather data
      */
     protected Map<String, List<Double>> monthlyValues=new HashMap<>();
-
+    protected List<Double> monthlyValuesData=new ArrayList<>();
     protected DailyAndMonthlyWeatherProcessor() {
         period= Period.MONTHLY;
 
@@ -93,30 +95,35 @@ public abstract  class DailyAndMonthlyWeatherProcessor extends WeatherProcessor 
         }
     @Override
     public void calculateMeanAverageValue() {
-      Set<String> monthNames= monthlyValues.keySet();
-      for(String month:monthNames){
-          double total=0;
-          List<Double> monthlyValues=this.monthlyValues.get(month);
-          for(Double doubleNum: monthlyValues){
-              total=total+doubleNum;
-          }
-          double average=Math.round(total/monthlyValues.size());
-          this.addAverageValue("Average "+processorName+" For Month "+month+" "+average);
-      }
-    }
+        double mean=ArrayUtilities.meanOfList(monthlyValuesData);
+        generateObservation(Values.number(mean), Stat.MEAN);
+        addAverageValue("Mean Average For "+ processorName +" "+mean);
+        generateObservation(Values.number(mean), Stat.MEDIAN);
 
+
+    }
     @Override
     public void calculateMedianAverageValue() {
-        Set<String> monthNames= monthlyValues.keySet();
-
-        for(String month:monthNames) {
-            List<Double> monthlyValues = this.monthlyValues.get(month);
-            double average = ArrayUtilities.medianOfList(monthlyValues);
-
-            addAverageValue(" Median Average For " + processorName + " " + average);
-        }
-
+        double average=ArrayUtilities.medianOfList(monthlyValuesData);
+        generateObservation(Values.number(average), Stat.MEDIAN);
+        addAverageValue(" Median Average For "+ processorName +" "+average);
+        generateObservation(Values.number(average), Stat.MEDIAN);
     }
+    @Override
+    public void calculateMaxValue() {
+        double max=ArrayUtilities.maxOfList(monthlyValuesData);
+        generateObservation(Values.number(max), Stat.MAX);
+        addAverageValue(" Median Average For "+ processorName +" "+max);
+        generateObservation(Values.number(max), Stat.MEDIAN);
+    }
+    @Override
+    public void calculateMinValue() {
+        double min=ArrayUtilities.minOfList(monthlyValuesData);
+        generateObservation(Values.number(min), Stat.MIN);
+        addAverageValue(" Median Average For "+ processorName +" "+min);
+        generateObservation(Values.number(min), Stat.MEDIAN);
+    }
+
 
     /**
      * Called at the start of a new day (typically at hour 0).

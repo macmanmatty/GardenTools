@@ -30,7 +30,7 @@ public class DaysBetweenYearly extends DailyAndMonthlyWeatherProcessor {
 
     public DaysBetweenYearly() {
         super("Days Above");
-        canonicalUnit= Unit.DAY;
+        outputUnit = Unit.DAY;
         conditionType= ConditionType.DAYS_WHERE;
 
 

@@ -15,7 +15,7 @@ public enum Unit {
 
         DEG_C("degC", Dimension.TEMPERATURE),
         DEG_F("degF", Dimension.TEMPERATURE),
-        K("K", Dimension.TEMPERATURE),
+        DEG_K("K", Dimension.TEMPERATURE),
         DEG_C_DAY("degC*d", Dimension.TEMPERATURE), // see note below
 
         M_PER_S("m/s", Dimension.WIND_SPEED),
@@ -50,7 +50,7 @@ public enum Unit {
 
         DIMENSIONLESS("", Dimension.DIMENSIONLESS),
         CODE("code", Dimension.CODE),
-
+        SAME_AS_INPUT("SAI", Dimension.UNKNOWN),
         UNKNOWN("?", Dimension.UNKNOWN),
         NONE("", Dimension.UNKNOWN); // see note below
     /**
@@ -112,7 +112,7 @@ public enum Unit {
             // ---- Temperature ----
             case "c", "°c", "celsius", "degc" -> DEG_C;
             case "f", "°f", "fahrenheit", "degf" -> DEG_F;
-            case "k", "kelvin" -> K;
+            case "k", "kelvin" -> DEG_K;
 
             // ---- Wind speed ----
             case "m/s", "mps", "m/sec", "meters per second" -> M_PER_S;

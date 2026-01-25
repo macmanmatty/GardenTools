@@ -37,12 +37,12 @@ public class DataUtilities {
         putIfNotNull.accept("wind_direction_100m", data.wind_direction_100m);
         putIfNotNull.accept("wind_gusts_10m", data.wind_gusts_10m);
         putIfNotNull.accept("soil_moisture_0_to_7cm", data.soil_moisture_0_to_7cm);
-        putIfNotNull.accept("soil_temperature_0_to_7cm", data.soil_temperature_0_to_7cm);
-        putIfNotNull.accept("soil_temperature_7_to_28cm", data.soil_temperature_7_to_28cm);
         putIfNotNull.accept("soil_moisture_7_to_28cm", data.soil_moisture_7_to_28cm);
         putIfNotNull.accept("soil_moisture_28_to_100cm", data.soil_moisture_28_to_100cm);
-        putIfNotNull.accept("soil_temperature_28_to_100cm", data.soil_temperature_28_to_100cm);
         putIfNotNull.accept("soil_moisture_100_to_255cm", data.soil_moisture_100_to_255cm);
+        putIfNotNull.accept("soil_temperature_0_to_7cm", data.soil_temperature_0_to_7cm);
+        putIfNotNull.accept("soil_temperature_7_to_28cm", data.soil_temperature_7_to_28cm);
+        putIfNotNull.accept("soil_temperature_28_to_100cm", data.soil_temperature_28_to_100cm);
         putIfNotNull.accept("soil_temperature_100_to_255cm", data.soil_temperature_100_to_255cm);
         Map<String, double[]> result = new LinkedHashMap<>();
         for (Map.Entry<String, List<? extends Number>> entry : rawData.entrySet()) {

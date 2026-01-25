@@ -71,29 +71,43 @@ public class WeatherProcessorService {
      List<HourlyWeatherProcessRequest> hourlyWeatherProcessRequests = weatherRequest.getHourlyWeatherProcessRequests();
      LocalDateTime [] time = locationResponse.getTime();
      List<WeatherProcessor> weatherProcessors = new ArrayList<>();
-     for (HourlyWeatherProcessRequest hourlyWeatherProcessRequest : hourlyWeatherProcessRequests) {
-           WeatherProcessor weatherProcessor=  weatherProcessorFactory.createHourlyProcessor(hourlyWeatherProcessRequest, locationWeatherResponse, weatherRequest);
-           if(weatherProcessor==null){
-               log.info("{} is an  invalid data type not adding processor ", hourlyWeatherProcessRequest.getProcessorName());
-               continue;
-           }
-         List<HourlyWeatherProcessRequest> dependentWeatherProcessors=weatherProcessor.getHourlyWeatherProcessRequests();
-           List<WeatherProcessor> createdDependentWeatherProcessors = new ArrayList<>();
-         boolean ok = true;
-         for(HourlyWeatherProcessRequest dependentWeatherProcessorRequest:dependentWeatherProcessors){
-             WeatherProcessor dependentWeatherProcessor=  weatherProcessorFactory.createHourlyProcessor(dependentWeatherProcessorRequest, locationWeatherResponse, weatherRequest);
-             if(dependentWeatherProcessor==null){
-                 log.info("{} is an  invalid data type not adding dependent  processor  removing {} parent processor as well ", dependentWeatherProcessorRequest.getProcessorName(), weatherProcessor.getProcessorName());
-                 ok = false; break;
+     for (HourlyWeatherProcessRequest hourlyReq : hourlyWeatherProcessRequests) {
+         try {
+             WeatherProcessor parent = weatherProcessorFactory
+                     .createHourlyProcessor(hourlyReq, locationWeatherResponse, weatherRequest);
+
+
+
+             boolean ok = true;
+             List<WeatherProcessor> createdDependents = new ArrayList<>();
+
+             for (HourlyWeatherProcessRequest depReq : parent.getHourlyWeatherProcessRequests()) {
+                 try {
+                     WeatherProcessor dep = weatherProcessorFactory
+                             .createHourlyProcessor(depReq, locationWeatherResponse, weatherRequest);
+
+                     createdDependents.add(dep);
+
+                 } catch (IllegalArgumentException depEx) {
+                     log.error("Skipping parent {} because dependent {} is invalid: {}",
+                             parent.getProcessorName(), depReq.getProcessorName(), depEx.getMessage());
+                     ok = false;
+                     break;
+                 }
              }
-             createdDependentWeatherProcessors.add(dependentWeatherProcessor);
+
+             if (!ok) continue;
+
+             weatherProcessors.addAll(createdDependents);
+             weatherProcessors.add(parent);
+
+         } catch (IllegalArgumentException ex) {
+             log.error("Skipping processor {}: {}", hourlyReq.getProcessorName(), ex.getMessage());
          }
-         weatherProcessors.addAll(createdDependentWeatherProcessors);
-         if (!ok){ continue;} // skip adding parent
-         weatherProcessors.add(weatherProcessor);
      }
 
-        buildDerivedSeries(weatherRequest, locationResponse);
+
+     buildDerivedSeries(weatherRequest, locationResponse);
          processHourlyWeather(time, weatherProcessors, locationResponse.getData(), locationResponse.getLocation().getName(), weatherRunContext.collector());
 
      return weatherResponse;

@@ -24,7 +24,7 @@ public class HoursBetweenMonthly extends DailyAndMonthlyWeatherProcessor {
 
 
     public HoursBetweenMonthly() {
-        canonicalUnit= Unit.HOUR;
+        outputUnit = Unit.HOUR;
         conditionType= ConditionType.HOURS_WHERE;
     }
     @Override
@@ -42,6 +42,7 @@ public class HoursBetweenMonthly extends DailyAndMonthlyWeatherProcessor {
             addProcessedTextValue(text + " For " + currentMonthName + " " + currentYear + " : " + hours);
 
         monthlyValues.get(currentMonthName).add(hours);
+        monthlyValuesData.add(hours);
         generateObservation(Values.number(value));
 
         hours =0;

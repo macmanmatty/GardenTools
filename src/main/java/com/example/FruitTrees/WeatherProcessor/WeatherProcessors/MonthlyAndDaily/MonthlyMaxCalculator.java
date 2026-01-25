@@ -26,7 +26,8 @@ public class MonthlyMaxCalculator extends DailyAndMonthlyWeatherProcessor {
 
             addProcessedTextValue(finalValue, localDateTime.getYear(), localDateTime.getMonth().name());
         monthlyValues.get(currentMonthName).add(finalValue);
-        generateObservation(Values.number(value));
+        monthlyValuesData.add(finalValue);
+        generateObservation(Values.number(finalValue));
 
         finalValue =Double.MIN_VALUE;
     }

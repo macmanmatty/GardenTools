@@ -1,5 +1,7 @@
 package com.example.FruitTrees.WeatherProcessor.WeatherProcessors.DerivedSeries;
 
+import com.example.FruitTrees.Metrics.Unit;
+
 import java.util.List;
 
 /**
@@ -30,6 +32,9 @@ public interface DerivedSeriesCalculator {
      *         requiredInputs[] array passed to computeAt().
      */
     List<String> requiredInputTypes();
+
+    List<Unit> preferredUnits();
+
 
     /**
      * @return List of additional input series keys that may be used if present.

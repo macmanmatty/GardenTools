@@ -24,7 +24,7 @@ public class HoursBetweenCalculator extends ProcessWeatherBetweenDates {
     private double hours;
 
     public HoursBetweenCalculator() {
-        canonicalUnit= Unit.HOUR;
+        outputUnit = Unit.HOUR;
         conditionType= ConditionType.HOURS_WHERE;
 
 

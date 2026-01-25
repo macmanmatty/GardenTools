@@ -30,6 +30,7 @@ public class MonthlyAverageCalculator extends DailyAndMonthlyWeatherProcessor {
         finalValue=(finalValue/hours);
         addProcessedTextValue(finalValue, localDateTime.getYear(), localDateTime.getMonth().name());
         monthlyValues.get(currentMonthName).add(finalValue);
+        monthlyValuesData.add(value);
         generateObservation(Values.number(value));
 
         finalValue =0;

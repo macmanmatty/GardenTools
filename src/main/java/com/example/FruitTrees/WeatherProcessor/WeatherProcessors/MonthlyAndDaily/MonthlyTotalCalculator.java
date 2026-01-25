@@ -24,8 +24,8 @@ public class MonthlyTotalCalculator extends DailyAndMonthlyWeatherProcessor {
         monthlyValuesResponse.getValues().put(processorName +" For "+dataType, String.valueOf(finalValue));
             addProcessedTextValue(finalValue, localDateTime.getYear(), localDateTime.getMonth().name());
         monthlyValues.get(currentMonthName).add(finalValue);
-        generateObservation(Values.number(value));
-
+        monthlyValuesData.add(finalValue);
+        generateObservation(Values.number(finalValue));
         finalValue =0;
     }
     @Override
