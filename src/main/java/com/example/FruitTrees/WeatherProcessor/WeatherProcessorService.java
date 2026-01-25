@@ -14,6 +14,7 @@ import com.example.FruitTrees.WeatherConroller.WeatherRequest;
 import com.example.FruitTrees.WeatherConroller.WeatherResponse.WeatherResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -94,6 +95,11 @@ public class WeatherProcessorService {
                      ok = false;
                      break;
                  }
+                 catch (NoSuchBeanDefinitionException e) {
+                     log.error("Unknown processor: {}", depReq.getProcessorName(), e);
+                     ok=false;
+                     break;
+                 }
              }
 
              if (!ok) continue;
@@ -103,6 +109,9 @@ public class WeatherProcessorService {
 
          } catch (IllegalArgumentException ex) {
              log.error("Skipping processor {}: {}", hourlyReq.getProcessorName(), ex.getMessage());
+         }
+         catch (NoSuchBeanDefinitionException e) {
+             log.error("Unknown processor: {}", hourlyReq.getProcessorName(), e);
          }
      }
 
