@@ -21,10 +21,7 @@ public class CToFCalculator implements DerivedSeriesCalculator {
         return List.of("temperature_c");
     }
 
-    @Override
-    public List<Unit> preferredUnits() {
-        return List.of();
-    }
+
 
     @Override
     public List<String> optionalInputTypes() {

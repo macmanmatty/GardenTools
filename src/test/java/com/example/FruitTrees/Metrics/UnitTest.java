@@ -22,7 +22,7 @@ class UnitTest {
                 IllegalArgumentException.class,
                 () -> Unit.fromString("bananasPerSecond")
         );
-        assertTrue(ex.getMessage().toLowerCase().contains("unknown canonicalUnit"));
+        assertTrue(ex.getMessage().toLowerCase().contains("unknown"));
     }
 
     @Test

@@ -21,10 +21,6 @@ public class FToCCalculator implements DerivedSeriesCalculator {
         return List.of("temperature_2m");
     }
 
-    @Override
-    public List<Unit> preferredUnits() {
-        return List.of();
-    }
 
     @Override
     public List<String> optionalInputTypes() {

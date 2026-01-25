@@ -33,7 +33,6 @@ public interface DerivedSeriesCalculator {
      */
     List<String> requiredInputTypes();
 
-    List<Unit> preferredUnits();
 
 
     /**

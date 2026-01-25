@@ -12,7 +12,6 @@ class MetricRegistryTest {
 
         // Adjust these if MetricDef uses getters instead of record accessors
         assertEquals("temperature_2m", def.dataType());
-        assertEquals(QuantityType.TEMPERATURE, def.type());
         assertEquals(Unit.DEG_C, def.canonicalUnit());
     }
 
@@ -21,7 +20,6 @@ class MetricRegistryTest {
         MetricDef def = MetricRegistry.defFor("totally_made_up_metric");
 
         assertEquals("totally_made_up_metric", def.dataType());
-        assertEquals(QuantityType.OTHER, def.type());
         assertEquals(Unit.UNKNOWN, def.canonicalUnit());
     }
 
@@ -31,7 +29,6 @@ class MetricRegistryTest {
         MetricDef def = MetricRegistry.defFor("Temperature_2m");
 
         assertEquals("Temperature_2m", def.dataType());
-        assertEquals(QuantityType.OTHER, def.type());
         assertEquals(Unit.UNKNOWN, def.canonicalUnit());
     }
 }

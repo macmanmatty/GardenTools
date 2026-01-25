@@ -1,30 +1,9 @@
 package com.example.FruitTrees.File;
 
-import com.example.FruitTrees.Metrics.QuantityType;
 import com.example.FruitTrees.Utilities.WeatherUtilities;
 
 public final class Units {
 
-    public static double convert(QuantityType type, double v, String from, String to) {
-        if (from == null || to == null) {
-            throw new IllegalArgumentException("from/to units must not be null");
-        }
-
-        from = from.trim();
-        to   = to.trim();
-
-        if (from.equalsIgnoreCase(to)) return v;
-
-        return switch (type) {
-            case TEMPERATURE  -> convertTemp(from, to, v);
-            case WIND_SPEED   -> convertWind(from, to, v);
-            case PRESSURE     -> convertPressure(from, to, v);
-            case PRECIP_DEPTH -> convertDepth(from, to, v);
-            default -> throw new IllegalArgumentException(
-                    "No converter for type=" + type + " (" + from + " -> " + to + ")"
-            );
-        };
-    }
 
     private static double convertTemp(String from, String to, double v) {
         if (from.equalsIgnoreCase("degC") && to.equalsIgnoreCase("degF"))
