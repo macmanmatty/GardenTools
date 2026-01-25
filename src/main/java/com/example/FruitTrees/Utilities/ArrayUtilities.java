@@ -2,26 +2,49 @@ package com.example.FruitTrees.Utilities;
 
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
 public class ArrayUtilities {
 
-    public static double  medianOfList(List<Double> numbers){
-        double average;
-        Collections.sort(numbers); // Step 1: Sort the array
-        int n = numbers.size();
-        // Step 2: Check if length is even or odd
-        if (n % 2 == 0) {
-            // Even: average of middle two numbers
-            average = (numbers.get(n / 2 - 1) + numbers.get(n / 2)) / 2.0;
-        } else {
-            // Odd: return the middle number
-            average= numbers.get(n / 2);
+
+    public static double meanOfList(List<Double> numbers) {
+        if (numbers == null || numbers.isEmpty()) {
+            throw new IllegalArgumentException("List must not be null or empty");
         }
-        return average;
+
+        double sum = 0.0;
+        int count = 0;
+
+        for (double v : numbers) {
+            if (Double.isNaN(v)) continue;   // optional but very wise for weather data
+            sum += v;
+            count++;
+        }
+
+        if (count == 0) {
+            throw new IllegalArgumentException("List contains no valid numbers");
+        }
+
+        return sum / count;
     }
+
+    public static double medianOfList(List<Double> numbers) {
+        if (numbers == null || numbers.isEmpty()) {
+            throw new IllegalArgumentException("List must not be null or empty");
+        }
+        List<Double> copy = new ArrayList<>(numbers);
+        Collections.sort(copy);
+
+        int n = copy.size();
+        if (n % 2 == 0) {
+            return (copy.get(n/2 - 1) + copy.get(n/2)) / 2.0;
+        }
+        return copy.get(n/2);
+    }
+
     public static double minOfList(List<Double> numbers) {
         if (numbers == null || numbers.isEmpty()) {
             throw new IllegalArgumentException("List must not be null or empty");

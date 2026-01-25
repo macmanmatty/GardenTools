@@ -88,14 +88,10 @@ public abstract  class ProcessWeatherBetweenDates  extends WeatherProcessor {
     protected abstract void processWeatherBetween(double data, LocalDateTime date);
     @Override
     public void calculateMeanAverageValue() {
-        double total=0;
-       for( Double doubleNum: yearlyDataValues){
-          total= doubleNum+total;
-        }
-       double average=Math.round(total/yearlyDataValues.size());
-        generateObservation(Values.number(average), Stat.MEAN);
-        addAverageValue("Mean Average For "+ processorName +" "+average);
-        generateObservation(Values.number(average), Stat.MEDIAN);
+     double mean=ArrayUtilities.meanOfList(yearlyDataValues);
+        generateObservation(Values.number(mean), Stat.MEAN);
+        addAverageValue("Mean Average For "+ processorName +" "+mean);
+        generateObservation(Values.number(mean), Stat.MEDIAN);
 
 
     }
@@ -115,7 +111,7 @@ public abstract  class ProcessWeatherBetweenDates  extends WeatherProcessor {
     }
     @Override
     public void calculateMinValue() {
-        double min=ArrayUtilities.maxOfList(yearlyDataValues);
+        double min=ArrayUtilities.minOfList(yearlyDataValues);
         generateObservation(Values.number(min), Stat.MIN);
         addAverageValue(" Median Average For "+ processorName +" "+min);
         generateObservation(Values.number(min), Stat.MEDIAN);
