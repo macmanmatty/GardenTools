@@ -21,7 +21,7 @@ public enum Unit {
         M_PER_S("m/s", Dimension.WIND_SPEED),
         KM_PER_H("km/h", Dimension.WIND_SPEED),
         MPH("mph", Dimension.WIND_SPEED),
-
+        // not temp but angle
         DEG("deg", Dimension.ANGLE),
 
         PA("Pa", Dimension.PRESSURE),
