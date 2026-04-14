@@ -1,6 +1,7 @@
 package com.example.FruitTrees.WeatherProcessor.WeatherProcessors.BetweenDates.DateCalculators;
 
 import com.example.FruitTrees.Metrics.Observation.Values;
+import com.example.FruitTrees.Metrics.Period;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -34,6 +35,8 @@ public class LastDateBelowValue extends DateValueProcessor{
         this.processorName="Last Date With Value Below "+ threshold;
         clearProcessedTextValues();
         yearlyDataValues.clear();
+        period= Period.YEARLY;
+
 
     }
 

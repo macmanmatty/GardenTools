@@ -3,7 +3,8 @@ package com.example.FruitTrees.Metrics;
 public enum Period {
     DAILY("Daily"),
     MONTHLY("Monthly"),
-    YEARLY("Yearly");
+    YEARLY("Yearly"),
+    NOT_SET("Not Set");
 
     private final String label;
 

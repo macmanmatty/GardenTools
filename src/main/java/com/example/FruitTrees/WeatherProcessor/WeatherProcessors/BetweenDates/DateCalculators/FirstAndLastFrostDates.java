@@ -1,6 +1,7 @@
 package com.example.FruitTrees.WeatherProcessor.WeatherProcessors.BetweenDates.DateCalculators;
 
 import com.example.FruitTrees.Metrics.Observation.Values;
+import com.example.FruitTrees.Metrics.Period;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -35,6 +36,8 @@ public class FirstAndLastFrostDates extends DateValueProcessor {
         startMonth=1;
         endDay=1;
         endMonth=8;
+        period= Period.YEARLY;
+
         if(dataType.equals("celsius")){
             freezing=0;
         }

@@ -1,4 +1,5 @@
 package com.example.FruitTrees.WeatherProcessor.WeatherProcessors.BetweenDates;
+import com.example.FruitTrees.Metrics.Period;
 import com.example.FruitTrees.WeatherConroller.WeatherResponse.YearlyValuesResponse;
 import com.example.FruitTrees.Metrics.Observation.Values;
 import org.springframework.context.annotation.Scope;
@@ -13,6 +14,8 @@ public class MinCalculator extends ProcessWeatherBetweenDates {
     private double finalValue =Double.MAX_VALUE;
     public MinCalculator() {
         super("Min");
+        period= Period.YEARLY;
+
     }
 
     @Override

@@ -1,6 +1,7 @@
 package com.example.FruitTrees.WeatherProcessor.WeatherProcessors.BetweenDates.DateCalculators;
 
 import com.example.FruitTrees.Metrics.Observation.Values;
+import com.example.FruitTrees.Metrics.Period;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -29,6 +30,8 @@ public class FirstDateAboveValue extends DateValueProcessor {
         this.processorName="First Date Above "+ threshold;
         clearProcessedTextValues();
         yearlyDataValues.clear();
+        period= Period.YEARLY;
+
 
     }
 

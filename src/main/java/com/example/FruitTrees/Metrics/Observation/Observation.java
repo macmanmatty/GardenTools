@@ -164,4 +164,24 @@ public record Observation(
          */
         Map<String, Object> meta
 
-) {}
+
+
+) {
+    @Override
+    public String toString() {
+        return "Observation{" +
+                "locationId='" + locationId.toString() + '\'' +
+                ", year=" + year.toString() +
+                ", month=" + month.toString() +
+                ", metricId='" + metricId.toString() + '\'' +
+                ", dataType='" + dataType.toString() + '\'' +
+                ", value=" + value.toString() +
+                ", canonicalUnit=" + canonicalUnit .toString()+
+                ", stat=" + stat.toString() +
+                ", period=" + period.toString() +
+                ", condition=" + condition.unit()+
+                ", spec=" + spec.toString() +
+                ", meta=" + meta.toString() +
+                '}';
+    }
+}

@@ -71,7 +71,7 @@ public abstract class WeatherProcessor {
     /**
      * the current of measurement for the data being processed
      */
-    protected Unit canonicalUnit;
+    protected Unit canonicalUnit=Unit.SAME_AS_INPUT;
     protected List<String> dataTypes= new ArrayList<>();
     protected List<String> dataUnits= new ArrayList<>();
     /**
@@ -113,12 +113,12 @@ public abstract class WeatherProcessor {
      * station Id used for NOAA processing
      *
      */
-        String stationId;
+        String stationId="";
     /**
      * the location id used for openmeteo
      *
      */
-    protected String locationId;
+    protected String locationId="";
     /**
      * external processors required by this one
      */
@@ -127,12 +127,12 @@ public abstract class WeatherProcessor {
      *
      * the period of measure monthly daily, yearly
      */
-    protected Period period;
+    protected Period period=Period.NOT_SET;
     /**
      *
      * the  calculated stat mean median etc.
      */
-    protected Stat stat;
+    protected Stat stat=Stat.BASE;
     /**
      *
      * the location object

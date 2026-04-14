@@ -1,5 +1,6 @@
 package com.example.FruitTrees.WeatherProcessor.WeatherProcessors.MonthlyAndDaily;
 import com.example.FruitTrees.Metrics.Observation.Values;
+import com.example.FruitTrees.Metrics.Period;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import java.time.LocalDateTime;
@@ -17,6 +18,7 @@ public class MonthlyMinCalculator extends DailyAndMonthlyWeatherProcessor {
     public void before() {
         super.before();
         processorName = "Monthly Min  For "+dataType;
+        period= Period.MONTHLY;
 
     }
 

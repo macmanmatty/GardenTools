@@ -1,6 +1,7 @@
 package com.example.FruitTrees.WeatherProcessor.WeatherProcessors.BetweenDates;
 
 import com.example.FruitTrees.Metrics.ConditionType;
+import com.example.FruitTrees.Metrics.Period;
 import com.example.FruitTrees.Metrics.Unit;
 import com.example.FruitTrees.WeatherConroller.WeatherResponse.YearlyValuesResponse;
 import com.example.FruitTrees.Metrics.Observation.Values;
@@ -26,6 +27,8 @@ public class HoursAboveCalculator extends ProcessWeatherBetweenDates {
     public HoursAboveCalculator() {
         outputUnit = Unit.HOUR;
         conditionType= ConditionType.HOURS_WHERE;
+        period= Period.YEARLY;
+
     }
     @Override
     public void before() {

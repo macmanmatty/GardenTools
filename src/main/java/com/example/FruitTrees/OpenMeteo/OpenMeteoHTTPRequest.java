@@ -111,7 +111,7 @@ public class OpenMeteoHTTPRequest {
      *
      * Java 8 friendly (no List.of(), no stream().toList()).
      */
-    String buildHourlyParam(WeatherRequest weatherRequest) {
+   public  String buildHourlyParam(WeatherRequest weatherRequest) {
         Set<String> hourlyDataTypes = weatherRequest.getOpenmeteoRequestHourlyDataTypes();
         if (hourlyDataTypes == null || hourlyDataTypes.isEmpty()) {
             return "";

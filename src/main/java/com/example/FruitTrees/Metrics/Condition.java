@@ -41,4 +41,15 @@ public record Condition(
         return new Condition(type, Comparison.BETWEEN, null, lower, upper, unit);
     }
 
+    @Override
+    public String toString() {
+        return "Condition{" +
+                "type=" + type +
+                ", comparison=" + comparison +
+                ", threshold=" + threshold +
+                ", lowerBound=" + lowerBound +
+                ", upperBound=" + upperBound +
+                ", unit=" + unit +
+                '}';
+    }
 }
