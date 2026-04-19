@@ -56,4 +56,13 @@ public class YearlyValuesResponse {
     public void setMonthlyWeatherValuesMap(Map<String, MonthlyValuesResponse> monthlyWeatherValuesMap) {
         this.monthlyWeatherValuesMap = monthlyWeatherValuesMap;
     }
+
+    @Override
+    public String toString() {
+        return "YearlyValuesResponse{" +
+                "name='" + name + '\'' +
+                ", values=" + values +
+                ", monthlyWeatherValuesMap=" + monthlyWeatherValuesMap +
+                '}';
+    }
 }

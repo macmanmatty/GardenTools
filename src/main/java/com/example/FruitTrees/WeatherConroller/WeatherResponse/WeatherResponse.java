@@ -46,4 +46,13 @@ public class WeatherResponse {
     public void setWeatherRunContext(List<WeatherRunContext> weatherRunContext) {
         this.weatherRunContext = weatherRunContext;
     }
+
+    @Override
+    public String toString() {
+        return "WeatherResponse{" +
+                "responses=" + responses +
+                ", locationWeatherResponses=" + locationWeatherResponses +
+                ", weatherRunContext=" + weatherRunContext +
+                '}';
+    }
 }

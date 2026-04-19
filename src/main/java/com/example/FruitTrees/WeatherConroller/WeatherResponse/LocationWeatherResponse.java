@@ -81,4 +81,15 @@ public class LocationWeatherResponse  {
     public void setObservations(List<Observation> observations) {
         this.observations = observations;
     }
+
+    @Override
+    public String toString() {
+        return "LocationWeatherResponse{" +
+                "yearlyWeatherValuesMap=" + yearlyWeatherValuesMap +
+                ", locationTotals=" + locationTotals +
+                ", location=" + location +
+                ", locationResponses=" + locationResponses +
+                ", observations=" + observations +
+                '}';
+    }
 }

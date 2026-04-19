@@ -53,8 +53,8 @@ public class FirstDateAboveValue extends DateValueProcessor {
     }
     @Override
     public void processWeatherBetween(double value, LocalDateTime date) {
-        if(value>= threshold){
-            this.date=Optional.of(date);
+        if (this.date.isEmpty() && value >= threshold) {
+            this.date = Optional.of(date);
             onStop(date);
         }
     }

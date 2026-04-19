@@ -48,7 +48,7 @@ public class WeatherProcessorService {
         for(LocationResponse locationResponse: locationResponses) {
           processLocationData(locationResponse, weatherRequest, weatherResponse, weatherRunContexts);
         }
-
+        log.info("Response size: {}", weatherResponse.toString().length());
         return weatherResponse;
     }
     /**
@@ -117,15 +117,11 @@ public class WeatherProcessorService {
 
 
      buildDerivedSeries(weatherRequest, locationResponse);
-         processHourlyWeather(time, weatherProcessors, locationResponse.getData(), locationResponse.getLocation().getName(), weatherRunContext.collector());
-
+         processHourlyWeather( weatherRequest,time, weatherProcessors, locationResponse.getData(), locationResponse.getLocation().getName(), weatherRunContext.collector());
+    weatherResponse.setWeatherRunContext(weatherRunContexts);
      return weatherResponse;
  }
-    public void  normalizeObservations(WeatherRequest weatherRequest, WeatherRunContext weatherRunContext){
-     List<Observation> observations=weatherRunContext.collector().getAll();
-     List<Observation> normalizedObservations = RequestUnitNormalizer.toUserUnits(weatherRequest, observations);
 
-    }
 
     /**
      * Computes and injects all derived time series (e.g., VPD, Feels-Like, ET0).
@@ -214,7 +210,7 @@ public class WeatherProcessorService {
      * @param processors    All processors to execute
      * @param seriesByType  Map of dataType → hourly double array
      */
-    public void processHourlyWeather(
+    public void processHourlyWeather(WeatherRequest weatherRequest,
             LocalDateTime [] iso8601Times,
             List<WeatherProcessor> processors,
             Map<String, double []> seriesByType,
@@ -238,7 +234,15 @@ public class WeatherProcessorService {
             if (processor.isCalculateMax())           processor.calculateMaxValue();
             List<String> text = processor.getProcessedTextValues();
             processor.getLocationWeatherResponse().getLocationResponses().addAll(text);
+            normalizeObservations(weatherRequest, processor.getObservationCollector());
+            log.info("Obeservations: "+observationCollector.getAll().size());
         }
+
+    }
+    public List<Observation>  normalizeObservations(WeatherRequest weatherRequest, ObservationCollector observationCollector){
+        List<Observation> observations=observationCollector.getAll();
+        List<Observation> normalizedObservations = RequestUnitNormalizer.toUserUnits(weatherRequest, observations);
+        return normalizedObservations;
 
     }
     /**

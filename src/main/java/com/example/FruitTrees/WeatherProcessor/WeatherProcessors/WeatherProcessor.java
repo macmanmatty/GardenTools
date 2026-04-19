@@ -10,6 +10,9 @@ import com.example.FruitTrees.Metrics.Stat;
 import com.example.FruitTrees.Metrics.Observation.Observation;
 import com.example.FruitTrees.Metrics.Observation.ObservationCollector;
 import com.example.FruitTrees.Metrics.Observation.Value;
+import org.slf4j.ILoggerFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import java.time.LocalDateTime;
@@ -24,6 +27,7 @@ import java.util.Map;
 @Scope("prototype")
 @Component
 public abstract class WeatherProcessor {
+    private static final Logger logger = LoggerFactory.getLogger(WeatherProcessor.class);
     /**
      *  the processed string values for the weather
      */
@@ -237,6 +241,24 @@ public abstract class WeatherProcessor {
     generateObservation(value, Stat.BASE);
     }
     protected void generateObservation( Value value, Stat stat){
+
+            logger.info(
+                    "Generating observation | processor={} | dataType={} | stat={} | year={} | month={} | " +
+                            "conditionType={} | threshold={} | lowerBound={} | upperBound={} | binsSize={} ",
+                    processorName,
+                    dataType,
+                    stat,
+                    currentYear,
+                    currentMonth,
+                    conditionType,
+                    threshold,
+                    lowerBound,
+                    upperBound,
+                    bins != null ? bins.size() : 0
+            );
+
+
+
         observationCollector.add(new Observation(
                 locationId,
                 currentYear,
@@ -370,9 +392,6 @@ public abstract class WeatherProcessor {
     }
     public void setOnlyCalculateAverage(boolean onlyCalculateAverage) {
         this.onlyCalculateAverage = onlyCalculateAverage;
-    }
-    public void stopProcessing(){
-        stopProcessing=false;
     }
     public void clearProcessedTextValues() {
         processedTextValues.clear();

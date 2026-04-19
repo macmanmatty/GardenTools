@@ -57,4 +57,6 @@ public class MonthlyValuesResponse {
     public void setDailyWeatherValuesMap(Map<String, DailyValuesResponse> dailyWeatherValuesMap) {
         this.dailyWeatherValuesMap = dailyWeatherValuesMap;
     }
+
+
 }
