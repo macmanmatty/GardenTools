@@ -41,15 +41,13 @@ public class FirstDateAboveValue extends DateValueProcessor {
     }
 
     public void onStop(LocalDateTime date) {
-            String text = "First instance of " + dataType + " Above " + threshold;
-          addValue(date,this.date, text);
-          if(this.date.isPresent()){
-        generateObservation(Values.time(this.date.get()));
+        String text = "First instance of " + dataType + " Above " + threshold;
+        addValue(date, this.date, text);
+        if (this.date.isPresent()) {
+            generateObservation(Values.time(this.date.get()));
         }
 
-        this.date=Optional.empty();
-            isInWindow();
-
+        isInWindow();
     }
     @Override
     public void processWeatherBetween(double value, LocalDateTime date) {
