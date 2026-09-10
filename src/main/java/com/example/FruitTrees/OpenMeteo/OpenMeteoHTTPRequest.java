@@ -25,6 +25,10 @@ public class OpenMeteoHTTPRequest {
     @Value("${open-meteo.url}")
    private  String openMeteoUrl;
 
+    @Value("${open-meteo.forcast-url}")
+    private  String openMeteoForcastUrl;
+
+
    private final  RestTemplate restTemplate;
     private final  CacheManager cacheManager;
     @Autowired
@@ -43,6 +47,8 @@ public class OpenMeteoHTTPRequest {
     @Cacheable(value = "openMeteoDataCache",
       key = "#location.getLatitude() + ':' + #location.getLongitude() + ':' + #weatherRequest.getHourlyDataTypes.hashCode() + ':' + #weatherRequest.getStartDate() + ':' + #weatherRequest.getEndDate()")
     public OpenMeteoLocationResponse makeLocationRequest(Location location, WeatherRequest weatherRequest){
+        String openMeteoUrl=this.openMeteoUrl;
+
         String fullUrl = openMeteoUrl + "?latitude=" + location.getLatitude() +
                 "&longitude=" + location.getLongitude() +
                 "&start_date=" + weatherRequest.getStartDate() +

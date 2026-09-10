@@ -1,4 +1,5 @@
 package com.example.FruitTrees.Utilities;
+import com.example.FruitTrees.OpenMeteo.OpenMeteoHistoricalForecastResponse;
 import com.example.FruitTrees.OpenMeteo.OpenMeteoResponse;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -43,16 +44,120 @@ public class DataUtilities {
         putIfNotNull.accept("soil_temperature_28_to_100cm", data.soil_temperature_28_to_100cm);
         putIfNotNull.accept("soil_moisture_100_to_255cm", data.soil_moisture_100_to_255cm);
         putIfNotNull.accept("soil_temperature_100_to_255cm", data.soil_temperature_100_to_255cm);
+        return convertToArrays(rawData);
+
+    }
+    public static Map<String, double[]> getAllHourlyData(
+            OpenMeteoHistoricalForecastResponse response) {
+        OpenMeteoHistoricalForecastResponse.Hourly data = response.hourly;
+        Map<String, List<? extends Number>> rawData = new HashMap<>();
+        BiConsumer<String, List<? extends Number>> putIfNotNull =
+                (key, value) -> {
+                    if (value != null) {
+                        rawData.put(key, value);
+                    }
+                };
+
+        putIfNotNull.accept("temperature_2m", data.temperature2m);
+        putIfNotNull.accept("relative_humidity_2m", data.relativeHumidity2m);
+        putIfNotNull.accept("dew_point_2m", data.dewPoint2m);
+        putIfNotNull.accept("apparent_temperature", data.apparentTemperature);
+
+        putIfNotNull.accept("precipitation_probability", data.precipitationProbability);
+        putIfNotNull.accept("precipitation", data.precipitation);
+        putIfNotNull.accept("rain", data.rain);
+        putIfNotNull.accept("showers", data.showers);
+        putIfNotNull.accept("snowfall", data.snowfall);
+        putIfNotNull.accept("snow_depth", data.snowDepth);
+
+        putIfNotNull.accept("weather_code", data.weatherCode);
+        putIfNotNull.accept("visibility", data.visibility);
+        putIfNotNull.accept("is_day", data.isDay);
+        putIfNotNull.accept("sunshine_duration", data.sunshineDuration);
+
+        putIfNotNull.accept("pressure_msl", data.pressureMsl);
+        putIfNotNull.accept("surface_pressure", data.surfacePressure);
+
+        putIfNotNull.accept("cloud_cover", data.cloudCover);
+        putIfNotNull.accept("cloud_cover_low", data.cloudCoverLow);
+        putIfNotNull.accept("cloud_cover_mid", data.cloudCoverMid);
+        putIfNotNull.accept("cloud_cover_high", data.cloudCoverHigh);
+
+        putIfNotNull.accept("evapotranspiration", data.evapotranspiration);
+        putIfNotNull.accept("et0_fao_evapotranspiration", data.et0FaoEvapotranspiration);
+        putIfNotNull.accept("vapour_pressure_deficit", data.vapourPressureDeficit);
+
+        putIfNotNull.accept("wind_speed_10m", data.windSpeed10m);
+        putIfNotNull.accept("wind_speed_80m", data.windSpeed80m);
+        putIfNotNull.accept("wind_speed_120m", data.windSpeed120m);
+        putIfNotNull.accept("wind_speed_180m", data.windSpeed180m);
+        putIfNotNull.accept("wind_speed_200m", data.windSpeed200m);
+
+        putIfNotNull.accept("wind_direction_10m", data.windDirection10m);
+        putIfNotNull.accept("wind_direction_80m", data.windDirection80m);
+        putIfNotNull.accept("wind_direction_120m", data.windDirection120m);
+        putIfNotNull.accept("wind_direction_180m", data.windDirection180m);
+        putIfNotNull.accept("wind_direction_200m", data.windDirection200m);
+
+        putIfNotNull.accept("wind_gusts_10m", data.windGusts10m);
+
+        putIfNotNull.accept("temperature_80m", data.temperature80m);
+        putIfNotNull.accept("temperature_120m", data.temperature120m);
+        putIfNotNull.accept("temperature_180m", data.temperature180m);
+
+        putIfNotNull.accept("soil_temperature_0cm", data.soilTemperature0cm);
+        putIfNotNull.accept("soil_temperature_6cm", data.soilTemperature6cm);
+        putIfNotNull.accept("soil_temperature_18cm", data.soilTemperature18cm);
+        putIfNotNull.accept("soil_temperature_54cm", data.soilTemperature54cm);
+
+        putIfNotNull.accept("soil_moisture_0_to_1cm", data.soilMoisture0To1cm);
+        putIfNotNull.accept("soil_moisture_1_to_3cm", data.soilMoisture1To3cm);
+        putIfNotNull.accept("soil_moisture_3_to_9cm", data.soilMoisture3To9cm);
+        putIfNotNull.accept("soil_moisture_9_to_27cm", data.soilMoisture9To27cm);
+        putIfNotNull.accept("soil_moisture_27_to_81cm", data.soilMoisture27To81cm);
+
+        putIfNotNull.accept("uv_index", data.uvIndex);
+        putIfNotNull.accept("uv_index_clear_sky", data.uvIndexClearSky);
+
+        putIfNotNull.accept("shortwave_radiation", data.shortwaveRadiation);
+        putIfNotNull.accept("direct_radiation", data.directRadiation);
+        putIfNotNull.accept("diffuse_radiation", data.diffuseRadiation);
+        putIfNotNull.accept("direct_normal_irradiance", data.directNormalIrradiance);
+        putIfNotNull.accept("terrestrial_radiation", data.terrestrialRadiation);
+
+        putIfNotNull.accept("wet_bulb_temperature_2m", data.wetBulbTemperature2m);
+        putIfNotNull.accept(
+                "total_column_integrated_water_vapour",
+                data.totalColumnIntegratedWaterVapour
+        );
+
+        putIfNotNull.accept("cape", data.cape);
+        putIfNotNull.accept("lifted_index", data.liftedIndex);
+        putIfNotNull.accept("convective_inhibition", data.convectiveInhibition);
+        putIfNotNull.accept("freezing_level_height", data.freezingLevelHeight);
+        putIfNotNull.accept("boundary_layer_height", data.boundaryLayerHeight);
+
+        return convertToArrays(rawData);
+    }
+
+    private static Map<String, double[]> convertToArrays(
+            Map<String, List<? extends Number>> rawData) {
+
         Map<String, double[]> result = new LinkedHashMap<>();
+
         for (Map.Entry<String, List<? extends Number>> entry : rawData.entrySet()) {
+
             List<? extends Number> list = entry.getValue();
+
             if (list != null) {
                 double[] arr = list.stream()
                         .mapToDouble(Number::doubleValue)
                         .toArray();
+
                 result.put(entry.getKey(), arr);
             }
         }
+
         return result;
     }
     public static String toNOAADatatype(String field) {
