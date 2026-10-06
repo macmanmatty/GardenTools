@@ -15,8 +15,9 @@ public class Location {
     /**
      * the latitude and longitude of the location
      */
-   private  String latitude;
-   private  String longitude;
+   private double latitude;
+   private  double longitude;
+   private  String latitudeAndLongitude;
     /**
     the weather station id currently not used
      */
@@ -52,16 +53,16 @@ public class Location {
     public void setName(String name) {
         this.name = name;
     }
-    public String getLatitude() {
+    public double getLatitude() {
         return latitude;
     }
-    public void setLatitude(String latitude) {
+    public void setLatitude(double latitude) {
         this.latitude = latitude;
     }
-    public String getLongitude() {
+    public double getLongitude() {
         return longitude;
     }
-    public void setLongitude(String longitude) {
+    public void setLongitude(double  longitude) {
         this.longitude = longitude;
     }
     public String getStationId() {
@@ -187,5 +188,24 @@ public class Location {
 
     public void setPropertyClass(String propertyClass) {
         this.propertyClass = propertyClass;
+    }
+
+    public String getLatitudeAndLongitude() {
+        return latitudeAndLongitude;
+    }
+
+    public void setLatitudeAndLongitude(String latitudeAndLongitude) {
+        this.latitudeAndLongitude = latitudeAndLongitude;
+
+        String[] coordinates = latitudeAndLongitude.split(",");
+
+        if (coordinates.length != 2) {
+            throw new IllegalArgumentException(
+                    "Expected latitude,longitude but got: " + latitudeAndLongitude
+            );
+        }
+
+        this.latitude = Double.parseDouble(coordinates[0].trim());
+        this.longitude = Double.parseDouble(coordinates[1].trim());
     }
 }

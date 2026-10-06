@@ -58,7 +58,7 @@ public class NOAAHTTPRequest {
         int pageSize=1000;
         String stationId= location.getStationId();
         if(stationId==null || stationId.isEmpty()){
-            stationId=noaaStationFinder.findNearestStation(location.getLatitude(), location.getLongitude(),weatherRequest.getStartDate(), weatherRequest.getEndDate(),  hourlyWeatherProcessRequest.getHourlyDataType());
+            stationId=noaaStationFinder.findNearestStation(location.getLatitude(), location.getLongitude(), weatherRequest.getNoaaStationSearchRadius(), weatherRequest.getStartDate(), weatherRequest.getEndDate(),  hourlyWeatherProcessRequest.getHourlyDataType());
         }
 
         while (moreData) {

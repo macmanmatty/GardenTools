@@ -77,7 +77,7 @@ public class WeatherRequest {
 
     private boolean useNOAA;
 
-
+    private int noaaStationSearchRadius;
 
 
     public List<Location> locations = new ArrayList<>();
@@ -211,6 +211,14 @@ public class WeatherRequest {
 
     public void setUseNOAA(boolean useNOAA) {
         this.useNOAA = useNOAA;
+    }
+
+    public int getNoaaStationSearchRadius() {
+        return noaaStationSearchRadius;
+    }
+
+    public void setNoaaStationSearchRadius(int noaaStationSearchRadius) {
+        this.noaaStationSearchRadius = noaaStationSearchRadius;
     }
 }
 
