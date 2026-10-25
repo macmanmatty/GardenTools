@@ -55,6 +55,7 @@ public class DataUtilities {
         }
         return result;
     }
+
     public static String toNOAADatatype(String field) {
         if (field == null) return null;
         switch (field.trim().toLowerCase()) {

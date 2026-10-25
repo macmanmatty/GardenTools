@@ -25,16 +25,27 @@ public class NoaaStationFinder {
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     /**
-     * Finds the nearest NOAA GHCN-Daily station within the specified
-     * search radius that supports the requested data type and date range.
+     * Finds the nearest NOAA station of the requested type.
      *
-     * @param latitude    latitude of the target location
-     * @param longitude   longitude of the target location
-     * @param radiusMiles search radius in miles
-     * @param startDate   beginning of requested date range (yyyy-MM-dd)
-     * @param endDate     end of requested date range (yyyy-MM-dd)
-     * @param dataType    NOAA data type, such as TMAX or TMIN
-     * @return NOAA station ID, or null if no station is found
+     * DAILY:
+     *   Searches for the nearest GHCN-Daily station.
+     *
+     * HOURLY:
+     *   Searches for the nearest NOAA hourly station.
+     *
+     * FALL_BACK:
+     *   Searches for an hourly station first. If no hourly station is
+     *   available within the requested radius, searches for a daily station.
+     *
+     * @param latitude    target latitude
+     * @param longitude   target longitude
+     * @param radiusMiles maximum search radius in miles
+     * @param startDate   requested start date
+     * @param endDate     requested end date
+     * @param dataType    requested NOAA data type
+     * @param stationType type of NOAA station to search for
+     *
+     * @return nearest station ID, or null if no suitable station is found
      */
     public String findNearestStation(
             double latitude,
@@ -42,30 +53,147 @@ public class NoaaStationFinder {
             double radiusMiles,
             String startDate,
             String endDate,
+            String dataType,
+            NOAAStationType stationType) {
+
+        if (stationType == null) {
+            throw new IllegalArgumentException(
+                    "NOAA station type cannot be null"
+            );
+        }
+
+        return switch (stationType) {
+
+            case HOURLY -> findNearestHourlyStation(
+                    latitude,
+                    longitude,
+                    radiusMiles,
+                    startDate,
+                    endDate,
+                    dataType
+            );
+
+            case DAILY -> findNearestDailyStation(
+                    latitude,
+                    longitude,
+                    radiusMiles,
+                    startDate,
+                    endDate,
+                    dataType
+            );
+
+            case FALL_BACK -> {
+
+                // Prefer hourly observations whenever they are available.
+                String stationId = findNearestHourlyStation(
+                        latitude,
+                        longitude,
+                        radiusMiles,
+                        startDate,
+                        endDate,
+                        dataType
+                );
+
+                // If no hourly station exists within the requested radius,
+                // fall back to the nearest suitable daily station.
+                if (stationId == null || stationId.isBlank()) {
+
+                    stationId = findNearestDailyStation(
+                            latitude,
+                            longitude,
+                            radiusMiles,
+                            startDate,
+                            endDate,
+                            dataType
+                    );
+                }
+
+                yield stationId;
+            }
+        };
+    }
+    /**
+     * Finds the nearest GHCN-Daily station.
+     */
+    private String findNearestDailyStation(
+            double latitude,
+            double longitude,
+            double radiusMiles,
+            String startDate,
+            String endDate,
             String dataType) {
 
+        return findNearestStationForDataset(
+                latitude,
+                longitude,
+                radiusMiles,
+                startDate,
+                endDate,
+                dataType,
+                "GHCND"
+        );
+    }
+
+    /**
+     * Finds the nearest NOAA hourly station.
+     */
+    private String findNearestHourlyStation(
+            double latitude,
+            double longitude,
+            double radiusMiles,
+            String startDate,
+            String endDate,
+            String dataType) {
+
+        return findNearestStationForDataset(
+                latitude,
+                longitude,
+                radiusMiles,
+                startDate,
+                endDate,
+                dataType,
+                "global-hourly"
+        );
+    }
+
+   
+    /**
+     * Searches a specific NOAA dataset for the nearest station.
+     */
+    private String findNearestStationForDataset(
+            double latitude,
+            double longitude,
+            double radiusMiles,
+            String startDate,
+            String endDate,
+            String dataType,
+            String datasetId) {
+
         try {
+
             String url = String.format(
-                    "%s?datasetid=GHCND"
+                    "%s?datasetid=%s"
                             + "&extent=%s"
                             + "&datatypeid=%s"
                             + "&startdate=%s"
                             + "&enddate=%s"
                             + "&limit=1000",
                     noaaStationUrl,
+                    datasetId,
                     getExtent(radiusMiles, latitude, longitude),
                     dataType,
                     startDate,
                     endDate
             );
 
-            Logger.getLogger("").info("NOAA station URL: " + url);
+            Logger.getLogger("").info(
+                    "Searching NOAA " + datasetId + " stations: " + url
+            );
 
-            // NOAA CDO API expects the API token in the "token" header.
             HttpHeaders headers = new HttpHeaders();
             headers.set("token", noaaApiKey);
 
-            HttpEntity<String> entity = new HttpEntity<>(headers);
+            HttpEntity<Void> entity = new HttpEntity<>(headers);
 
             ResponseEntity<String> response = restTemplate.exchange(
                     url,
@@ -74,27 +202,39 @@ public class NoaaStationFinder {
                     String.class
             );
 
-            JsonNode json = objectMapper.readTree(response.getBody());
-            JsonNode results = json.get("results");
+            JsonNode json =
+                    objectMapper.readTree(response.getBody());
 
-            if (results != null && results.isArray() && !results.isEmpty()) {
-                return getClosestStation(
-                        results,
-                        latitude,
-                        longitude,
-                        radiusMiles
-                );
+            JsonNode results =
+                    json.get("results");
+
+            if (results == null
+                    || !results.isArray()
+                    || results.isEmpty()) {
+
+                return null;
             }
 
+            return getClosestStation(
+                    results,
+                    latitude,
+                    longitude,
+                    radiusMiles
+            );
+
         } catch (Exception e) {
+
             Logger.getLogger("")
-                    .severe("Error while fetching NOAA station ID: "
-                            + e.getMessage());
+                    .severe(
+                            "Error finding NOAA "
+                                    + datasetId
+                                    + " station: "
+                                    + e.getMessage()
+                    );
+
+            return null;
         }
-
-        return null;
     }
-
     /**
      * Creates the NOAA geographic extent (bounding box) used to search
      * for stations near the requested latitude/longitude.
