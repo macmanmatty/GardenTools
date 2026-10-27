@@ -1,9 +1,7 @@
 package com.example.FruitTrees.Utilities;
 import com.example.FruitTrees.OpenMeteo.OpenMeteoResponse;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+
+import java.util.*;
 import java.util.function.BiConsumer;
 public class DataUtilities {
     private  DataUtilities() {
@@ -55,10 +53,13 @@ public class DataUtilities {
         }
         return result;
     }
-
     public static String toNOAADatatype(String field) {
-        if (field == null) return null;
-        switch (field.trim().toLowerCase()) {
+        if (field == null) {
+            return null;
+        }
+
+        switch (field.trim().toLowerCase(Locale.ROOT)) {
+
             // Temperature
             case "temperature":
             case "temp":
@@ -68,6 +69,7 @@ public class DataUtilities {
             case "2m_temperature":
             case "tmp":
                 return "TMP";
+
             // Dew Point
             case "dew point":
             case "dewpoint":
@@ -75,38 +77,38 @@ public class DataUtilities {
             case "dew_point_2m":
             case "dew_point_temperature":
             case "dew":
-            case "md1": case "md2": case "md3": case "md4": case "md5": case "md6":
                 return "DEW";
+
             // Sea-Level Pressure
             case "sea level pressure":
             case "sea_level_pressure":
             case "slp":
                 return "SLP";
+
             // Station Pressure
             case "station pressure":
             case "station_pressure":
             case "stp":
-                return "STP";
+                return "MA1";
+
             // Visibility
             case "visibility":
             case "vis":
                 return "VIS";
-            // Wind Speed
+
+            // Wind Speed and Direction
             case "wind":
             case "wind speed":
             case "wind_speed":
             case "wind_speed_10m":
             case "10m_wind_speed":
-            case "wds":
-            case "wnd":
-                return "WDS";
-            // Wind Direction
             case "wind direction":
             case "wind_dir":
             case "wind_direction":
             case "wind_direction_10m":
-            case "wdf":
-                return "WDF";
+            case "wnd":
+                return "WND";
+
             // Wind Gusts
             case "gust":
             case "wind gust":
@@ -114,64 +116,52 @@ public class DataUtilities {
             case "wind_gust":
             case "wind_gusts":
             case "wind_gusts_10m":
-            case "gus":
-            case "ga1":
-            case "ga2":
-                return "GUS";
+            case "oc1":
+                return "OC1";
+
             // Ceiling Height
             case "cloud ceiling":
             case "ceiling height":
             case "cloud_ceiling":
             case "clg":
-                return "CLG";
-            // Sky Cover
+                return "CIG";
+
+            // Cloud Cover
             case "sky cover":
             case "cloud cover":
             case "sky_cover":
             case "cloud_cover":
-            case "skc":
-                return "SKC";
-            // Lightning
-            case "lightning":
-            case "lgt":
-                return "LGT";
-            // Pressure Tendency
-            case "pressure tendency":
-            case "pressure_tendency":
-            case "prs":
-                return "PRS";
+            case "ga1":
+                return "GA1";
+
             // Precipitation
             case "rain":
             case "precip":
             case "precipitation":
             case "precipitation_1h":
             case "hourly_precip":
-            case "p01i":
-            case "p06i":
-            case "aa1": case "aa2": case "aa3": case "aa4":
-                return "P01I";
-            // Snow
+            case "aa1":
+                return "AA1";
+
+            case "aa2":
+                return "AA2";
+
+            case "aa3":
+                return "AA3";
+
+            case "aa4":
+                return "AA4";
+
+            // Snow Depth
             case "snow":
             case "snow depth":
             case "snow_depth":
-            case "sn1":
-            case "sn2":
-                return "SN1";
-            // Ground Frost
-            case "frost":
-            case "ground frost":
-            case "ground_frost":
-            case "gf1":
-            case "gf2":
-                return "GF1";
-            // Remarks
-            case "remarks":
-            case "notes":
-            case "rem":
-                return "REM";
-            // Unknown
+            case "aj1":
+                return "AJ1";
+
+            // Unknown or unsupported datatype
             default:
-               return null;
+                return null;
         }
     }
     /**

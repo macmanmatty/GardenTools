@@ -141,7 +141,10 @@ public abstract class WeatherProcessor {
         if(stopProcessing){
             return;
         }
-        processWeather(value, date);
+        // noaa may not have a value for all times
+        if(Double.isFinite(value) ){
+            processWeather(value, date);
+        }
     }
     /**
      *

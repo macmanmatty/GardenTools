@@ -43,6 +43,7 @@ public class NOAAHTTPRequest {
     private final RestTemplate restTemplate = new RestTemplate();
     private final CacheManager cacheManager;
     private final NoaaStationFinder noaaStationFinder;
+    private NOAAHourlyNormalizer noaaHourlyNormalizer;
     /*
      * NOAA currently permits more than two requests per second,
      * but keeping this below NOAA's maximum provides some margin.
@@ -50,11 +51,12 @@ public class NOAAHTTPRequest {
     private final RateLimiter limiter;
     public NOAAHTTPRequest(
             CacheManager cacheManager,
-            NoaaStationFinder noaaStationFinder,
+            NoaaStationFinder noaaStationFinder, NOAAHourlyNormalizer noaaHourlyNormalizer,
             @Value("${noaa.api.rate-limit}") double rateLimit) {
         this.cacheManager = cacheManager;
         this.noaaStationFinder = noaaStationFinder;
         this.limiter = RateLimiter.create(rateLimit);
+        this.noaaHourlyNormalizer = noaaHourlyNormalizer;
     }
     /**
      * Retrieves NOAA hourly weather observations for a location.
@@ -148,6 +150,7 @@ public class NOAAHTTPRequest {
         }
         NOAAHourlyDataMap result = new NOAAHourlyDataMap();
         result.addRecords(allData);
+        noaaHourlyNormalizer.normalize(result);
         return result;
     }
     private void fetchDateRange(

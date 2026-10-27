@@ -1,5 +1,4 @@
 package com.example.FruitTrees.NOAA;
-
 import com.example.FruitTrees.Location.Location;
 import com.example.FruitTrees.OpenMeteo.LocationResponses;
 import com.example.FruitTrees.OpenStreetMap.OpenStreetLocationService;
@@ -11,11 +10,9 @@ import com.example.FruitTrees.WeatherProcessor.WeatherProcessorService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
-
 import java.io.IOException;
 import java.util.List;
 import java.util.logging.Logger;
-
 @Service
 public class NOAAService {
    private final NOAAHTTPRequest noaahttpRequest;
@@ -57,59 +54,43 @@ public class NOAAService {
     private LocationResponses makeRequest(
             LocationResponses locationResponses,
             WeatherRequest weatherRequest)
-            throws IOException, InterruptedException {
-
+            throws IOException{
         List<Location> locations = weatherRequest.getLocations();
-
         requestValidation.locationCheck(locations);
-
         boolean populateLocationData =
                 weatherRequest.isPopulateLocationData();
-
         for (Location location : locations) {
-
             try {
                 NOAALocationResponse noaaLocationResponse =
                         new NOAALocationResponse();
-
                 noaaLocationResponse.setLocation(location);
-
                 List<HourlyWeatherProcessRequest> processors =
                         weatherRequest.getHourlyWeatherProcessRequests();
-
                 if (processors == null || processors.isEmpty()) {
                     throw new IllegalArgumentException(
                             "At least one hourly weather processor is required"
                     );
                 }
-
                 NOAAHourlyDataMap noaaHourlyDataMap =
                         noaahttpRequest.makeLocationRequest(
                                 location,
                                 weatherRequest,
                                 processors.get(0)
                         );
-
                 noaaLocationResponse.setNoaaHourlyDataMap(
                         noaaHourlyDataMap
                 );
-
                 if (populateLocationData) {
                     openStreetLocationService.populateLocationData(location);
                 }
-
                 locationResponses.getLocationResponses()
                         .add(noaaLocationResponse);
-
             } catch (RestClientException e) {
-
                 Logger.getLogger(NOAAService.class.getName())
                         .severe("NOAA request failed: " + e.getMessage());
-
                 throw new IOException(e);
             }
         }
-
         return locationResponses;
     }
 }

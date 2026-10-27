@@ -4,26 +4,26 @@ import com.example.FruitTrees.Location.Location;
 import com.example.FruitTrees.OpenMeteo.LocationResponse;
 import com.example.FruitTrees.Utilities.DataUtilities;
 
-import java.time.Instant;
 import java.time.LocalDateTime;
-import java.time.ZoneOffset;
-import java.time.temporal.ChronoUnit;
 import java.util.*;
 
-public class NOAALocationResponse implements LocationResponse  {
+public class NOAALocationResponse implements LocationResponse {
+
     /**
-     * the map of NOAA weather  data
-     * key= weather type temperature, precipitation tec.
-     * value = list of hourly numeric values
+     * NOAA weather observations and normalized hourly data.
      */
-  private NOAAHourlyDataMap noaaHourlyDataMap = new NOAAHourlyDataMap();
-  private List<NOAAWeatherRecord> noaaWeatherRecordList = new ArrayList<>();
-    /**
-     * the location object
-     */
-  private Location location;
-  private final String DATA_SOURCE="NOAA";
-  public Location getLocation() {
+    private NOAAHourlyDataMap noaaHourlyDataMap =
+            new NOAAHourlyDataMap();
+
+    private List<NOAAWeatherRecord> noaaWeatherRecordList =
+            new ArrayList<>();
+
+    private Location location;
+
+    private final String DATA_SOURCE = "NOAA";
+
+    @Override
+    public Location getLocation() {
         return location;
     }
 
@@ -35,76 +35,89 @@ public class NOAALocationResponse implements LocationResponse  {
         return noaaHourlyDataMap;
     }
 
-    public void setNoaaHourlyDataMap(NOAAHourlyDataMap noaaHourlyDataMap) {
+    public void setNoaaHourlyDataMap(
+            NOAAHourlyDataMap noaaHourlyDataMap) {
+
         this.noaaHourlyDataMap = noaaHourlyDataMap;
     }
 
-
+    /**
+     * Return the normalized hourly timeline.
+     */
+    @Override
     public LocalDateTime[] getTime() {
 
-        return noaaHourlyDataMap
-                .getNoaaHourlyObservationsMap()
-                .values()
-                .stream()
-                .filter(Objects::nonNull)
-                .flatMap(List::stream)
-                .map(NOAAWeatherRecord::getDate)
-                .filter(Objects::nonNull)
-                .map(date -> LocalDateTime.ofInstant(
-                        Instant.parse(
-                                date.endsWith("Z") ? date : date + "Z"
-                        ),
-                        ZoneOffset.UTC
-                ))
-                .map(time -> time.truncatedTo(ChronoUnit.HOURS))
-                .distinct()
-                .sorted()
-                .toArray(LocalDateTime[]::new);
+        return noaaHourlyDataMap.getNormalizedTime();
     }
 
     /**
-     * get the data from the map of noaa data as a list of numbers
+     * Return normalized values for a datatype.
      *
-     * @param type the data of weather to get
-     * @return The list of numerical data
+     * Accepts either NOAA datatype names (TMP, DEW)
+     * or Open-Meteo datatype names (temperature_2m, dew_point_2m).
      */
     public double[] getData(String type) {
 
-        List<NOAAWeatherRecord> records =
-                noaaHourlyDataMap
-                        .getNoaaHourlyObservationsMap()
-                        .get(type);
+        Map<String, double[]> data =
+                noaaHourlyDataMap.getNormalizedData();
 
-        if (records == null) {
+        if (data == null || type == null) {
             return new double[0];
         }
 
-        return records.stream()
-                .map(NOAAWeatherRecord::getValue)
-                .mapToDouble(Number::doubleValue)
-                .toArray();
+        // Direct NOAA datatype lookup.
+        double[] values = data.get(type.toUpperCase(Locale.ROOT));
+
+        if (values != null) {
+            return values;
+        }
+
+        // Look up the corresponding Open-Meteo datatype.
+        for (Map.Entry<String, double[]> entry : data.entrySet()) {
+
+            String openMeteoType =
+                    DataUtilities.toOpenMeteoDatatype(
+                            entry.getKey().toLowerCase(Locale.ROOT)
+                    );
+
+            if (type.equalsIgnoreCase(openMeteoType)) {
+                return entry.getValue();
+            }
+        }
+
+        return new double[0];
     }
 
+    /**
+     * Return all normalized data using Open-Meteo datatype names,
+     * as expected by the weather processors.
+     */
     @Override
     public Map<String, double[]> getData() {
 
         Map<String, double[]> result = new LinkedHashMap<>();
 
         if (noaaHourlyDataMap == null ||
-                noaaHourlyDataMap.getNoaaHourlyObservationsMap() == null) {
+                noaaHourlyDataMap.getNormalizedData() == null) {
+
             return result;
         }
 
-        for (String type : noaaHourlyDataMap
-                .getNoaaHourlyObservationsMap()
-                .keySet()) {
+        for (Map.Entry<String, double[]> entry :
+                noaaHourlyDataMap.getNormalizedData().entrySet()) {
 
-            result.put(DataUtilities.toOpenMeteoDatatype(type.toLowerCase()), getData(type));
+            String openMeteoType =
+                    DataUtilities.toOpenMeteoDatatype(
+                            entry.getKey().toLowerCase(Locale.ROOT)
+                    );
+
+            result.put(openMeteoType, entry.getValue());
         }
 
         return result;
     }
 
+    @Override
     public String getDataSource() {
         return DATA_SOURCE;
     }
@@ -113,7 +126,9 @@ public class NOAALocationResponse implements LocationResponse  {
         return noaaWeatherRecordList;
     }
 
-    public void setNoaaWeatherRecordList(List<NOAAWeatherRecord> noaaWeatherRecordList) {
+    public void setNoaaWeatherRecordList(
+            List<NOAAWeatherRecord> noaaWeatherRecordList) {
+
         this.noaaWeatherRecordList = noaaWeatherRecordList;
     }
 }
