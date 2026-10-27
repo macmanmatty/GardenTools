@@ -102,29 +102,46 @@ public abstract  class DailyAndMonthlyWeatherProcessor extends WeatherProcessor 
         }
     @Override
     public void calculateMeanAverageValue() {
-      Set<String> monthNames= monthlyValues.keySet();
-      for(String month:monthNames){
-          double total=0;
-          List<Double> monthlyValues=this.monthlyValues.get(month);
-          for(Double doubleNum: monthlyValues){
-              total=total+doubleNum;
-          }
-          double average=Math.round(total/monthlyValues.size());
-          this.addAverageValue("Average "+processorName+" For Month "+month+" "+average);
-      }
+        for (Map.Entry<String, List<Double>> entry : monthlyValues.entrySet()) {
+            String month = entry.getKey();
+
+            DoubleSummaryStatistics stats = entry.getValue().stream()
+                    .filter(Objects::nonNull)
+                    .filter(Double::isFinite)
+                    .mapToDouble(Double::doubleValue)
+                    .summaryStatistics();
+
+            double average = stats.getCount() > 0
+                    ? Math.round(stats.getAverage())
+                    : Double.NaN;
+
+            addAverageValue(
+                    "Average " + processorName +
+                            " For Month " + month + " " + average
+            );
+        }
     }
 
     @Override
     public void calculateMedianAverageValue() {
-        Set<String> monthNames= monthlyValues.keySet();
+        for (Map.Entry<String, List<Double>> entry : monthlyValues.entrySet()) {
+            String month = entry.getKey();
 
-        for(String month:monthNames) {
-            List<Double> monthlyValues = this.monthlyValues.get(month);
-            double average = ArrayUtilities.medianOfList(monthlyValues);
+            List<Double> values = entry.getValue().stream()
+                    .filter(Objects::nonNull)
+                    .filter(Double::isFinite)
+                    .sorted()
+                    .toList();
 
-            addAverageValue(" Median Average For " + processorName + " " + average);
+            double median = values.isEmpty()
+                    ? Double.NaN
+                    : ArrayUtilities.medianOfList(values);
+
+            addAverageValue(
+                    "Median Average For " + processorName +
+                            " For Month " + month + " " + median
+            );
         }
-
     }
 
     /**
