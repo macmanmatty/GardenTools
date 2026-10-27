@@ -82,6 +82,7 @@ public class WeatherRequest {
     private int noaaStationSearchRadius = 25;
 
     private String noaaStationType = NOAAStationType.FALL_BACK.toString();
+    private WeatherMode weatherMode= WeatherMode.AUTO;
 
 
     public List<Location> locations = new ArrayList<>();

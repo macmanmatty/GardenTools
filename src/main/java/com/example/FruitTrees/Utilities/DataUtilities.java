@@ -171,7 +171,7 @@ public class DataUtilities {
                 return "REM";
             // Unknown
             default:
-               throw new IllegalArgumentException("Invalid field name: " + field);
+               return null;
         }
     }
     /**

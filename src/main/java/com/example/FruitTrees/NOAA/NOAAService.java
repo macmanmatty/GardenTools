@@ -54,29 +54,62 @@ public class NOAAService {
      * @return
      * @throws IOException
      */
-    private LocationResponses makeRequest( LocationResponses locationResponses, WeatherRequest weatherRequest) throws IOException, InterruptedException {
-        List<Location> locations =weatherRequest.getLocations();
+    private LocationResponses makeRequest(
+            LocationResponses locationResponses,
+            WeatherRequest weatherRequest)
+            throws IOException, InterruptedException {
+
+        List<Location> locations = weatherRequest.getLocations();
+
         requestValidation.locationCheck(locations);
-        boolean populateLocationData= weatherRequest.isPopulateLocationData();
-        NOAALocationResponse noaaLocationResponse= new NOAALocationResponse();
+
+        boolean populateLocationData =
+                weatherRequest.isPopulateLocationData();
+
         for (Location location : locations) {
+
             try {
-                for(HourlyWeatherProcessRequest weatherProcessor: weatherRequest.hourlyWeatherProcessRequests) {
-                    NOAAHourlyDataMap noaaHourlyDataMap = noaahttpRequest.makeLocationRequest(location, weatherRequest, weatherProcessor);
-                    noaaLocationResponse.getNoaaHourlyDataMap().getNoaaHourlyObservationsMap().putAll(noaaHourlyDataMap.getNoaaHourlyObservationsMap());
+                NOAALocationResponse noaaLocationResponse =
+                        new NOAALocationResponse();
+
+                noaaLocationResponse.setLocation(location);
+
+                List<HourlyWeatherProcessRequest> processors =
+                        weatherRequest.getHourlyWeatherProcessRequests();
+
+                if (processors == null || processors.isEmpty()) {
+                    throw new IllegalArgumentException(
+                            "At least one hourly weather processor is required"
+                    );
                 }
-                    if (populateLocationData) {
-                        openStreetLocationService.populateLocationData(location);
-                    }
-                //locationResponses.getLocationResponses().add(noaaLocationResponse);
+
+                NOAAHourlyDataMap noaaHourlyDataMap =
+                        noaahttpRequest.makeLocationRequest(
+                                location,
+                                weatherRequest,
+                                processors.get(0)
+                        );
+
+                noaaLocationResponse.setNoaaHourlyDataMap(
+                        noaaHourlyDataMap
+                );
+
+                if (populateLocationData) {
+                    openStreetLocationService.populateLocationData(location);
+                }
+
+                locationResponses.getLocationResponses()
+                        .add(noaaLocationResponse);
 
             } catch (RestClientException e) {
-                Logger.getLogger("").info(e.toString());
+
+                Logger.getLogger(NOAAService.class.getName())
+                        .severe("NOAA request failed: " + e.getMessage());
 
                 throw new IOException(e);
             }
         }
-        return  locationResponses;
-    }
 
+        return locationResponses;
+    }
 }

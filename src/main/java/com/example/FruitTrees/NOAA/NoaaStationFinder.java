@@ -4,49 +4,34 @@ import com.example.FruitTrees.Utilities.WeatherUtilities;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.*;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponentsBuilder;
 
+import java.net.URI;
+import java.time.LocalDate;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
 import java.util.logging.Logger;
 
 @Component
 public class NoaaStationFinder {
-
+    private static final Logger LOGGER = Logger.getLogger(NoaaStationFinder.class.getName());
+    private static final String DATASET = "global-hourly";
     private static final double MILES_PER_LATITUDE_DEGREE = 69.0;
+    private static final int PAGE_SIZE = 1000;
+    private static final int MAX_PAGES = 20;
 
-    @Value("${noaa.station.url}")
-    private String noaaStationUrl;
-
-    @Value("${noaa.api.key}")
-    private String noaaApiKey;
+    @Value("${noaa.station.url-hourly:https://www.ncei.noaa.gov/access/services/search/v1/data}")
+    private String searchUrl;
 
     private final RestTemplate restTemplate = new RestTemplate();
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    /**
-     * Finds the nearest NOAA station of the requested type.
-     *
-     * DAILY:
-     *   Searches for the nearest GHCN-Daily station.
-     *
-     * HOURLY:
-     *   Searches for the nearest NOAA hourly station.
-     *
-     * FALL_BACK:
-     *   Searches for an hourly station first. If no hourly station is
-     *   available within the requested radius, searches for a daily station.
-     *
-     * @param latitude    target latitude
-     * @param longitude   target longitude
-     * @param radiusMiles maximum search radius in miles
-     * @param startDate   requested start date
-     * @param endDate     requested end date
-     * @param dataType    requested NOAA data type
-     * @param stationType type of NOAA station to search for
-     *
-     * @return nearest station ID, or null if no suitable station is found
-     */
+    /** Returns a Global Hourly station ID, or null when none qualifies. */
     public String findNearestStation(
             double latitude,
             double longitude,
@@ -57,272 +42,155 @@ public class NoaaStationFinder {
             NOAAStationType stationType) {
 
         if (stationType == null) {
-            throw new IllegalArgumentException(
-                    "NOAA station type cannot be null"
-            );
+            throw new IllegalArgumentException("Station type is required");
+        }
+        if (stationType == NOAAStationType.DAILY) {
+            throw new UnsupportedOperationException("Daily NOAA station discovery is not supported");
+        }
+        if (!Double.isFinite(latitude) || latitude < -90 || latitude > 90
+                || !Double.isFinite(longitude) || longitude < -180 || longitude > 180
+                || !Double.isFinite(radiusMiles) || radiusMiles <= 0) {
+            throw new IllegalArgumentException("Invalid coordinates or radius");
+        }
+        LocalDate from = LocalDate.parse(startDate);
+        LocalDate to = LocalDate.parse(endDate);
+        if (from.isAfter(to)) {
+            throw new IllegalArgumentException("Start date is after end date");
+        }
+        if (dataType == null || dataType.isBlank()) {
+            throw new IllegalArgumentException("Data type is required");
         }
 
-        return switch (stationType) {
+        String requiredType = dataType.trim().toUpperCase(Locale.ROOT);
+        String bbox = getBoundingBox(radiusMiles, latitude, longitude);
+        Map<String, Candidate> candidates = new HashMap<>();
 
-            case HOURLY -> findNearestHourlyStation(
-                    latitude,
-                    longitude,
-                    radiusMiles,
-                    startDate,
-                    endDate,
-                    dataType
-            );
+        for (int page = 0; page < MAX_PAGES; page++) {
+            int offset = page * PAGE_SIZE;
+            URI uri = UriComponentsBuilder.fromUriString(searchUrl)
+                    .queryParam("dataset", DATASET)
+                    .queryParam("bbox", bbox)
+                    .queryParam("startDate", startDate)
+                    .queryParam("endDate", endDate)
+                    .queryParam("dataTypes", requiredType)
+                    .queryParam("limit", PAGE_SIZE)
+                    .queryParam("offset", offset)
+                    .build().encode().toUri();
 
-            case DAILY -> findNearestDailyStation(
-                    latitude,
-                    longitude,
-                    radiusMiles,
-                    startDate,
-                    endDate,
-                    dataType
-            );
+            LOGGER.info("Searching NOAA Global Hourly stations: " + uri);
+            String response = restTemplate.getForObject(uri, String.class);
+            if (response == null || response.isBlank()) {
+                throw new IllegalStateException("Empty NOAA search response");
+            }
 
-            case FALL_BACK -> {
+            JsonNode root;
+            try {
+                root = objectMapper.readTree(response);
+            } catch (Exception e) {
+                throw new IllegalStateException("Unable to parse NOAA search response", e);
+            }
+            JsonNode results = root.path("results");
+            if (!results.isArray()) {
+                throw new IllegalStateException("NOAA search response has no results array");
+            }
 
-                // Prefer hourly observations whenever they are available.
-                String stationId = findNearestHourlyStation(
-                        latitude,
-                        longitude,
-                        radiusMiles,
-                        startDate,
-                        endDate,
-                        dataType
-                );
-
-                // If no hourly station exists within the requested radius,
-                // fall back to the nearest suitable daily station.
-                if (stationId == null || stationId.isBlank()) {
-
-                    stationId = findNearestDailyStation(
-                            latitude,
-                            longitude,
-                            radiusMiles,
-                            startDate,
-                            endDate,
-                            dataType
-                    );
+            for (JsonNode record : results) {
+                JsonNode coordinates = record.path("location").path("coordinates");
+                if (!coordinates.isArray() || coordinates.size() < 2
+                        || !coordinates.get(0).isNumber() || !coordinates.get(1).isNumber()) {
+                    continue;
+                }
+                // GeoJSON coordinates are [longitude, latitude].
+                double stationLongitude = coordinates.get(0).asDouble();
+                double stationLatitude = coordinates.get(1).asDouble();
+                double distance = WeatherUtilities.distanceMiles(
+                        latitude, longitude, stationLatitude, stationLongitude);
+                if (distance > radiusMiles) {
+                    continue;
                 }
 
-                yield stationId;
-            }
-        };
-    }
-    /**
-     * Finds the nearest GHCN-Daily station.
-     */
-    private String findNearestDailyStation(
-            double latitude,
-            double longitude,
-            double radiusMiles,
-            String startDate,
-            String endDate,
-            String dataType) {
+                String year = record.path("startDate").asText("");
+                if (year.length() >= 4) {
+                    year = year.substring(0, 4);
+                }
 
-        return findNearestStationForDataset(
-                latitude,
-                longitude,
-                radiusMiles,
-                startDate,
-                endDate,
-                dataType,
-                "GHCND"
-        );
-    }
-
-    /**
-     * Finds the nearest NOAA hourly station.
-     */
-    private String findNearestHourlyStation(
-            double latitude,
-            double longitude,
-            double radiusMiles,
-            String startDate,
-            String endDate,
-            String dataType) {
-
-        return findNearestStationForDataset(
-                latitude,
-                longitude,
-                radiusMiles,
-                startDate,
-                endDate,
-                dataType,
-                "global-hourly"
-        );
-    }
-
-   
-    /**
-     * Searches a specific NOAA dataset for the nearest station.
-     */
-    private String findNearestStationForDataset(
-            double latitude,
-            double longitude,
-            double radiusMiles,
-            String startDate,
-            String endDate,
-            String dataType,
-            String datasetId) {
-
-        try {
-
-            String url = String.format(
-                    "%s?datasetid=%s"
-                            + "&extent=%s"
-                            + "&datatypeid=%s"
-                            + "&startdate=%s"
-                            + "&enddate=%s"
-                            + "&limit=1000",
-                    noaaStationUrl,
-                    datasetId,
-                    getExtent(radiusMiles, latitude, longitude),
-                    dataType,
-                    startDate,
-                    endDate
-            );
-
-            Logger.getLogger("").info(
-                    "Searching NOAA " + datasetId + " stations: " + url
-            );
-
-            HttpHeaders headers = new HttpHeaders();
-            headers.set("token", noaaApiKey);
-
-            HttpEntity<Void> entity = new HttpEntity<>(headers);
-
-            ResponseEntity<String> response = restTemplate.exchange(
-                    url,
-                    HttpMethod.GET,
-                    entity,
-                    String.class
-            );
-
-            JsonNode json =
-                    objectMapper.readTree(response.getBody());
-
-            JsonNode results =
-                    json.get("results");
-
-            if (results == null
-                    || !results.isArray()
-                    || results.isEmpty()) {
-
-                return null;
+                for (JsonNode station : record.path("stations")) {
+                    String stationId = station.path("id").asText("");
+                    if (stationId.isBlank() || !hasDataType(station, requiredType)) {
+                        continue;
+                    }
+                    Candidate candidate = candidates.computeIfAbsent(
+                            stationId, id -> new Candidate(id, distance));
+                    candidate.distanceMiles = Math.min(candidate.distanceMiles, distance);
+                    if (year.length() == 4) {
+                        candidate.years.add(year);
+                    }
+                }
             }
 
-            return getClosestStation(
-                    results,
-                    latitude,
-                    longitude,
-                    radiusMiles
-            );
+            if (results.size() < PAGE_SIZE) {
+                break;
+            }
+            if (page == MAX_PAGES - 1) {
+                throw new IllegalStateException(
+                        "NOAA search exceeded " + MAX_PAGES + " pages; cannot rank complete results");
+            }
+        }
 
-        } catch (Exception e) {
-
-            Logger.getLogger("")
-                    .severe(
-                            "Error finding NOAA "
-                                    + datasetId
-                                    + " station: "
-                                    + e.getMessage()
-                    );
-
+        // Favor longer historical coverage; use distance to break ties.
+        Candidate best = null;
+        for (Candidate candidate : candidates.values()) {
+            if (best == null
+                    || candidate.years.size() > best.years.size()
+                    || (candidate.years.size() == best.years.size()
+                    && candidate.distanceMiles < best.distanceMiles)) {
+                best = candidate;
+            }
+        }
+        if (best == null) {
+            LOGGER.info("No matching Global Hourly station within " + radiusMiles + " miles");
             return null;
         }
-    }
-    /**
-     * Creates the NOAA geographic extent (bounding box) used to search
-     * for stations near the requested latitude/longitude.
-     *
-     * NOAA expects:
-     *
-     * southLatitude,westLongitude,northLatitude,eastLongitude
-     *
-     * Latitude is approximately 69 miles per degree. Longitude varies
-     * with latitude, so its conversion is adjusted using cosine.
-     */
-    private String getExtent(
-            double radiusMiles,
-            double latitude,
-            double longitude) {
-
-        double latitudeDelta =
-                radiusMiles / MILES_PER_LATITUDE_DEGREE;
-
-        double longitudeDelta =
-                radiusMiles /
-                        (MILES_PER_LATITUDE_DEGREE *
-                                Math.cos(Math.toRadians(latitude)));
-
-        return String.format(
-                "%f,%f,%f,%f",
-                latitude - latitudeDelta,   // south
-                longitude - longitudeDelta, // west
-                latitude + latitudeDelta,   // north
-                longitude + longitudeDelta  // east
-        );
+        LOGGER.info("Selected Global Hourly station " + best.id
+                + " (" + best.years.size() + " years, "
+                + best.distanceMiles + " miles away)");
+        return best.id;
     }
 
-    /**
-     * Finds the closest station in the NOAA results.
-     *
-     * The NOAA extent search returns stations inside a rectangular
-     * bounding box. Because the box can contain stations farther than
-     * the requested radius, the actual great-circle distance is checked
-     * before accepting a station.
-     */
-    private String getClosestStation(
-            JsonNode results,
-            double latitude,
-            double longitude,
-            double radiusMiles) {
-
-        JsonNode closest = null;
-        double closestDistance = Double.MAX_VALUE;
-
-        for (JsonNode station : results) {
-
-            // Skip malformed station records.
-            if (!station.hasNonNull("latitude")
-                    || !station.hasNonNull("longitude")
-                    || !station.hasNonNull("id")) {
-                continue;
-            }
-
-            double stationLat =
-                    station.get("latitude").asDouble();
-
-            double stationLon =
-                    station.get("longitude").asDouble();
-
-            double distance = WeatherUtilities.distanceMiles(
-                    latitude,
-                    longitude,
-                    stationLat,
-                    stationLon
-            );
-
-            /*
-             * The NOAA search uses a rectangular bounding box.
-             * Enforce the requested circular radius here.
-             */
-            if (distance <= radiusMiles
-                    && distance < closestDistance) {
-
-                closestDistance = distance;
-                closest = station;
+    private boolean hasDataType(JsonNode station, String requiredType) {
+        JsonNode types = station.path("dataTypes");
+        if (!types.isArray()) {
+            return false;
+        }
+        for (JsonNode type : types) {
+            if (requiredType.equalsIgnoreCase(type.path("id").asText(""))) {
+                return true;
             }
         }
-
-        return closest != null
-                ? closest.get("id").asText()
-                : null;
+        return false;
     }
 
+    /** NOAA Access Search bbox order: north, west, south, east. */
+    private String getBoundingBox(double radiusMiles, double latitude, double longitude) {
+        double latDelta = radiusMiles / MILES_PER_LATITUDE_DEGREE;
+        double maxLatitude = Math.min(90.0, latitude + latDelta);
+        double minLatitude = Math.max(-90.0, latitude - latDelta);
+        double cosine = Math.cos(Math.toRadians(latitude));
+        double lonDelta = Math.abs(cosine) < 0.000001
+                ? 180.0 : Math.min(180.0, radiusMiles / (MILES_PER_LATITUDE_DEGREE * Math.abs(cosine)));
+        return String.format(Locale.ROOT, "%.6f,%.6f,%.6f,%.6f",
+                maxLatitude, Math.max(-180.0, longitude - lonDelta),
+                minLatitude, Math.min(180.0, longitude + lonDelta));
+    }
 
+    private static final class Candidate {
+        private final String id;
+        private double distanceMiles;
+        private final Set<String> years = new HashSet<>();
+
+        private Candidate(String id, double distanceMiles) {
+            this.id = id;
+            this.distanceMiles = distanceMiles;
+        }
+    }
 }
