@@ -10,11 +10,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
 import java.time.LocalDate;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.logging.Logger;
 
 @Component
@@ -31,53 +27,66 @@ public class NoaaStationFinder {
     private final RestTemplate restTemplate = new RestTemplate();
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    /** Returns a Global Hourly station ID, or null when none qualifies. */
+
     public String findNearestStation(
             double latitude,
             double longitude,
             double radiusMiles,
             String startDate,
             String endDate,
-            String dataType,
+            Set<String> dataTypes,
             NOAAStationType stationType) {
 
         if (stationType == null) {
             throw new IllegalArgumentException("Station type is required");
         }
         if (stationType == NOAAStationType.DAILY) {
-            throw new UnsupportedOperationException("Daily NOAA station discovery is not supported");
+            throw new UnsupportedOperationException(
+                    "Daily NOAA station discovery is not supported");
         }
         if (!Double.isFinite(latitude) || latitude < -90 || latitude > 90
                 || !Double.isFinite(longitude) || longitude < -180 || longitude > 180
                 || !Double.isFinite(radiusMiles) || radiusMiles <= 0) {
             throw new IllegalArgumentException("Invalid coordinates or radius");
         }
+
         LocalDate from = LocalDate.parse(startDate);
         LocalDate to = LocalDate.parse(endDate);
         if (from.isAfter(to)) {
             throw new IllegalArgumentException("Start date is after end date");
         }
-        if (dataType == null || dataType.isBlank()) {
-            throw new IllegalArgumentException("Data type is required");
+
+        if (dataTypes == null || dataTypes.isEmpty()) {
+            throw new IllegalArgumentException("At least one data type is required");
         }
 
-        String requiredType = dataType.trim().toUpperCase(Locale.ROOT);
+        Set<String> requiredTypes = new LinkedHashSet<>();
+        for (String dataType : dataTypes) {
+            if (dataType == null || dataType.isBlank()) {
+                continue;
+
+            }
+            requiredTypes.add(dataType.trim().toUpperCase(Locale.ROOT));
+        }
+
         String bbox = getBoundingBox(radiusMiles, latitude, longitude);
         Map<String, Candidate> candidates = new HashMap<>();
 
         for (int page = 0; page < MAX_PAGES; page++) {
             int offset = page * PAGE_SIZE;
+
             URI uri = UriComponentsBuilder.fromUriString(searchUrl)
                     .queryParam("dataset", DATASET)
                     .queryParam("bbox", bbox)
                     .queryParam("startDate", startDate)
                     .queryParam("endDate", endDate)
-                    .queryParam("dataTypes", requiredType)
+                    .queryParam("dataTypes", String.join(",", requiredTypes))
                     .queryParam("limit", PAGE_SIZE)
                     .queryParam("offset", offset)
                     .build().encode().toUri();
 
             LOGGER.info("Searching NOAA Global Hourly stations: " + uri);
+
             String response = restTemplate.getForObject(uri, String.class);
             if (response == null || response.isBlank()) {
                 throw new IllegalStateException("Empty NOAA search response");
@@ -87,24 +96,32 @@ public class NoaaStationFinder {
             try {
                 root = objectMapper.readTree(response);
             } catch (Exception e) {
-                throw new IllegalStateException("Unable to parse NOAA search response", e);
+                throw new IllegalStateException(
+                        "Unable to parse NOAA search response", e);
             }
+
             JsonNode results = root.path("results");
             if (!results.isArray()) {
-                throw new IllegalStateException("NOAA search response has no results array");
+                throw new IllegalStateException(
+                        "NOAA search response has no results array");
             }
 
             for (JsonNode record : results) {
-                JsonNode coordinates = record.path("location").path("coordinates");
+                JsonNode coordinates =
+                        record.path("location").path("coordinates");
+
                 if (!coordinates.isArray() || coordinates.size() < 2
-                        || !coordinates.get(0).isNumber() || !coordinates.get(1).isNumber()) {
+                        || !coordinates.get(0).isNumber()
+                        || !coordinates.get(1).isNumber()) {
                     continue;
                 }
-                // GeoJSON coordinates are [longitude, latitude].
+
                 double stationLongitude = coordinates.get(0).asDouble();
                 double stationLatitude = coordinates.get(1).asDouble();
+
                 double distance = WeatherUtilities.distanceMiles(
                         latitude, longitude, stationLatitude, stationLongitude);
+
                 if (distance > radiusMiles) {
                     continue;
                 }
@@ -116,12 +133,18 @@ public class NoaaStationFinder {
 
                 for (JsonNode station : record.path("stations")) {
                     String stationId = station.path("id").asText("");
-                    if (stationId.isBlank() || !hasDataType(station, requiredType)) {
+
+                    if (stationId.isBlank()
+                            || !hasAllDataTypes(station, requiredTypes)) {
                         continue;
                     }
+
                     Candidate candidate = candidates.computeIfAbsent(
                             stationId, id -> new Candidate(id, distance));
-                    candidate.distanceMiles = Math.min(candidate.distanceMiles, distance);
+
+                    candidate.distanceMiles =
+                            Math.min(candidate.distanceMiles, distance);
+
                     if (year.length() == 4) {
                         candidate.years.add(year);
                     }
@@ -131,14 +154,16 @@ public class NoaaStationFinder {
             if (results.size() < PAGE_SIZE) {
                 break;
             }
+
             if (page == MAX_PAGES - 1) {
                 throw new IllegalStateException(
-                        "NOAA search exceeded " + MAX_PAGES + " pages; cannot rank complete results");
+                        "NOAA search exceeded " + MAX_PAGES
+                                + " pages; cannot rank complete results");
             }
         }
 
-        // Favor longer historical coverage; use distance to break ties.
         Candidate best = null;
+
         for (Candidate candidate : candidates.values()) {
             if (best == null
                     || candidate.years.size() > best.years.size()
@@ -147,28 +172,45 @@ public class NoaaStationFinder {
                 best = candidate;
             }
         }
+
         if (best == null) {
-            LOGGER.info("No matching Global Hourly station within " + radiusMiles + " miles");
+            LOGGER.info("No station within " + radiusMiles
+                    + " miles reports all requested types: " + requiredTypes);
             return null;
         }
+
         LOGGER.info("Selected Global Hourly station " + best.id
                 + " (" + best.years.size() + " years, "
-                + best.distanceMiles + " miles away)");
+                + best.distanceMiles + " miles away)"
+                + " for " + requiredTypes);
+
         return best.id;
     }
 
-    private boolean hasDataType(JsonNode station, String requiredType) {
+
+    private boolean hasAllDataTypes(
+            JsonNode station,
+            Set<String> requiredTypes) {
+
         JsonNode types = station.path("dataTypes");
+
         if (!types.isArray()) {
             return false;
         }
+
+        Set<String> availableTypes = new HashSet<>();
+
         for (JsonNode type : types) {
-            if (requiredType.equalsIgnoreCase(type.path("id").asText(""))) {
-                return true;
+            String id = type.path("id").asText("");
+
+            if (!id.isBlank()) {
+                availableTypes.add(id.trim().toUpperCase(Locale.ROOT));
             }
         }
-        return false;
+
+        return availableTypes.containsAll(requiredTypes);
     }
+
 
     /** NOAA Access Search bbox order: north, west, south, east. */
     private String getBoundingBox(double radiusMiles, double latitude, double longitude) {

@@ -6,6 +6,7 @@ import com.example.FruitTrees.WeatherProcessor.WeatherProcessorService;
 import com.example.FruitTrees.WeatherConroller.HourlyWeatherProcessRequest;
 import com.example.FruitTrees.WeatherConroller.WeatherRequest;
 import com.example.FruitTrees.WeatherConroller.WeatherResponse.WeatherResponse;
+import com.example.FruitTrees.WeatherProcessor.WeatherProcessors.DataProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -42,6 +43,7 @@ public class OpenMeteoService {
         List<HourlyWeatherProcessRequest> hourlyWeatherProcessRequests=weatherRequest.getHourlyWeatherProcessRequests();
         weatherRequest.getHourlyDataTypes().clear();
         for(HourlyWeatherProcessRequest hourlyWeatherProcessRequest:hourlyWeatherProcessRequests){
+            hourlyWeatherProcessRequest.setDataProvider(DataProvider.OPEN_METEO);
             weatherRequest.getHourlyDataTypes().add(hourlyWeatherProcessRequest.getHourlyDataType());
         }
     }

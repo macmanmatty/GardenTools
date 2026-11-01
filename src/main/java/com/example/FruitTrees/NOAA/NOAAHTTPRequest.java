@@ -1,7 +1,6 @@
 package com.example.FruitTrees.NOAA;
 import com.example.FruitTrees.Location.Location;
 import com.example.FruitTrees.Utilities.DataUtilities;
-import com.example.FruitTrees.WeatherConroller.HourlyWeatherProcessRequest;
 import com.example.FruitTrees.WeatherConroller.WeatherRequest;
 import com.google.common.util.concurrent.RateLimiter;
 import org.springframework.beans.factory.annotation.Value;
@@ -14,7 +13,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
-
 import java.net.URI;
 import java.time.LocalDate;
 import java.util.*;
@@ -38,8 +36,6 @@ public class NOAAHTTPRequest {
     private static final int PAGE_SIZE = 1000;
     @Value("${noaa.url}")
     private String noaaUrl;
-    @Value("${noaa.api.key}")
-    private String noaaApiKey;
     private final RestTemplate restTemplate = new RestTemplate();
     private final CacheManager cacheManager;
     private final NoaaStationFinder noaaStationFinder;
@@ -71,8 +67,6 @@ public class NOAAHTTPRequest {
      * @param location location for which weather data is requested
      * @param weatherRequest request containing date range, search radius,
      *                       and requested hourly data types
-     * @param hourlyWeatherProcessRequest information about the hourly
-     *                                    weather calculation being performed
      *
      * @return NOAA hourly observations organized in a NOAAHourlyDataMap
      *
@@ -87,8 +81,7 @@ public class NOAAHTTPRequest {
     )
     public NOAAHourlyDataMap makeLocationRequest(
             Location location,
-            WeatherRequest weatherRequest,
-            HourlyWeatherProcessRequest hourlyWeatherProcessRequest)
+            WeatherRequest weatherRequest)
        {
         LocalDate startDate = LocalDate.parse(
                 weatherRequest.getStartDate().toString()
@@ -103,16 +96,18 @@ public class NOAAHTTPRequest {
         }
         String stationId = location.getStationId();
         if (stationId == null || stationId.isBlank()) {
+            Set<String> requiredTypes = new LinkedHashSet<>();
+            for (String dataType : weatherRequest.getHourlyDataTypes()) {
+                requiredTypes.add(DataUtilities.toNOAADatatype(dataType));
+            }
             stationId = noaaStationFinder.findNearestStation(
                     location.getLatitude(),
                     location.getLongitude(),
                     weatherRequest.getNoaaStationSearchRadius(),
                     weatherRequest.getStartDate(),
                     weatherRequest.getEndDate(),
-                    DataUtilities.toNOAADatatype(hourlyWeatherProcessRequest.getHourlyDataType()),
-                    NOAAStationType.fromString(
-                            weatherRequest.getNoaaStationType()
-                    )
+                    requiredTypes,
+                    NOAAStationType.fromString(weatherRequest.getNoaaStationType())
             );
         }
         if (stationId == null || stationId.isBlank()) {
@@ -159,7 +154,6 @@ public class NOAAHTTPRequest {
             LocalDate startDate,
             LocalDate endDate,
             List<NOAAWeatherRecord> allData) {
-
         String url = buildNoaaUrl(
                 stationId,
                 weatherRequest,
@@ -168,16 +162,11 @@ public class NOAAHTTPRequest {
         );
         boolean useFahrenheit = true;
         if (weatherRequest.temperatureUnit.equalsIgnoreCase("celsius") || weatherRequest.temperatureUnit.equalsIgnoreCase("c")) {
-
         useFahrenheit = false;
         }
-
         limiter.acquire();
-
         URI uri = URI.create(url);
-
         LOGGER.info("NOAA REQUEST: " + uri);
-
         HttpHeaders headers = new HttpHeaders();
         HttpEntity<Void> entity = new HttpEntity<>(headers);
         ResponseEntity<NOAAGlobalHourlyRecord[]> response =
@@ -187,26 +176,20 @@ public class NOAAHTTPRequest {
                         entity,
                         NOAAGlobalHourlyRecord[].class
                 );
-
         NOAAGlobalHourlyRecord[] results = Objects.requireNonNull(
                 response.getBody(),
                 "NOAA returned an empty response body"
         );
-
         for (NOAAGlobalHourlyRecord record : results) {
             allData.addAll(convertRecord(record, useFahrenheit));
         }
-
         LOGGER.info("Retrieved " + results.length
                 + " NOAA observations for " + startDate
                 + " through " + endDate);
     }
-
     private List<NOAAWeatherRecord> convertRecord(
             NOAAGlobalHourlyRecord raw, boolean useFahrenheit) {
-
         List<NOAAWeatherRecord> records = new ArrayList<>();
-
         addMeasurement(
                 records,
                 raw,
@@ -215,7 +198,6 @@ public class NOAAHTTPRequest {
                 10.0,
                 9999, useFahrenheit
         );
-
         addMeasurement(
                 records,
                 raw,
@@ -224,10 +206,8 @@ public class NOAAHTTPRequest {
                 10.0,
                 9999, useFahrenheit
         );
-
         return records;
     }
-
     private void addMeasurement(
             List<NOAAWeatherRecord> records,
             NOAAGlobalHourlyRecord raw,
@@ -235,33 +215,24 @@ public class NOAAHTTPRequest {
             String encodedValue,
             double divisor,
             int missingValue,  boolean useFahrenheit) {
-
         if (encodedValue == null || encodedValue.isBlank()) {
             return;
         }
-
         String[] parts = encodedValue.split(",");
-
         if (parts.length < 2) {
             return;
         }
-
         try {
             int encoded = Integer.parseInt(parts[0]);
-
             if (Math.abs(encoded) == missingValue) {
                 return;
             }
-
             String qualityFlag = parts[1];
-
             if (!qualityFlag.equals("1")
                     && !qualityFlag.equals("5")) {
                 return;
             }
-
             NOAAWeatherRecord record = new NOAAWeatherRecord();
-
             record.setDate(raw.getDate());
             record.setStation(raw.getStation());
             record.setDatatype(datatype);
@@ -272,7 +243,6 @@ public class NOAAHTTPRequest {
                 record.setValue(fahrenheit);
             }
             records.add(record);
-
         } catch (NumberFormatException e) {
             LOGGER.warning(
                     "Invalid NOAA " + datatype + " value: " + encodedValue
@@ -287,29 +257,23 @@ public class NOAAHTTPRequest {
             WeatherRequest weatherRequest,
             LocalDate startDate,
             LocalDate endDate) {
-
         Set<String> requestedTypes =
                 weatherRequest.getHourlyDataTypes();
-
         HashSet<String> dataTypes =  new LinkedHashSet<String>();
-
         if (requestedTypes != null) {
             for (String datatype : requestedTypes) {
                 String noaaDatatype =
                         DataUtilities.toNOAADatatype(datatype);
-
                 if (noaaDatatype != null && !noaaDatatype.isBlank()) {
                     dataTypes.add(noaaDatatype);
                 }
             }
         }
-
         if (dataTypes.isEmpty()) {
             throw new IllegalArgumentException(
                     "At least one NOAA hourly data type is required"
             );
         }
-
         return UriComponentsBuilder
                 .fromUriString(noaaUrl)
                 .queryParam("dataset", "global-hourly")

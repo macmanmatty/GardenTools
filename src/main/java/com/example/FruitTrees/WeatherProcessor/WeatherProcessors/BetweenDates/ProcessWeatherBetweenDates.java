@@ -52,8 +52,8 @@ public abstract  class ProcessWeatherBetweenDates  extends WeatherProcessor {
                     onEndDate(date);
                 }
             }
-            if(processing){
-                processWeatherBetween(value, date);
+            if(processing && Double.isFinite(value) ){
+                    processWeatherBetween(value, date);
             }
         }
     /**

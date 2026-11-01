@@ -69,8 +69,11 @@ public abstract  class DailyAndMonthlyWeatherProcessor extends WeatherProcessor 
      */
     @Override
     public void processWeather(double value, LocalDateTime date) {
-        processWeatherBetween(value, date);
-        DateRecord dateRecord=analyzeDate(date);
+
+        if(Double.isFinite(value) ) {
+            processWeatherBetween(value, date);
+        }
+        dateRecord=processTimestamp(date);
         switch (dateRecord.hourType()){
             case START_DAY -> {
                 onStartDay(value, date);
@@ -207,11 +210,12 @@ public abstract  class DailyAndMonthlyWeatherProcessor extends WeatherProcessor 
      * or the last day of the month or new years day or new years eve
      * if so sets the current years and month and returns a enum used to call
      * the correct abstract processing method
+     *
      * @param localDate the current date and time being processed
      * @return true if the day / time is the 0 hour of the first day of the month
      * otherwise returns false
      */
-    protected DateRecord analyzeDate(LocalDateTime localDate) {
+    protected DateRecord processTimestamp(LocalDateTime localDate) {
 
         // Determine hour type
         DateType hourType = switch (localDate.getHour()) {

@@ -104,9 +104,12 @@ public abstract class WeatherProcessor {
      *
      */
         String stationId;
+
+        protected  DateRecord dateRecord;
     /**
      * external processors required by this one
      */
+    protected DataProvider dataProvider=DataProvider.OPEN_METEO;
     public List<HourlyWeatherProcessRequest> hourlyWeatherProcessRequests = new ArrayList<>();
     public WeatherProcessor(String processorName) {
         this.processorName = processorName;
@@ -131,6 +134,9 @@ public abstract class WeatherProcessor {
      * @param date the date and time the value happened
      */
     protected abstract void processWeather(double value, LocalDateTime date);
+
+
+
     /**
      *
      * the externally called method for processing weather
@@ -142,9 +148,8 @@ public abstract class WeatherProcessor {
             return;
         }
         // noaa may not have a value for all times
-        if(Double.isFinite(value) ){
             processWeather(value, date);
-        }
+
     }
     /**
      *

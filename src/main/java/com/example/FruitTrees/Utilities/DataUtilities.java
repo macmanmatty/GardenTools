@@ -1,5 +1,6 @@
 package com.example.FruitTrees.Utilities;
 import com.example.FruitTrees.OpenMeteo.OpenMeteoResponse;
+import com.example.FruitTrees.WeatherProcessor.WeatherProcessors.DataProvider;
 
 import java.util.*;
 import java.util.function.BiConsumer;
@@ -52,6 +53,19 @@ public class DataUtilities {
             }
         }
         return result;
+    }
+
+    public static  String getDataType(String field, DataProvider dataProvider){
+        switch (dataProvider){
+            case OPEN_METEO -> {
+                return  toOpenMeteoDatatype(field);
+            }
+            case NOAA -> {
+                return  toNOAADatatype(field);
+            }
+            default -> throw new IllegalArgumentException("Unsupported data provider " + dataProvider);
+        }
+
     }
     public static String toNOAADatatype(String field) {
         if (field == null) {
@@ -187,6 +201,7 @@ public class DataUtilities {
             case "dew_point":
             case "dew_point_temperature":
             case "dew_point_2m":
+            case "dewpoint_2m":
             case "md1": case "md2": case "md3": case "md4": case "md5": case "md6":
                 return "dew_point_2m";
             // Apparent temperature

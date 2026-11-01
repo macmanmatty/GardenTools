@@ -7,6 +7,7 @@ import com.example.FruitTrees.WeatherConroller.RequestValidation;
 import com.example.FruitTrees.WeatherConroller.WeatherRequest;
 import com.example.FruitTrees.WeatherConroller.WeatherResponse.WeatherResponse;
 import com.example.FruitTrees.WeatherProcessor.WeatherProcessorService;
+import com.example.FruitTrees.WeatherProcessor.WeatherProcessors.DataProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
@@ -71,11 +72,13 @@ public class NOAAService {
                             "At least one hourly weather processor is required"
                     );
                 }
+                for (HourlyWeatherProcessRequest processor : processors) {
+                    processor.setDataProvider(DataProvider.NOAA);
+                }
                 NOAAHourlyDataMap noaaHourlyDataMap =
                         noaahttpRequest.makeLocationRequest(
                                 location,
-                                weatherRequest,
-                                processors.get(0)
+                                weatherRequest
                         );
                 noaaLocationResponse.setNoaaHourlyDataMap(
                         noaaHourlyDataMap
