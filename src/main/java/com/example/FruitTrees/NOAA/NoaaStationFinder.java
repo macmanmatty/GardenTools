@@ -13,6 +13,19 @@ import java.time.LocalDate;
 import java.util.*;
 import java.util.logging.Logger;
 
+/**
+ * Finds a NOAA Global Hourly weather station for a geographic location.
+ *
+ * Searches stations within a specified radius and date range, requiring
+ * each qualifying station to report every requested NOAA data type.
+ *
+ * Stations are ranked by:
+ * 1. Number of distinct years represented in the search results.
+ * 2. Distance from the requested location, as a tiebreaker.
+ *
+ * Note: Station metadata indicating a data type is available does not
+ * guarantee complete hourly observations for that data type.
+ */
 @Component
 public class NoaaStationFinder {
     private static final Logger LOGGER = Logger.getLogger(NoaaStationFinder.class.getName());
@@ -27,6 +40,29 @@ public class NoaaStationFinder {
     private final RestTemplate restTemplate = new RestTemplate();
     private final ObjectMapper objectMapper = new ObjectMapper();
 
+    /**
+     * Finds the best qualifying NOAA Global Hourly station.
+     *
+     * A qualifying station must:
+     * - Be within the requested search radius.
+     * - Appear in NOAA search results for the requested date range.
+     * - Report all requested NOAA data types in its station metadata.
+     *
+     * The station with the most distinct years of matching search records
+     * is selected. Distance is used to break ties.
+     *
+     * @param latitude latitude of the requested location
+     * @param longitude longitude of the requested location
+     * @param radiusMiles maximum search distance in miles
+     * @param startDate beginning of the requested period, ISO yyyy-MM-dd
+     * @param endDate end of the requested period, ISO yyyy-MM-dd
+     * @param dataTypes required NOAA data types, such as TMP and DEW
+     * @param stationType requested NOAA station category
+     * @return selected station ID, or null if no station qualifies
+     * @throws IllegalArgumentException if input parameters are invalid
+     * @throws UnsupportedOperationException if daily discovery is requested
+     * @throws IllegalStateException if the NOAA search response is invalid
+     */
 
     public String findNearestStation(
             double latitude,
@@ -64,7 +100,6 @@ public class NoaaStationFinder {
         for (String dataType : dataTypes) {
             if (dataType == null || dataType.isBlank()) {
                 continue;
-
             }
             requiredTypes.add(dataType.trim().toUpperCase(Locale.ROOT));
         }
@@ -74,7 +109,6 @@ public class NoaaStationFinder {
 
         for (int page = 0; page < MAX_PAGES; page++) {
             int offset = page * PAGE_SIZE;
-
             URI uri = UriComponentsBuilder.fromUriString(searchUrl)
                     .queryParam("dataset", DATASET)
                     .queryParam("bbox", bbox)
