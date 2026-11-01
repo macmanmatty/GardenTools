@@ -145,9 +145,25 @@ public class NOAAHTTPRequest {
         }
         NOAAHourlyDataMap result = new NOAAHourlyDataMap();
         result.addRecords(allData);
-        noaaHourlyNormalizer.normalize(result);
-        return result;
+           noaaHourlyNormalizer.normalize(
+                   result,
+                   startDate,
+                   endDate
+           );
+           return result;
     }
+    /**
+     * Fetches NOAA Global Hourly observations for a date range.
+     *
+     * Converts the returned raw NOAA records into individual weather
+     * measurements and appends them to the supplied collection.
+     *
+     * @param stationId NOAA station identifier
+     * @param weatherRequest request containing data types and units
+     * @param startDate beginning of the date range
+     * @param endDate end of the date range
+     * @param allData destination collection for converted observations
+     */
     private void fetchDateRange(
             String stationId,
             WeatherRequest weatherRequest,
@@ -187,6 +203,16 @@ public class NOAAHTTPRequest {
                 + " NOAA observations for " + startDate
                 + " through " + endDate);
     }
+    /**
+     * Extracts supported measurements from a raw NOAA observation.
+     *
+     * Each raw observation may contain multiple meteorological fields.
+     * Currently converts temperature (TMP) and dew point (DEW).
+     *
+     * @param raw raw NOAA Global Hourly observation
+     * @param useFahrenheit whether to convert temperatures to Fahrenheit
+     * @return converted measurements from the raw observation
+     */
     private List<NOAAWeatherRecord> convertRecord(
             NOAAGlobalHourlyRecord raw, boolean useFahrenheit) {
         List<NOAAWeatherRecord> records = new ArrayList<>();
@@ -208,6 +234,23 @@ public class NOAAHTTPRequest {
         );
         return records;
     }
+    /**
+     * Decodes and validates a NOAA temperature measurement.
+     *
+     * NOAA encodes temperature and dew point as comma-separated values,
+     * with the numeric measurement stored in tenths of a degree Celsius.
+     *
+     * Measurements with missing values or disallowed quality flags
+     * are discarded.
+     *
+     * @param records destination list for valid measurements
+     * @param raw original NOAA observation
+     * @param datatype NOAA data type identifier
+     * @param encodedValue raw encoded measurement
+     * @param divisor scaling divisor applied to the encoded value
+     * @param missingValue NOAA missing-value sentinel
+     * @param useFahrenheit whether to convert Celsius to Fahrenheit
+     */
     private void addMeasurement(
             List<NOAAWeatherRecord> records,
             NOAAGlobalHourlyRecord raw,
@@ -250,7 +293,16 @@ public class NOAAHTTPRequest {
         }
     }
     /**
-     * Builds a CDO API v2 URL for one page of one date chunk.
+     * Builds the NOAA Global Hourly API URL.
+     *
+     * Converts requested application data types into NOAA identifiers,
+     * removes duplicates, and includes the station and date range.
+     *
+     * @param stationId NOAA station identifier
+     * @param weatherRequest weather request containing data types
+     * @param startDate beginning of the requested date chunk
+     * @param endDate end of the requested date chunk
+     * @return NOAA API request URL
      */
     private String buildNoaaUrl(
             String stationId,
