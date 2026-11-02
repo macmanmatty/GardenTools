@@ -26,6 +26,12 @@ public class WeatherProcessorController {
             WeatherResponse weatherResponse = new WeatherResponse();
             if(weatherRequest.isUseNOAA()) {
                weatherResponse = noaaService.getData(locationResponses, weatherRequest);
+               if(weatherResponse==null){
+                   weatherResponse = openMeteoService.getData(locationResponses, weatherRequest);
+                    if(weatherResponse==null){
+                        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+                    }
+               }
             }
             else{
                 weatherResponse = openMeteoService.getData(locationResponses, weatherRequest);

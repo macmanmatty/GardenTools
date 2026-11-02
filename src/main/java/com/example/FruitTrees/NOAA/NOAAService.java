@@ -31,7 +31,11 @@ public class NOAAService {
     public WeatherResponse getData(LocationResponses locationResponses, WeatherRequest weatherRequest ) throws IOException, InterruptedException {
         extractHourlyDataTypes(weatherRequest);
         LocationResponses noaaRespnses=makeRequest(locationResponses, weatherRequest);
+        if(noaaRespnses==null){
+            return null;
+        }
         WeatherResponse  response= weatherProcessorService.processHourlyData( weatherRequest, noaaRespnses);
+
         return  response;
     }
     /**
@@ -80,6 +84,10 @@ public class NOAAService {
                                 location,
                                 weatherRequest
                         );
+                if(noaaHourlyDataMap==null){
+
+                    return null;
+                }
                 noaaLocationResponse.setNoaaHourlyDataMap(
                         noaaHourlyDataMap
                 );

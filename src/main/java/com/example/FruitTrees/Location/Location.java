@@ -21,7 +21,7 @@ public class Location {
     /**
     the weather station id currently not used
      */
-   private  String stationId;
+   private  String noaaStationId;
 
    private String streetName;
 
@@ -46,6 +46,8 @@ public class Location {
     private String propertyType;
     private String propertyClass;
     private boolean populated=false;
+    private double elevation;
+    private double noaaStationElevation;
    private LocationArea locationArea= new LocationArea();
     public String getName() {
         return name;
@@ -65,11 +67,11 @@ public class Location {
     public void setLongitude(double  longitude) {
         this.longitude = longitude;
     }
-    public String getStationId() {
-        return stationId;
+    public String getNoaaStationId() {
+        return noaaStationId;
     }
-    public void setStationId(String stationId) {
-        this.stationId = stationId;
+    public void setNoaaStationId(String noaaStationId) {
+        this.noaaStationId = noaaStationId;
     }
     public long getId() {
         return id;
@@ -207,5 +209,21 @@ public class Location {
 
         this.latitude = Double.parseDouble(coordinates[0].trim());
         this.longitude = Double.parseDouble(coordinates[1].trim());
+    }
+
+    public double getElevation() {
+        return elevation;
+    }
+
+    public void setElevation(double elevation) {
+        this.elevation = elevation;
+    }
+
+    public double getNoaaStationElevation() {
+        return noaaStationElevation;
+    }
+
+    public void setNoaaStationElevation(double noaaStationElevation) {
+        this.noaaStationElevation = noaaStationElevation;
     }
 }

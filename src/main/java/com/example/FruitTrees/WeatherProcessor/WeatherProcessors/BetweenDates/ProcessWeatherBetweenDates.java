@@ -55,6 +55,9 @@ public abstract  class ProcessWeatherBetweenDates  extends WeatherProcessor {
             if(processing && Double.isFinite(value) ){
                     processWeatherBetween(value, date);
             }
+            else if (!Double.isFinite(value)) {
+                warnings.add("Incomplete Data Set of "+dataType+" Calculations May Not Be Accurate");
+            }
         }
     /**
      * method  for

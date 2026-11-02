@@ -8,7 +8,10 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+
 /**
  *a base  abstract class for implementing a weather processor
  * identified by the component name in the map of weather processors
@@ -111,6 +114,7 @@ public abstract class WeatherProcessor {
      */
     protected DataProvider dataProvider=DataProvider.OPEN_METEO;
     public List<HourlyWeatherProcessRequest> hourlyWeatherProcessRequests = new ArrayList<>();
+    public Set<String> warnings =new HashSet<>();
     public WeatherProcessor(String processorName) {
         this.processorName = processorName;
     }
@@ -340,5 +344,13 @@ public abstract class WeatherProcessor {
 
     public void setBins(List<Bin> bins) {
         this.bins = bins;
+    }
+
+    public Set<String> getWarnings() {
+        return warnings;
+    }
+
+    public void setWarnings(Set<String> warnings) {
+        this.warnings = warnings;
     }
 }

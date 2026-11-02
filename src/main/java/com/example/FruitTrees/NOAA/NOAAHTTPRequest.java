@@ -94,7 +94,7 @@ public class NOAAHTTPRequest {
                     "NOAA start date must not be after end date"
             );
         }
-        String stationId = location.getStationId();
+        String stationId = location.getNoaaStationId();
         if (stationId == null || stationId.isBlank()) {
             Set<String> requiredTypes = new LinkedHashSet<>();
             for (String dataType : weatherRequest.getHourlyDataTypes()) {
@@ -111,12 +111,7 @@ public class NOAAHTTPRequest {
             );
         }
         if (stationId == null || stationId.isBlank()) {
-            throw new IllegalStateException(
-                    "No NOAA station found near "
-                            + location.getLatitude()
-                            + ", "
-                            + location.getLongitude()
-            );
+            return null;
         }
            System.err.println(">>> STATION FINDER RETURNED: " + stationId);
         List<NOAAWeatherRecord> allData = new ArrayList<>();
@@ -129,6 +124,7 @@ public class NOAAHTTPRequest {
             if (chunkEnd.isAfter(endDate)) {
                 chunkEnd = endDate;
             }
+            location.setNoaaStationId(stationId);
             LOGGER.info(
                     "Fetching NOAA data for station " + stationId
                             + " from " + chunkStart

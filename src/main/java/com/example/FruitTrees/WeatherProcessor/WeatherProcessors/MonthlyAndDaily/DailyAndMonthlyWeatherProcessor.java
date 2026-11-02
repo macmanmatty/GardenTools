@@ -73,6 +73,10 @@ public abstract  class DailyAndMonthlyWeatherProcessor extends WeatherProcessor 
         if(Double.isFinite(value) ) {
             processWeatherBetween(value, date);
         }
+        else{
+
+            warnings.add("Incomplete Data Set of "+dataType+" Calculations May Not Be Accurate");
+        }
         dateRecord=processTimestamp(date);
         switch (dateRecord.hourType()){
             case START_DAY -> {
