@@ -112,7 +112,6 @@ public class OpenStreetLocationHTTPRequest {
      * @return The LocationResponse containing the  OpenMeteoResponse and the Location Object
      * @throws IOException
      */
-
     @Cacheable(value = "locationCache", key = "#address")
     public OpenStreetLocationResponse forwardGeocodeAddress(
             String address) {
