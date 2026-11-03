@@ -112,7 +112,7 @@ public class LocationService {
        locationEntity.setLatitude(location.getLatitude());
         locationEntity.setLongitude(location.getLongitude());
         locationEntity.setName(location.getName());
-        locationEntity.setNoaaStationId(location.getNoaaStationId());
+        locationEntity.setNoaaStation(location.getNoaaStation());
         return locationEntity;
     }
 
@@ -122,7 +122,7 @@ public class LocationService {
         location.setLatitude(locationEntity.getLatitude());
         location.setLongitude(locationEntity.getLongitude());
         location.setName(locationEntity.getName());
-        location.setNoaaStationId(locationEntity.getNoaaStationId());
+        location.setNoaaStation(locationEntity.getNoaaStation());
         return location;
     }
 }

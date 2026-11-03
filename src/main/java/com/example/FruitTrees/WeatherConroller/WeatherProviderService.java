@@ -7,7 +7,7 @@ import com.example.FruitTrees.NOAA.NoaaStationFinder;
 import com.example.FruitTrees.OpenMeteo.LocationResponses;
 import com.example.FruitTrees.OpenMeteo.OpenMeteoService;
 import com.example.FruitTrees.WeatherConroller.WeatherResponse.WeatherResponse;
-import com.example.FruitTrees.WeatherProcessor.DataMode;
+import com.example.FruitTrees.WeatherProcessor.ProviderMode;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -41,8 +41,8 @@ public class WeatherProviderService {
 
         Objects.requireNonNull(request, "WeatherRequest is required");
 
-        DataMode provider = determineProvider(request);
-        if (provider == DataMode.OPEN_METEO_ONLY ) {
+        ProviderMode provider = determineProvider(request);
+        if (provider == ProviderMode.OPEN_METEO_ONLY ) {
             return fallback(responses, request);
         }
 
@@ -50,13 +50,13 @@ public class WeatherProviderService {
             // Find station once and assess its suitability.
             // Adapt this to your actual station finder return type.
             NOAAStation station = stationFinder.findBestStation(request);
-
+            request.getLocation().setNoaaStation(station);
             if (station == null) {
                 return fallback(responses, request);
             }
 
-            if (provider == DataMode.AUTO &&
-                    !isSuitableStation(station)) {
+            if (provider == ProviderMode.AUTO &&
+                    !isSuitableStation(station, request)) {
                 return fallback(responses, request);
             }
 
@@ -75,39 +75,40 @@ public class WeatherProviderService {
         return result;
     }
 
-    private DataMode determineProvider(WeatherRequest request) {
+    private ProviderMode determineProvider(WeatherRequest request) {
 
         // Future dates require a provider that supports them.
         if (LocalDate.parse(request.getEndDate()).isAfter(LocalDate.now())) {
-            return DataMode.OPEN_METEO_ONLY;
+            return ProviderMode.OPEN_METEO_ONLY;
         }
 
         // Existing boolean preference.
         if (!request.isUseNOAA()) {
-            return DataMode.OPEN_METEO_ONLY;
+            return ProviderMode.OPEN_METEO_ONLY;
         }
 
         // AUTO is the default for NOAA-preferred historical requests.
-        return DataMode.AUTO;
+        return ProviderMode.AUTO;
     }
 
-    private boolean isSuitableStation(NOAAStation station) {
+    private boolean isSuitableStation(NOAAStation station, WeatherRequest weatherRequest) {
 
-        if (station.getDistanceMiles() > MAX_STATION_DISTANCE_MILES) {
+        if (station.getDistanceMiles() > weatherRequest.getNoaaStationSearchRadius()) {
             return false;
         }
 
         // Prefer closer stations. More distant stations must
         // have a reasonably similar elevation.
-        if (station.getDistanceMiles() > PREFERRED_STATION_DISTANCE_MILES) {
 
-            Double difference = station.getElevationDifferenceMeters();
+            if(weatherRequest.getLocation().getElevation()!=Double.MIN_VALUE) {
+                Double difference = station.getElevationDifferenceMeters(weatherRequest.getLocation().getElevation());
 
-            if (difference != null &&
-                    difference > MAX_ELEVATION_DIFFERENCE_METERS) {
-                return false;
+                if (difference != null &&
+                        difference > weatherRequest.getMaxNoaaStationElevationDifference()) {
+                    return false;
+                }
             }
-        }
+
 
         return true;
     }

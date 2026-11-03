@@ -2,6 +2,7 @@ package com.example.FruitTrees.WeatherConroller;
 
 import com.example.FruitTrees.Location.Location;
 import com.example.FruitTrees.NOAA.NOAAStationType;
+import com.example.FruitTrees.WeatherProcessor.ProviderMode;
 
 import java.util.*;
 
@@ -80,9 +81,10 @@ public class WeatherRequest {
     private boolean useNOAA;
 
     private int noaaStationSearchRadius = 25;
+    private int maxNoaaStationElevationDifference;
 
     private String noaaStationType = NOAAStationType.FALL_BACK.toString();
-    private WeatherMode weatherMode= WeatherMode.AUTO;
+    protected ProviderMode weatherMode= ProviderMode.AUTO;
 
 
     public Location location = new Location();
@@ -233,9 +235,27 @@ public class WeatherRequest {
         this.noaaStationType = noaaStationType;
     }
 
+    public int getMaxNoaaStationElevationDifference() {
+        return maxNoaaStationElevationDifference;
+    }
+
+    public void setMaxNoaaStationElevationDifference(int maxNoaaStationElevationDifference) {
+        this.maxNoaaStationElevationDifference = maxNoaaStationElevationDifference;
+    }
+
+    public ProviderMode getWeatherMode() {
+        return weatherMode;
+    }
+
+    public void setWeatherMode(ProviderMode weatherMode) {
+        this.weatherMode = weatherMode;
+    }
+
     public WeatherUnit getUnit() {
         return unit;
     }
+
+
 
     public void setUnit(WeatherUnit unit) {
 

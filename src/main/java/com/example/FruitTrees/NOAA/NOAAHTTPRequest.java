@@ -94,13 +94,13 @@ public class NOAAHTTPRequest {
                     "NOAA start date must not be after end date"
             );
         }
-        String stationId = location.getNoaaStationId();
-        if (stationId == null || stationId.isBlank()) {
+        NOAAStation station = location.getNoaaStation();
+        if (station == null || station.getStationId() == null ||station.getStationId().isEmpty()) {
             Set<String> requiredTypes = new LinkedHashSet<>();
             for (String dataType : weatherRequest.getHourlyDataTypes()) {
                 requiredTypes.add(DataUtilities.toNOAADatatype(dataType));
             }
-            stationId = noaaStationFinder.findNearestStation(
+            station= noaaStationFinder.findNearestStation(
                     location.getLatitude(),
                     location.getLongitude(),
                     weatherRequest.getNoaaStationSearchRadius(),
@@ -110,6 +110,7 @@ public class NOAAHTTPRequest {
                     NOAAStationType.fromString(weatherRequest.getNoaaStationType())
             );
         }
+        String stationId=station.getStationId();
         if (stationId == null || stationId.isBlank()) {
             return null;
         }
@@ -124,7 +125,7 @@ public class NOAAHTTPRequest {
             if (chunkEnd.isAfter(endDate)) {
                 chunkEnd = endDate;
             }
-            location.setNoaaStationId(stationId);
+            location.setNoaaStation(station);
             LOGGER.info(
                     "Fetching NOAA data for station " + stationId
                             + " from " + chunkStart

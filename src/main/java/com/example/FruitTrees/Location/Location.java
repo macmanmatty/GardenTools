@@ -1,5 +1,7 @@
 package com.example.FruitTrees.Location;
 
+import com.example.FruitTrees.NOAA.NOAAStation;
+
 /**
  * class the represents a location
  */
@@ -18,10 +20,8 @@ public class Location {
    private double latitude;
    private  double longitude;
    private  String latitudeAndLongitude;
-    /**
-    the weather station id currently not used
-     */
-   private  String noaaStationId;
+
+   private NOAAStation noaaStation = null;
 
    private String streetName;
 
@@ -46,8 +46,7 @@ public class Location {
     private String propertyType;
     private String propertyClass;
     private boolean populated=false;
-    private double elevation;
-    private double noaaStationElevation;
+    private double elevation=Double.MIN_VALUE;
    private LocationArea locationArea= new LocationArea();
     public String getName() {
         return name;
@@ -66,12 +65,6 @@ public class Location {
     }
     public void setLongitude(double  longitude) {
         this.longitude = longitude;
-    }
-    public String getNoaaStationId() {
-        return noaaStationId;
-    }
-    public void setNoaaStationId(String noaaStationId) {
-        this.noaaStationId = noaaStationId;
     }
     public long getId() {
         return id;
@@ -219,11 +212,13 @@ public class Location {
         this.elevation = elevation;
     }
 
-    public double getNoaaStationElevation() {
-        return noaaStationElevation;
+
+
+    public NOAAStation getNoaaStation() {
+        return noaaStation;
     }
 
-    public void setNoaaStationElevation(double noaaStationElevation) {
-        this.noaaStationElevation = noaaStationElevation;
+    public void setNoaaStation(NOAAStation noaaStation) {
+        this.noaaStation = noaaStation;
     }
 }

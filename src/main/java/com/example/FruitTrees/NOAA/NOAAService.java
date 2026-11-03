@@ -7,7 +7,7 @@ import com.example.FruitTrees.WeatherConroller.RequestValidation;
 import com.example.FruitTrees.WeatherConroller.WeatherRequest;
 import com.example.FruitTrees.WeatherConroller.WeatherResponse.WeatherResponse;
 import com.example.FruitTrees.WeatherProcessor.WeatherProcessorService;
-import com.example.FruitTrees.WeatherProcessor.WeatherProcessors.DataMode;
+import com.example.FruitTrees.WeatherProcessor.WeatherProcessors.WeatherProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
@@ -76,7 +76,7 @@ public class NOAAService {
                     );
                 }
                 for (HourlyWeatherProcessRequest processor : processors) {
-                    processor.setDataProvider(DataMode.NOAA);
+                    processor.setDataProvider(WeatherProvider.NOAA);
                 }
                 NOAAHourlyDataMap noaaHourlyDataMap =
                         noaahttpRequest.makeLocationRequest(

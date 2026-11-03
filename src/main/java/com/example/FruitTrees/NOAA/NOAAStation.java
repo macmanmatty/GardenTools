@@ -1,54 +1,65 @@
+
 package com.example.FruitTrees.NOAA;
 
 public class NOAAStation {
-    String stationId;
-    double latitude;
-    double longitude;
-    Double elevationMeters;
-    double distanceMiles;
+
+    private final String stationId;
+    private final double latitude;
+    private final double longitude;
+    private final Double elevationMeters;
+    private final double distanceMiles;
+    private final int yearsAvailable;
+
+    public NOAAStation(
+            String stationId,
+            double latitude,
+            double longitude,
+            Double elevationMeters,
+            double distanceMiles,
+            int yearsAvailable) {
+
+        this.stationId = stationId;
+        this.latitude = latitude;
+        this.longitude = longitude;
+        this.elevationMeters = elevationMeters;
+        this.distanceMiles = distanceMiles;
+        this.yearsAvailable = yearsAvailable;
+    }
 
     public String getStationId() {
         return stationId;
-    }
-
-    public void setStationId(String stationId) {
-        this.stationId = stationId;
     }
 
     public double getLatitude() {
         return latitude;
     }
 
-    public void setLatitude(double latitude) {
-        this.latitude = latitude;
-    }
-
     public double getLongitude() {
         return longitude;
-    }
-
-    public void setLongitude(double longitude) {
-        this.longitude = longitude;
     }
 
     public Double getElevationMeters() {
         return elevationMeters;
     }
 
-    public void setElevationMeters(Double elevationMeters) {
-        this.elevationMeters = elevationMeters;
-    }
-
     public double getDistanceMiles() {
         return distanceMiles;
     }
 
-    public void setDistanceMiles(double distanceMiles) {
-        this.distanceMiles = distanceMiles;
+    public int getYearsAvailable() {
+        return yearsAvailable;
     }
 
-    public Double getElevationDifferenceMeters() {
-        return 0.0d;
+    public Double getElevationDifferenceMeters(
+            Double locationElevationMeters) {
+
+        if (elevationMeters == null
+                || locationElevationMeters == null) {
+            return null;
+        }
+
+        return Math.abs(
+                elevationMeters - locationElevationMeters
+        );
     }
 }
-
