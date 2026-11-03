@@ -1,6 +1,7 @@
 package com.example.FruitTrees.NOAA;
 
 import com.example.FruitTrees.Utilities.WeatherUtilities;
+import com.example.FruitTrees.WeatherConroller.WeatherRequest;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Value;
@@ -258,6 +259,11 @@ public class NoaaStationFinder {
                 maxLatitude, Math.max(-180.0, longitude - lonDelta),
                 minLatitude, Math.min(180.0, longitude + lonDelta));
     }
+
+    public NOAAStation findBestStation(WeatherRequest location) {
+        return null;
+    }
+
 
     private static final class Candidate {
         private final String id;

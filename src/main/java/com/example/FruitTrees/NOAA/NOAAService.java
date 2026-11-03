@@ -7,7 +7,7 @@ import com.example.FruitTrees.WeatherConroller.RequestValidation;
 import com.example.FruitTrees.WeatherConroller.WeatherRequest;
 import com.example.FruitTrees.WeatherConroller.WeatherResponse.WeatherResponse;
 import com.example.FruitTrees.WeatherProcessor.WeatherProcessorService;
-import com.example.FruitTrees.WeatherProcessor.WeatherProcessors.DataProvider;
+import com.example.FruitTrees.WeatherProcessor.WeatherProcessors.DataMode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
@@ -60,11 +60,10 @@ public class NOAAService {
             LocationResponses locationResponses,
             WeatherRequest weatherRequest)
             throws IOException{
-        List<Location> locations = weatherRequest.getLocations();
-        requestValidation.locationCheck(locations);
+        Location location = weatherRequest.getLocation();
+       // requestValidation.locationCheck(locations);
         boolean populateLocationData =
                 weatherRequest.isPopulateLocationData();
-        for (Location location : locations) {
             try {
                 NOAALocationResponse noaaLocationResponse =
                         new NOAALocationResponse();
@@ -77,7 +76,7 @@ public class NOAAService {
                     );
                 }
                 for (HourlyWeatherProcessRequest processor : processors) {
-                    processor.setDataProvider(DataProvider.NOAA);
+                    processor.setDataProvider(DataMode.NOAA);
                 }
                 NOAAHourlyDataMap noaaHourlyDataMap =
                         noaahttpRequest.makeLocationRequest(
@@ -101,7 +100,7 @@ public class NOAAService {
                         .severe("NOAA request failed: " + e.getMessage());
                 throw new IOException(e);
             }
-        }
+
         return locationResponses;
     }
 }

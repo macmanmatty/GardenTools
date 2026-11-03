@@ -1,7 +1,7 @@
 package com.example.FruitTrees.WeatherConroller;
 
 import com.example.FruitTrees.WeatherProcessor.WeatherProcessors.Bin;
-import com.example.FruitTrees.WeatherProcessor.WeatherProcessors.DataProvider;
+import com.example.FruitTrees.WeatherProcessor.WeatherProcessors.DataMode;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -72,7 +72,7 @@ public class HourlyWeatherProcessRequest {
     private  double lowerBound;
     private double upperBound;
     private double threshold;
-    DataProvider dataProvider;
+    DataMode dataMode;
 
     List<Bin> bins=new ArrayList<>();
 
@@ -235,11 +235,11 @@ public class HourlyWeatherProcessRequest {
         this.dataTypes = dataTypes;
     }
 
-    public DataProvider getDataProvider() {
-        return dataProvider;
+    public DataMode getDataProvider() {
+        return dataMode;
     }
 
-    public void setDataProvider(DataProvider dataProvider) {
-        this.dataProvider = dataProvider;
+    public void setDataProvider(DataMode dataMode) {
+        this.dataMode = dataMode;
     }
 }

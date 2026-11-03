@@ -1,5 +1,5 @@
 package com.example.FruitTrees.WeatherProcessor.WeatherProcessors;
 
-public enum DataProvider {
+public enum DataMode {
     OPEN_METEO, NOAA
 }

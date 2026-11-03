@@ -85,7 +85,7 @@ public class WeatherRequest {
     private WeatherMode weatherMode= WeatherMode.AUTO;
 
 
-    public List<Location> locations = new ArrayList<>();
+    public Location location = new Location();
 
     public Set<String> getHourlyDataTypes() {
         return hourlyDataTypes;
@@ -161,12 +161,12 @@ public class WeatherRequest {
         this.hourlyWeatherProcessRequests = hourlyWeatherProcessRequests;
     }
 
-    public List<Location> getLocations() {
-        return locations;
+    public Location getLocation() {
+        return location;
     }
 
-    public void setLocations(List<Location> locations) {
-        this.locations = locations;
+    public void setLocation(Location location) {
+        this.location = location;
     }
 
     public boolean isShowStringText() {

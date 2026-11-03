@@ -1,6 +1,6 @@
 package com.example.FruitTrees.Utilities;
 import com.example.FruitTrees.OpenMeteo.OpenMeteoResponse;
-import com.example.FruitTrees.WeatherProcessor.WeatherProcessors.DataProvider;
+import com.example.FruitTrees.WeatherProcessor.WeatherProcessors.DataMode;
 
 import java.util.*;
 import java.util.function.BiConsumer;
@@ -55,15 +55,15 @@ public class DataUtilities {
         return result;
     }
 
-    public static  String getDataType(String field, DataProvider dataProvider){
-        switch (dataProvider){
+    public static  String getDataType(String field, DataMode dataMode){
+        switch (dataMode){
             case OPEN_METEO -> {
                 return  toOpenMeteoDatatype(field);
             }
             case NOAA -> {
                 return  toNOAADatatype(field);
             }
-            default -> throw new IllegalArgumentException("Unsupported data provider " + dataProvider);
+            default -> throw new IllegalArgumentException("Unsupported data provider " + dataMode);
         }
 
     }

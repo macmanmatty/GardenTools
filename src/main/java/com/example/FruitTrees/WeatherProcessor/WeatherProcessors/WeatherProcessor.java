@@ -112,7 +112,7 @@ public abstract class WeatherProcessor {
     /**
      * external processors required by this one
      */
-    protected DataProvider dataProvider=DataProvider.OPEN_METEO;
+    protected DataMode dataMode = DataMode.OPEN_METEO;
     public List<HourlyWeatherProcessRequest> hourlyWeatherProcessRequests = new ArrayList<>();
     public Set<String> warnings =new HashSet<>();
     public WeatherProcessor(String processorName) {
