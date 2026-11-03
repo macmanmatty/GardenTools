@@ -98,6 +98,10 @@ public abstract class WeatherProcessor {
     private boolean calculateMax;
     private boolean calculateMin;
     /**
+     * number of hours missing weather  data
+     */
+    protected int missedHours;
+    /**
      * temperature bins used for utah chill calculation
      * maybe empty to use default calculation mode
      */
@@ -129,7 +133,13 @@ public abstract class WeatherProcessor {
      * overridden  method called
      * after the processing of weather ends
      */
-    public  void  after(){}
+    public  void  after(){
+        if(missedHours>0){
+            warnings.add("Incomplete Data Set of "+dataType+" Missing " +missedHours+" of Data"+" Calculations May Not Be Accurate");
+        }
+
+
+    }
     /**
      *
      * internally called for each double in the data set to process weather value
@@ -336,6 +346,10 @@ public abstract class WeatherProcessor {
     }
     public void setThreshold(double threshold) {
         this.threshold = threshold;
+    }
+
+    public int getMissedHours() {
+        return missedHours;
     }
 
     public List<Bin> getBins() {

@@ -74,8 +74,7 @@ public abstract  class DailyAndMonthlyWeatherProcessor extends WeatherProcessor 
             processWeatherBetween(value, date);
         }
         else{
-
-            warnings.add("Incomplete Data Set of "+dataType+" Calculations May Not Be Accurate");
+            missedHours++;
         }
         dateRecord=processTimestamp(date);
         switch (dateRecord.hourType()){
