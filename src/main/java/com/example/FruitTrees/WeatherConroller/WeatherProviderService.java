@@ -43,8 +43,7 @@ public class WeatherProviderService {
                 "Weather location is required"
         );
 
-        // Prevent a stale station from a previous request.
-        request.getLocation().setNoaaStation(null);
+
 
         ProviderMode provider = determineProvider(request);
 
@@ -52,17 +51,23 @@ public class WeatherProviderService {
             return getOpenMeteo(responses, request);
         }
 
-        NOAAStation station =
-                stationFinder.findBestStation(request);
+        NOAAStation station = request.getLocation().getNoaaStation();
 
-        if (station == null) {
-            return fallback(
-                    request,
-                    "No suitable NOAA station found"
-            );
+        boolean userSelectedStation =
+                station != null
+                        && station.getStationId() != null
+                        && !station.getStationId().isBlank();
+
+        if (!userSelectedStation) {
+            station = stationFinder.findBestStation(request);
+
+            if (station == null) {
+                return fallback(request, "No suitable NOAA station found");
+            }
         }
 
         if (provider == ProviderMode.AUTO
+                && !userSelectedStation
                 && !isSuitableStation(station, request)) {
 
             return fallback(
@@ -70,7 +75,6 @@ public class WeatherProviderService {
                     "NOAA station exceeds distance or elevation limits"
             );
         }
-
         request.getLocation().setNoaaStation(station);
 
         WeatherResponse result =
