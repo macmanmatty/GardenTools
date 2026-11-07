@@ -95,21 +95,8 @@ public class NOAAHTTPRequest {
             );
         }
         NOAAStation station = location.getNoaaStation();
-        if (station == null || station.getStationId() == null ||station.getStationId().isEmpty()) {
-            Set<String> requiredTypes = new LinkedHashSet<>();
-            for (String dataType : weatherRequest.getHourlyDataTypes()) {
-                requiredTypes.add(DataUtilities.toNOAADatatype(dataType));
-            }
-            station= noaaStationFinder.findNearestStation(
-                    location.getLatitude(),
-                    location.getLongitude(),
-                    weatherRequest.getNoaaStationSearchRadius(),
-                    weatherRequest.getStartDate(),
-                    weatherRequest.getEndDate(),
-                    requiredTypes,
-                    NOAAStationType.fromString(weatherRequest.getNoaaStationType())
-            );
-        }
+
+
         String stationId=station.getStationId();
         if (stationId == null || stationId.isBlank()) {
             return null;

@@ -1,6 +1,5 @@
 package com.example.FruitTrees.WeatherConroller;
 import com.example.FruitTrees.File.FileSaver;
-import com.example.FruitTrees.NOAA.NOAAService;
 import com.example.FruitTrees.OpenMeteo.LocationResponses;
 import com.example.FruitTrees.OpenMeteo.OpenMeteoService;
 import com.example.FruitTrees.WeatherConroller.WeatherResponse.WeatherResponse;
@@ -12,33 +11,15 @@ import org.springframework.web.bind.annotation.*;
 import java.io.IOException;
 @RestController
 public class WeatherProcessorController {
-    OpenMeteoService openMeteoService;
+    WeatherProviderService weatherProviderService;
     @Autowired
-    NOAAService noaaService;
-    @Autowired
-    public WeatherProcessorController(OpenMeteoService openMeteoService) {
-        this.openMeteoService = openMeteoService;
+    public WeatherProcessorController(WeatherProviderService openMeteoService) {
     }
     @PostMapping(value = "/weatherInfo", consumes = {"application/json"})
     public ResponseEntity<Object> getWeather( @RequestBody  WeatherRequest weatherRequest) {
         try {
             LocationResponses locationResponses= new LocationResponses();
-            WeatherResponse weatherResponse = new WeatherResponse();
-            if(weatherRequest.isUseNOAA()) {
-               weatherResponse = noaaService.getData(locationResponses, weatherRequest);
-               if(weatherResponse==null){
-                   weatherResponse = openMeteoService.getData(locationResponses, weatherRequest);
-                    if(weatherResponse==null){
-                        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-                    }
-               }
-            }
-            else{
-                weatherResponse = openMeteoService.getData(locationResponses, weatherRequest);
-            }
-         if(weatherRequest.isSaveToFile()){
-             FileSaver.saveFile(weatherRequest.getFilePath(), weatherRequest.getOutputFileType(), weatherResponse);
-         }
+             WeatherResponse weatherResponse = weatherProviderService.getWeather(locationResponses, weatherRequest);
             return  new ResponseEntity<>(weatherResponse, HttpStatus.OK);
      }
       catch (InterruptedException | IllegalArgumentException e) {
