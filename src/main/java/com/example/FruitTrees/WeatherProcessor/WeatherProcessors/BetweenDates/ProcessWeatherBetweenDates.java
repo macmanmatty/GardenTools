@@ -1,10 +1,14 @@
 package com.example.FruitTrees.WeatherProcessor.WeatherProcessors.BetweenDates;
 
 import com.example.FruitTrees.Utilities.ArrayUtilities;
+import com.example.FruitTrees.Utilities.DataUtilities;
 import com.example.FruitTrees.Utilities.DateUtilities;
+import com.example.FruitTrees.WeatherProcessor.WeatherProcessors.DateType;
+import com.example.FruitTrees.WeatherProcessor.WeatherProcessors.MonthlyAndDaily.DailyAndMonthlyWeatherProcessor;
 import com.example.FruitTrees.WeatherProcessor.WeatherProcessors.WeatherProcessor;
 
 import java.time.LocalDateTime;
+import java.time.YearMonth;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,6 +26,10 @@ public abstract  class ProcessWeatherBetweenDates  extends WeatherProcessor {
      *  and the weather data is currently processing
      */
     private boolean processing;
+    private YearMonth warningMonth;
+    private  LocalDateTime currentDate;
+    private boolean onEndDateCalled;
+
     public ProcessWeatherBetweenDates(String name) {
         super(name);
     }
@@ -31,8 +39,9 @@ public abstract  class ProcessWeatherBetweenDates  extends WeatherProcessor {
 
     @Override
     public void before() {
-        clearProcessedTextValues();
+        super.before();
         yearlyDataValues.clear();
+        processing = false;
     }
     /**
      * the overridden process data method that  processes 
@@ -40,26 +49,40 @@ public abstract  class ProcessWeatherBetweenDates  extends WeatherProcessor {
      * @param value the number value of the weather parameter
      * @param date the date and time the value happened
      */
-    @Override
-    public final  void processWeather(double value, LocalDateTime date) {
-        switch(DateUtilities.checkDate(date, startDay, startMonth, endDay, endMonth)){
-                case START_PROCESSING -> {
-                    processing =true;
-                    onStartDate(date);
-                }
-                case END_PROCESSING -> {
-                    processing =false;
-                    onEndDate(date);
-                }
-            }
-            if(processing && Double.isFinite(value) ){
-                    processWeatherBetween(value, date);
-            }
 
-            else if (!Double.isFinite(value)) {
+    @Override
+    public final void processWeather(double value, LocalDateTime date) {
+        YearMonth observationMonth = YearMonth.from(date);
+        this.currentDate = date;
+
+        if (warningMonth != null && !warningMonth.equals(observationMonth)) {
+            flushMissingHours();
+        }
+
+        warningMonth = observationMonth;
+        DateType dateType = DateUtilities.checkDate(
+                date, startDay, startMonth, endDay, endMonth
+        );
+
+        if (dateType == DateType.START_PROCESSING) {
+            processing = true;
+            onStartDateLoop(date);
+        }
+
+        if (processing) {
+            if (Double.isFinite(value)) {
+                processWeatherBetween(value, date);
+            } else {
                 missedHours++;
             }
         }
+
+        if (dateType == DateType.END_PROCESSING) {
+            onEndDateLoop(date);
+            processing = false;
+        }
+    }
+
     /**
      * method  for
      * preforming actions on weather start date
@@ -69,21 +92,41 @@ public abstract  class ProcessWeatherBetweenDates  extends WeatherProcessor {
      */
     protected  void onStartDate(LocalDateTime date){}
     /**
+     * method  for
+     * preforming actions on weather start date
+     * when the processing of weather starts
+     * @param date  the current date and time of the weather  being processed
+     *
+     */
+    protected  void onStartDateLoop(LocalDateTime date){
+        onEndDateCalled=false;
+        onStartDate(date);
+    }
+    /**
      *  method  for
      * preforming actions on weather end date
      * when the processing of weather ends
      * @param date  the current date and time of the weather  being processed
      */
     protected void onEndDate(LocalDateTime date){
-
+    }
+    /**
+     *  method  for
+     * preforming actions on weather end date
+     * when the processing of weather ends
+     * @param date  the current date and time of the weather  being processed
+     */
+    private void onEndDateLoop(LocalDateTime date){
+        onEndDateCalled = true;
+        onEndDate(date);
     }
     /**
      * subclass implemented method  for
      * processing the weather
      * @param date  the current date and time of the weather  being processed
-     * @param  data the value of the weather data at the current date and time
+     * @param  value the value of the weather data at the current date and time
      */
-    protected abstract void processWeatherBetween(Number data, LocalDateTime date);
+    protected abstract void processWeatherBetween(double value, LocalDateTime date);
 
 
     @Override
@@ -92,17 +135,31 @@ public abstract  class ProcessWeatherBetweenDates  extends WeatherProcessor {
        for( Double doubleNum: yearlyDataValues){
           total= doubleNum+total;
         }
-       double average=Math.round(total/yearlyDataValues.size());
+        double average = yearlyDataValues.isEmpty()
+                ? Double.NaN
+                : Math.round(total / yearlyDataValues.size());
        addAverageValue("Mean Average For "+ processorName +" "+average);
     }
     @Override
     public void calculateMedianAverageValue() {
-        double average=ArrayUtilities.medianOfList(yearlyDataValues);
-        addAverageValue(" Median Average For "+ processorName +" "+average);
+        if (yearlyDataValues.isEmpty()) {
+            addAverageValue("Median Average For " + processorName + " NaN");
+            return;
+        }
 
+        double median = ArrayUtilities.medianOfList(yearlyDataValues);
+        addAverageValue("Median Average For " + processorName + " " + median);
     }
 
+    @Override
+    public void after() {
+        flushMissingHours();
 
+        if (processing && currentDate != null && !onEndDateCalled) {
+            onEndDateLoop(currentDate);
+            processing = false;
+        }
+    }
 
     /**
      * stops all processing of data
@@ -114,6 +171,18 @@ public abstract  class ProcessWeatherBetweenDates  extends WeatherProcessor {
     @Override
     public void startProcessing(){
         processing=true;
+    }
+    private void flushMissingHours() {
+        if (warningMonth != null && missedHours > 0) {
+            warnings.add(
+                    "Incomplete Data Set of " + dataType
+                            + ": missing " + missedHours
+                            + " hours for " + warningMonth
+                            + ". Calculations may not be accurate."
+            );
+        }
+
+        missedHours = 0;
     }
 
 

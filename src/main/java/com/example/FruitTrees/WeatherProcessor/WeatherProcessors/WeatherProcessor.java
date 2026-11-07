@@ -135,9 +135,7 @@ public abstract class WeatherProcessor {
      * after the processing of weather ends
      */
     public  void  after(){
-        if(missedHours>0){
-            warnings.add("Incomplete Data Set of "+dataType+" Missing " +missedHours+" of Data"+" Calculations May Not Be Accurate");
-        }
+
 
 
     }

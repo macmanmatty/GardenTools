@@ -29,16 +29,19 @@ public abstract  class DailyAndMonthlyWeatherProcessor extends WeatherProcessor 
      * the current month name  of weather being processed
      */
     public String currentMonthName="";
-    /**
-     *  the total number of processed months
-     */
-    public int totalMonths;
+
+    public double currentValue;
+
+    public  LocalDateTime currentDateTime;
+
+    boolean onMonthEndCalled;
+
     /**
      * the map of  monthly values
      * key= string month name
      * value=  yearly data for month for the processed weather data
      */
-    protected Map<String, List<Double>> monthlyValues=new HashMap<>();
+    protected Map<String, List<Double>> monthlyValues=new LinkedHashMap<>();
 
     protected DailyAndMonthlyWeatherProcessor() {
     }
@@ -46,66 +49,70 @@ public abstract  class DailyAndMonthlyWeatherProcessor extends WeatherProcessor 
     @Override
     public void before() {
         clearProcessedTextValues();
-        currentYearlyValuesResponse =locationWeatherResponse.getYearlyValues(String.valueOf(currentYear));
-        monthlyValuesResponse = currentYearlyValuesResponse.getMonthlyValues(currentMonthName);
-        monthlyValues.put("JANUARY", new ArrayList<>());
-        monthlyValues.put("FEBRUARY", new ArrayList<>());
-        monthlyValues.put("MARCH", new ArrayList<>());
-        monthlyValues.put("APRIL", new ArrayList<>());
-        monthlyValues.put("MAY", new ArrayList<>());
-        monthlyValues.put("JUNE", new ArrayList<>());
-        monthlyValues.put("JULY", new ArrayList<>());
-        monthlyValues.put("AUGUST", new ArrayList<>());
-        monthlyValues.put("SEPTEMBER", new ArrayList<>());
-        monthlyValues.put("OCTOBER", new ArrayList<>());
-        monthlyValues.put("NOVEMBER", new ArrayList<>());
-        monthlyValues.put("DECEMBER", new ArrayList<>());
+
+        onMonthEndCalled = false;
+        currentDateTime = null;
+        currentValue = Double.NaN;
+
+        currentYear = 0;
+        currentMonth = 0;
+        currentMonthName = "";
+        missedHours = 0;
+
+        monthlyValues.clear();
+
+        for (java.time.Month month : java.time.Month.values()) {
+            monthlyValues.put(month.name(), new ArrayList<>());
+        }
     }
-    /**
-     * the overridden process data method that  processes 
-     * weather data between dates
-     * @param value the number value of the weather parameter
-     * @param date the date and time the value happened
-     */
+
     @Override
     public void processWeather(double value, LocalDateTime date) {
+        this.currentValue=value;
+        this.currentDateTime=date;
+        dateRecord = processTimestamp(date);
 
-        if(Double.isFinite(value) ) {
-            processWeatherBetween(value, date);
+        // Initialize new year/month/day before processing.
+        switch (dateRecord.dayType()) {
+            case NEW_YEARS_DAY -> {
+                onStartNewYear(value, date);
+                onStartNewMonthLoop(value, date);
+            }
+            case FIRST_DAY_OF_MONTH ->
+                    onStartNewMonthLoop(value, date);
+            default -> {
+            }
         }
-        else{
+
+        if (dateRecord.hourType() == DateType.START_DAY) {
+            onStartDay(value, date);
+        }
+
+        // Process the hourly observation.
+        if (Double.isFinite(value)) {
+            processWeatherBetween(value, date);
+        } else {
             missedHours++;
         }
-        dateRecord=processTimestamp(date);
-        switch (dateRecord.hourType()){
-            case START_DAY -> {
-                onStartDay(value, date);
-                break;
 
-            }
-            case END_DAY -> {
-                onEndDay(value, date);
-            }
+        // Finalize the day after processing its last hour.
+        if (dateRecord.hourType() == DateType.END_DAY) {
+            onEndDay(value, date);
+        }
 
+        // Finalize the month/year after processing.
+        switch (dateRecord.dayType()) {
+            case NEW_YEARS_EVE -> {
+                onMonthEndLoop(value, date);
+                onEndYear(value, date);
+            }
+            case LAST_DAY_OF_MONTH ->
+                    onMonthEndLoop(value, date);
+            default -> {
+            }
         }
-       switch( dateRecord.dayType()){
-           case NEW_YEARS_EVE -> {
-               onEndYear(value, date);
-               onMonthEnd(value, date);
-           }
-           case NEW_YEARS_DAY -> {
-               onStartNewYear(value, date);
-               onStartNewMonth(value, date);
-           }
-           case FIRST_DAY_OF_MONTH -> {
-               onStartNewMonth(value, date);
-               totalMonths++;
-           }
-           case LAST_DAY_OF_MONTH -> {
-               onMonthEnd(value, date);
-           }
-       }
-        }
+    }
+
     @Override
     public void calculateMeanAverageValue() {
         for (Map.Entry<String, List<Double>> entry : monthlyValues.entrySet()) {
@@ -150,6 +157,15 @@ public abstract  class DailyAndMonthlyWeatherProcessor extends WeatherProcessor 
         }
     }
 
+    @Override
+    public void after() {
+        if(onMonthEndCalled){
+            return;
+        }
+        onMonthEndLoop(currentValue, currentDateTime);
+
+    }
+
     /**
      * Called at the start of a new day (typically at hour 0).
      * Override this method to perform any setup or initialization
@@ -192,7 +208,38 @@ public abstract  class DailyAndMonthlyWeatherProcessor extends WeatherProcessor 
      * when the processing of weather ends
      * @param date  the current date and time of the weather  being processed
      */
+    protected void onStartNewMonthLoop(double value, LocalDateTime date){
+        onStartNewMonth(value, date);
+
+    }    /**
+     * subclass implemented method  for
+     * preforming actions on weather first day of the first hour
+     * when the processing of weather ends
+     * @param date  the current date and time of the weather  being processed
+     */
     protected  void onStartNewMonth(double value, LocalDateTime date){}
+    /**
+     * subclass implemented method  for
+     * preforming actions on weather last day of the  month on the 23 hour
+     * when the processing of weather ends
+     * @param date  the current date and time of the weather  being processed
+     */
+    protected void onMonthEndLoop(double value, LocalDateTime date){
+        onMonthEndCalled =true;
+        if (missedHours > 0) {
+            warnings.add(
+                    "Incomplete Data Set of " + dataType
+                            + ": missing " + missedHours
+                            + " hours for " + currentMonthName
+                            + " " + currentYear
+                            + ". Calculations may not be accurate."
+            );
+        }
+
+        missedHours = 0;
+        onMonthEnd(value, date);
+    }
+
     /**
      * subclass implemented method  for
      * preforming actions on weather last day of the  month on the 23 hour
@@ -219,7 +266,23 @@ public abstract  class DailyAndMonthlyWeatherProcessor extends WeatherProcessor 
      * otherwise returns false
      */
     protected DateRecord processTimestamp(LocalDateTime localDate) {
+        if (currentYear != localDate.getYear()
+                || currentMonth != localDate.getMonthValue()) {
+            onMonthEndCalled = false;
+            currentYear = localDate.getYear();
+            currentMonth = localDate.getMonthValue();
+            currentMonthName = localDate.getMonth().name();
 
+            currentYearlyValuesResponse =
+                    locationWeatherResponse.getYearlyValues(
+                            String.valueOf(currentYear)
+                    );
+
+            monthlyValuesResponse =
+                    currentYearlyValuesResponse.getMonthlyValues(
+                            currentMonthName
+                    );
+        }
         // Determine hour type
         DateType hourType = switch (localDate.getHour()) {
             case 0 -> DateType.START_DAY;
@@ -227,32 +290,30 @@ public abstract  class DailyAndMonthlyWeatherProcessor extends WeatherProcessor 
             default -> DateType.NORMAL_HOUR;
         };
 
-        // Determine day type
         int day = localDate.getDayOfMonth();
         int month = localDate.getMonthValue();
+        int hour = localDate.getHour();
         int maxDay = localDate.toLocalDate().lengthOfMonth();
+
         DateType dayType = DateType.STANDARD_DAY;
 
-        if (day == 31 && localDate.getHour() == 23 && month == 12) {
+        if (month == 12 && day == 31 && hour == 23) {
             dayType = DateType.NEW_YEARS_EVE;
-        } else if (day == 1 && localDate.getHour() == 0 && month == 1) {
-            currentYear = localDate.getYear();
-            currentMonth = 1;
-            currentMonthName = localDate.getMonth().name();
-            currentYearlyValuesResponse = locationWeatherResponse.getYearlyValues(String.valueOf(currentYear));
-            monthlyValuesResponse = currentYearlyValuesResponse.getMonthlyValues(currentMonthName);
+
+        } else if (month == 1 && day == 1 && hour == 0) {
             dayType = DateType.NEW_YEARS_DAY;
-        } else if (day == maxDay && localDate.getHour() == 23) {
+
+        } else if (day == maxDay && hour == 23) {
             dayType = DateType.LAST_DAY_OF_MONTH;
-        } else if (day == 1 && localDate.getHour() == 0) {
-            currentMonth = month;
-            currentMonthName = localDate.getMonth().name();
-            monthlyValuesResponse = currentYearlyValuesResponse.getMonthlyValues(currentMonthName);
+
+        } else if (day == 1 && hour == 0) {
             dayType = DateType.FIRST_DAY_OF_MONTH;
         }
 
         return new DateRecord(hourType, dayType);
     }
+
+
     
 }
     
