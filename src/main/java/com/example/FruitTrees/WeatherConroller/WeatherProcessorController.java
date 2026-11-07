@@ -13,7 +13,8 @@ import java.io.IOException;
 public class WeatherProcessorController {
     WeatherProviderService weatherProviderService;
     @Autowired
-    public WeatherProcessorController(WeatherProviderService openMeteoService) {
+    public WeatherProcessorController(WeatherProviderService weatherProviderService) {
+        this.weatherProviderService = weatherProviderService;
     }
     @PostMapping(value = "/weatherInfo", consumes = {"application/json"})
     public ResponseEntity<Object> getWeather( @RequestBody  WeatherRequest weatherRequest) {
