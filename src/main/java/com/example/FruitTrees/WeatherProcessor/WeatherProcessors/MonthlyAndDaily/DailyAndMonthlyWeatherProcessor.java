@@ -159,11 +159,11 @@ public abstract  class DailyAndMonthlyWeatherProcessor extends WeatherProcessor 
 
     @Override
     public void after() {
-        if(onMonthEndCalled){
+        if (currentDateTime == null || onMonthEndCalled) {
             return;
         }
-        onMonthEndLoop(currentValue, currentDateTime);
 
+        onMonthEndLoop(currentValue, currentDateTime);
     }
 
     /**
