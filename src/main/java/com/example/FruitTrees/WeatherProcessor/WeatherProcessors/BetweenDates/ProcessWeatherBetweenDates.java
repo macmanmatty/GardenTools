@@ -36,12 +36,16 @@ public abstract  class ProcessWeatherBetweenDates  extends WeatherProcessor {
 
     protected ProcessWeatherBetweenDates() {
     }
-
     @Override
     public void before() {
         super.before();
         yearlyDataValues.clear();
+
         processing = false;
+        warningMonth = null;
+        currentDate = null;
+        onEndDateCalled = false;
+        missedHours = 0;
     }
     /**
      * the overridden process data method that  processes 
@@ -77,7 +81,7 @@ public abstract  class ProcessWeatherBetweenDates  extends WeatherProcessor {
             }
         }
 
-        if (dateType == DateType.END_PROCESSING) {
+        if (dateType == DateType.END_PROCESSING && processing) {
             onEndDateLoop(date);
             processing = false;
         }
