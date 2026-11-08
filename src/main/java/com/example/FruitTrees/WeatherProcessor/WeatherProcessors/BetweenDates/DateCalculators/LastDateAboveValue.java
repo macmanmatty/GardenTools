@@ -40,8 +40,7 @@ public class LastDateAboveValue extends DateValueProcessor {
             this.date = Optional.empty();
     }
     @Override
-    public void processWeatherBetween(Number data, LocalDateTime date) {
-        double value=data.doubleValue();
+    public void processWeatherBetween(double value, LocalDateTime date) {
         if( value>= threshold) {
             this.date= Optional.of(date);
         }

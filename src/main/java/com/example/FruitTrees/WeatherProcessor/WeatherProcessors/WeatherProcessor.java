@@ -8,7 +8,10 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+
 /**
  *a base  abstract class for implementing a weather processor
  * identified by the component name in the map of weather processors
@@ -95,6 +98,10 @@ public abstract class WeatherProcessor {
     private boolean calculateMax;
     private boolean calculateMin;
     /**
+     * number of hours missing weather  data
+     */
+    protected int missedHours;
+    /**
      * temperature bins used for utah chill calculation
      * maybe empty to use default calculation mode
      */
@@ -104,10 +111,15 @@ public abstract class WeatherProcessor {
      *
      */
         String stationId;
+
+        protected  DateRecord dateRecord;
     /**
+     *
      * external processors required by this one
      */
+    protected WeatherProvider weatherProvider = WeatherProvider.OPEN_METEO;
     public List<HourlyWeatherProcessRequest> hourlyWeatherProcessRequests = new ArrayList<>();
+    public Set<String> warnings =new HashSet<>();
     public WeatherProcessor(String processorName) {
         this.processorName = processorName;
     }
@@ -122,7 +134,11 @@ public abstract class WeatherProcessor {
      * overridden  method called
      * after the processing of weather ends
      */
-    public  void  after(){}
+    public  void  after(){
+
+
+
+    }
     /**
      *
      * internally called for each double in the data set to process weather value
@@ -131,6 +147,9 @@ public abstract class WeatherProcessor {
      * @param date the date and time the value happened
      */
     protected abstract void processWeather(double value, LocalDateTime date);
+
+
+
     /**
      *
      * the externally called method for processing weather
@@ -141,7 +160,9 @@ public abstract class WeatherProcessor {
         if(stopProcessing){
             return;
         }
-        processWeather(value, date);
+        // noaa may not have a value for all times
+            processWeather(value, date);
+
     }
     /**
      *
@@ -326,11 +347,23 @@ public abstract class WeatherProcessor {
         this.threshold = threshold;
     }
 
+    public int getMissedHours() {
+        return missedHours;
+    }
+
     public List<Bin> getBins() {
         return bins;
     }
 
     public void setBins(List<Bin> bins) {
         this.bins = bins;
+    }
+
+    public Set<String> getWarnings() {
+        return warnings;
+    }
+
+    public void setWarnings(Set<String> warnings) {
+        this.warnings = warnings;
     }
 }

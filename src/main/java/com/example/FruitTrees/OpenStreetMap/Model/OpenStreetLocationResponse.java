@@ -11,8 +11,8 @@ public class OpenStreetLocationResponse {
     private String licence;
     private String osm_type;
     private String osm_id;
-    private String lat;
-    private String lon;
+    private double lat;
+    private double lon;
     private String display_name;
     private Address address;
     private List<String> boundingbox;
@@ -55,19 +55,19 @@ public class OpenStreetLocationResponse {
         this.osm_id = osm_id;
     }
 
-    public String getLat() {
+    public double getLat() {
         return lat;
     }
 
-    public void setLat(String lat) {
+    public void setLat(double lat) {
         this.lat = lat;
     }
 
-    public String getLon() {
+    public double getLon() {
         return lon;
     }
 
-    public void setLon(String lon) {
+    public void setLon(double lon) {
         this.lon = lon;
     }
 

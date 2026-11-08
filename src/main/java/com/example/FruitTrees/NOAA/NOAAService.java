@@ -1,5 +1,4 @@
 package com.example.FruitTrees.NOAA;
-
 import com.example.FruitTrees.Location.Location;
 import com.example.FruitTrees.OpenMeteo.LocationResponses;
 import com.example.FruitTrees.OpenStreetMap.OpenStreetLocationService;
@@ -8,14 +7,13 @@ import com.example.FruitTrees.WeatherConroller.RequestValidation;
 import com.example.FruitTrees.WeatherConroller.WeatherRequest;
 import com.example.FruitTrees.WeatherConroller.WeatherResponse.WeatherResponse;
 import com.example.FruitTrees.WeatherProcessor.WeatherProcessorService;
+import com.example.FruitTrees.WeatherProcessor.WeatherProcessors.WeatherProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
-
 import java.io.IOException;
 import java.util.List;
 import java.util.logging.Logger;
-
 @Service
 public class NOAAService {
    private final NOAAHTTPRequest noaahttpRequest;
@@ -33,7 +31,11 @@ public class NOAAService {
     public WeatherResponse getData(LocationResponses locationResponses, WeatherRequest weatherRequest ) throws IOException, InterruptedException {
         extractHourlyDataTypes(weatherRequest);
         LocationResponses noaaRespnses=makeRequest(locationResponses, weatherRequest);
+        if(noaaRespnses==null){
+            return null;
+        }
         WeatherResponse  response= weatherProcessorService.processHourlyData( weatherRequest, noaaRespnses);
+
         return  response;
     }
     /**
@@ -54,29 +56,51 @@ public class NOAAService {
      * @return
      * @throws IOException
      */
-    private LocationResponses makeRequest( LocationResponses locationResponses, WeatherRequest weatherRequest) throws IOException, InterruptedException {
-        List<Location> locations =weatherRequest.getLocations();
-        requestValidation.locationCheck(locations);
-        boolean populateLocationData= weatherRequest.isPopulateLocationData();
-        NOAALocationResponse noaaLocationResponse= new NOAALocationResponse();
-        for (Location location : locations) {
+    private LocationResponses makeRequest(
+            LocationResponses locationResponses,
+            WeatherRequest weatherRequest)
+            throws IOException{
+        Location location = weatherRequest.getLocation();
+       // requestValidation.locationCheck(locations);
+        boolean populateLocationData =
+                weatherRequest.isPopulateLocationData();
             try {
-                for(HourlyWeatherProcessRequest weatherProcessor: weatherRequest.hourlyWeatherProcessRequests) {
-                    NOAAHourlyDataMap noaaHourlyDataMap = noaahttpRequest.makeLocationRequest(location, weatherRequest, weatherProcessor);
-                    noaaLocationResponse.getNoaaHourlyDataMap().getNoaaHourlyObservationsMap().putAll(noaaHourlyDataMap.getNoaaHourlyObservationsMap());
+                NOAALocationResponse noaaLocationResponse =
+                        new NOAALocationResponse();
+                noaaLocationResponse.setLocation(location);
+                List<HourlyWeatherProcessRequest> processors =
+                        weatherRequest.getHourlyWeatherProcessRequests();
+                if (processors == null || processors.isEmpty()) {
+                    throw new IllegalArgumentException(
+                            "At least one hourly weather processor is required"
+                    );
                 }
-                    if (populateLocationData) {
-                        openStreetLocationService.populateLocationData(location);
-                    }
-                //locationResponses.getLocationResponses().add(noaaLocationResponse);
+                for (HourlyWeatherProcessRequest processor : processors) {
+                    processor.setDataProvider(WeatherProvider.NOAA);
+                }
+                NOAAHourlyDataMap noaaHourlyDataMap =
+                        noaahttpRequest.makeLocationRequest(
+                                location,
+                                weatherRequest
+                        );
+                if(noaaHourlyDataMap==null){
 
+                    return null;
+                }
+                noaaLocationResponse.setNoaaHourlyDataMap(
+                        noaaHourlyDataMap
+                );
+                if (populateLocationData) {
+                    openStreetLocationService.populateLocationData(location);
+                }
+                locationResponses.getLocationResponses()
+                        .add(noaaLocationResponse);
             } catch (RestClientException e) {
-                Logger.getLogger("").info(e.toString());
-
+                Logger.getLogger(NOAAService.class.getName())
+                        .severe("NOAA request failed: " + e.getMessage());
                 throw new IOException(e);
             }
-        }
-        return  locationResponses;
-    }
 
+        return locationResponses;
+    }
 }

@@ -63,6 +63,8 @@ public class DateUtilities {
         throw new IllegalArgumentException("Date: "+ startDateTime+ "Is  Out Of Bounds");
     }
 
+
+
     /**
      *  checks a string  date in YYYY-MM-DDTHH:MM format   to see if
      *  it is the start date or the end date or justa normal date
@@ -79,10 +81,43 @@ public class DateUtilities {
         if(dayOfMonth==startDay && month==startMonth && hour==0){
             return DateType.START_PROCESSING;
         }
+
         return  DateType.STANDARD_DAY;
     }
 
-        public static Optional<LocalDateTime> calculateMeanAverageDate(List<Optional<LocalDateTime>> dateOptionals, float percentMissing) {
+
+    /**
+     * Classifies calendar boundaries independently of
+     * weather processing start and end dates.
+     */
+    public static DateType checkCalendarDate(LocalDateTime date) {
+
+        int day = date.getDayOfMonth();
+        int month = date.getMonthValue();
+        int hour = date.getHour();
+
+        if (month == 12 && day == 31 && hour == 23) {
+            return DateType.NEW_YEARS_EVE;
+        }
+
+        if (month == 1 && day == 1 && hour == 0) {
+            return DateType.NEW_YEARS_DAY;
+        }
+
+        if (day == 1 && hour == 0) {
+            return DateType.FIRST_DAY_OF_MONTH;
+        }
+
+        if (day == date.toLocalDate().lengthOfMonth()
+                && hour == 23) {
+            return DateType.LAST_DAY_OF_MONTH;
+        }
+
+        return DateType.NORMAL_HOUR;
+    }
+
+
+    public static Optional<LocalDateTime> calculateMeanAverageDate(List<Optional<LocalDateTime>> dateOptionals, float percentMissing) {
             List<LocalDateTime> dates = dateOptionals.stream()
                     .filter(Optional::isPresent)
                     .map(Optional::get)

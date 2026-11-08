@@ -107,6 +107,7 @@ public class WeatherProcessorService {
 
             List<String> text = processor.getProcessedTextValues();
             processor.getLocationWeatherResponse().getLocationResponses().addAll(text);
+            processor.getLocationWeatherResponse().getWarnings().addAll(processor.getWarnings());
         }
     }
 

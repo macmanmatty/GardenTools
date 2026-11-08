@@ -1,5 +1,10 @@
 package com.example.FruitTrees.Location;
 
+import com.example.FruitTrees.NOAA.NOAAStation;
+
+import java.util.LinkedHashMap;
+import java.util.Map;
+
 /**
  * class the represents a location
  */
@@ -15,12 +20,11 @@ public class Location {
     /**
      * the latitude and longitude of the location
      */
-   private  String latitude;
-   private  String longitude;
-    /**
-    the weather station id currently not used
-     */
-   private  String stationId;
+   private double latitude;
+   private  double longitude;
+   private  String latitudeAndLongitude;
+
+   private Map<String, NOAAStation> noaaStations = new LinkedHashMap<>();
 
    private String streetName;
 
@@ -33,6 +37,7 @@ public class Location {
    private String state;
     public String suburb;
     public String borough;
+    public String noaaStationId;
     /**
      * the US FIPS Code For the state
      */
@@ -45,6 +50,7 @@ public class Location {
     private String propertyType;
     private String propertyClass;
     private boolean populated=false;
+    private double elevation=Double.MIN_VALUE;
    private LocationArea locationArea= new LocationArea();
     public String getName() {
         return name;
@@ -52,23 +58,17 @@ public class Location {
     public void setName(String name) {
         this.name = name;
     }
-    public String getLatitude() {
+    public double getLatitude() {
         return latitude;
     }
-    public void setLatitude(String latitude) {
+    public void setLatitude(double latitude) {
         this.latitude = latitude;
     }
-    public String getLongitude() {
+    public double getLongitude() {
         return longitude;
     }
-    public void setLongitude(String longitude) {
+    public void setLongitude(double  longitude) {
         this.longitude = longitude;
-    }
-    public String getStationId() {
-        return stationId;
-    }
-    public void setStationId(String stationId) {
-        this.stationId = stationId;
     }
     public long getId() {
         return id;
@@ -187,5 +187,49 @@ public class Location {
 
     public void setPropertyClass(String propertyClass) {
         this.propertyClass = propertyClass;
+    }
+
+    public String getLatitudeAndLongitude() {
+        return latitudeAndLongitude;
+    }
+
+    public void setLatitudeAndLongitude(String latitudeAndLongitude) {
+        this.latitudeAndLongitude = latitudeAndLongitude;
+
+        String[] coordinates = latitudeAndLongitude.split(",");
+
+        if (coordinates.length != 2) {
+            throw new IllegalArgumentException(
+                    "Expected latitude,longitude but got: " + latitudeAndLongitude
+            );
+        }
+
+        this.latitude = Double.parseDouble(coordinates[0].trim());
+        this.longitude = Double.parseDouble(coordinates[1].trim());
+    }
+
+    public double getElevation() {
+        return elevation;
+    }
+
+    public void setElevation(double elevation) {
+        this.elevation = elevation;
+    }
+
+
+    public Map<String, NOAAStation> getNoaaStations() {
+        return noaaStations;
+    }
+
+    public void setNoaaStations(Map<String, NOAAStation> noaaStations) {
+        this.noaaStations = noaaStations;
+    }
+
+    public String getNoaaStationId() {
+        return noaaStationId;
+    }
+
+    public void setNoaaStationId(String noaaStationId) {
+        this.noaaStationId = noaaStationId;
     }
 }

@@ -1,11 +1,10 @@
 package com.example.FruitTrees.WeatherConroller;
 
 import com.example.FruitTrees.Location.Location;
+import com.example.FruitTrees.NOAA.NOAAStationType;
+import com.example.FruitTrees.WeatherProcessor.ProviderMode;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class WeatherRequest {
 
@@ -28,19 +27,19 @@ public class WeatherRequest {
      * either Fahrenheit
      * or empty string  for Celsius
      */
-    public String temperatureUnit="";
+    public String temperatureUnit = "";
     /**
      * the unit of measurement for wind speed
      */
-    public String windSpeedUnit="";
+    public String windSpeedUnit = "";
     /**
      * the unit of measurement for snow and rain and precipitation (both snow and rain)
      */
-    public String precipitationUnit="";
+    public String precipitationUnit = "";
     /**
      * the time zone to use EST EDT CST etc.
      */
-    public String timezone="EST";
+    public String timezone = "EST";
     /**
      * the yyyy-mm-dd date to start processing the weather data on
      */
@@ -51,36 +50,44 @@ public class WeatherRequest {
     public String endDate;
 
     public boolean showStringText;
+    /**
+     * the unit of measurement metric or US standard
+     * setting this will overwrite the open-meteo data specific units
+     */
+    public WeatherUnit unit;
 
     /**
      * whether to retrieve the unpopulated location data
-     *
      */
     private boolean populateLocationData;
     /**
      * if saving to a file the path to save to
-     *
      */
     private String filePath;
 
     /**
      * whether to save the response to a file
-     *
      */
     private boolean saveToFile;
     /**
      * The file format to save to
      * JSON, CSV, or XLS
-     *
      */
     private String outputFileType;
+    /**
+     * weather or not to use noaa for the data
+     */
 
     private boolean useNOAA;
 
+    private int noaaStationSearchRadius = 25;
+    private int maxNoaaStationElevationDifference;
+
+    private String noaaStationType = NOAAStationType.FALL_BACK.toString();
+    protected ProviderMode weatherMode= ProviderMode.AUTO;
 
 
-
-    public List<Location> locations = new ArrayList<>();
+    public Location location = new Location();
 
     public Set<String> getHourlyDataTypes() {
         return hourlyDataTypes;
@@ -102,7 +109,6 @@ public class WeatherRequest {
     public void setEndDate(String endDate) {
         this.endDate = endDate;
     }
-
 
 
     public void setHourlyDataTypes(Set<String> hourlyDataTypes) {
@@ -157,12 +163,12 @@ public class WeatherRequest {
         this.hourlyWeatherProcessRequests = hourlyWeatherProcessRequests;
     }
 
-    public List<Location> getLocations() {
-        return locations;
+    public Location getLocation() {
+        return location;
     }
 
-    public void setLocations(List<Location> locations) {
-        this.locations = locations;
+    public void setLocation(Location location) {
+        this.location = location;
     }
 
     public boolean isShowStringText() {
@@ -212,5 +218,62 @@ public class WeatherRequest {
     public void setUseNOAA(boolean useNOAA) {
         this.useNOAA = useNOAA;
     }
-}
 
+    public int getNoaaStationSearchRadius() {
+        return noaaStationSearchRadius;
+    }
+
+    public void setNoaaStationSearchRadius(int noaaStationSearchRadius) {
+        this.noaaStationSearchRadius = noaaStationSearchRadius;
+    }
+
+    public String getNoaaStationType() {
+        return noaaStationType;
+    }
+
+    public void setNoaaStationType(String noaaStationType) {
+        this.noaaStationType = noaaStationType;
+    }
+
+    public int getMaxNoaaStationElevationDifference() {
+        return maxNoaaStationElevationDifference;
+    }
+
+    public void setMaxNoaaStationElevationDifference(int maxNoaaStationElevationDifference) {
+        this.maxNoaaStationElevationDifference = maxNoaaStationElevationDifference;
+    }
+
+    public ProviderMode getWeatherMode() {
+        return weatherMode;
+    }
+
+    public void setWeatherMode(ProviderMode weatherMode) {
+        this.weatherMode = weatherMode;
+    }
+
+    public WeatherUnit getUnit() {
+        return unit;
+    }
+
+
+
+    public void setUnit(WeatherUnit unit) {
+
+        this.unit = Objects.requireNonNull(unit);
+
+        switch (unit) {
+            case METRIC:
+                temperatureUnit = "celsius";
+                windSpeedUnit = "kmh";
+                precipitationUnit = "mm";
+                break;
+
+            case STANDARD:
+                temperatureUnit = "fahrenheit";
+                windSpeedUnit = "mph";
+                precipitationUnit = "inch";
+                break;
+        }
+    }
+
+}

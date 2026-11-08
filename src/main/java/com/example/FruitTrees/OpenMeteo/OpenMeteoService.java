@@ -6,6 +6,7 @@ import com.example.FruitTrees.WeatherProcessor.WeatherProcessorService;
 import com.example.FruitTrees.WeatherConroller.HourlyWeatherProcessRequest;
 import com.example.FruitTrees.WeatherConroller.WeatherRequest;
 import com.example.FruitTrees.WeatherConroller.WeatherResponse.WeatherResponse;
+import com.example.FruitTrees.WeatherProcessor.WeatherProcessors.WeatherProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -42,6 +43,7 @@ public class OpenMeteoService {
         List<HourlyWeatherProcessRequest> hourlyWeatherProcessRequests=weatherRequest.getHourlyWeatherProcessRequests();
         weatherRequest.getHourlyDataTypes().clear();
         for(HourlyWeatherProcessRequest hourlyWeatherProcessRequest:hourlyWeatherProcessRequests){
+            hourlyWeatherProcessRequest.setDataProvider(WeatherProvider.OPEN_METEO);
             weatherRequest.getHourlyDataTypes().add(hourlyWeatherProcessRequest.getHourlyDataType());
         }
     }
@@ -54,10 +56,9 @@ public class OpenMeteoService {
      */
     private LocationResponses makeRequest( LocationResponses locationResponses, WeatherRequest weatherRequest) throws IOException {
 
-        List<Location> locations =weatherRequest.getLocations();
-        requestValidation.locationCheck(locations);
+        Location location =weatherRequest.getLocation();
+        //requestValidation.locationCheck(locations);
         boolean populateLocationData= weatherRequest.isPopulateLocationData();
-        for (Location location : locations) {
             try {
                     OpenMeteoLocationResponse locationResponse = openMeteoHTTPRequest.makeLocationRequest(location, weatherRequest);
                     locationResponses.getLocationResponses().add(locationResponse);
@@ -68,7 +69,7 @@ public class OpenMeteoService {
             } catch (RestClientException e) {
                 throw new IOException(e);
             }
-        }
+
         return  locationResponses;
     }
 

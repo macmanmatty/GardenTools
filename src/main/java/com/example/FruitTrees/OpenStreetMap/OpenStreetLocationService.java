@@ -1,95 +1,172 @@
+
 package com.example.FruitTrees.OpenStreetMap;
+
 import com.example.FruitTrees.Location.Location;
 import com.example.FruitTrees.OpenStreetMap.Model.OpenStreetLocationResponse;
 import com.example.FruitTrees.Utilities.LocationUtilities;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestClientException;
+
 import java.io.IOException;
+import java.util.Objects;
+
 @Service
 public class OpenStreetLocationService {
-    private static final Logger log = LoggerFactory.getLogger(OpenStreetLocationService.class);
-    private final OpenStreetLocationHTTPRequest openStreetLocationHTTPRequest;
-   @Autowired
-    public OpenStreetLocationService(OpenStreetLocationHTTPRequest openStreetLocationHTTPRequest) {
-       this.openStreetLocationHTTPRequest = openStreetLocationHTTPRequest;
+
+    private static final Logger log =
+            LoggerFactory.getLogger(OpenStreetLocationService.class);
+
+    private final OpenStreetLocationHTTPRequest httpRequest;
+
+    public OpenStreetLocationService(
+            OpenStreetLocationHTTPRequest httpRequest) {
+        this.httpRequest = httpRequest;
     }
-        public Location populateLocationData(Location location) throws IOException {
-       OpenStreetLocationResponse openStreetLocationResponse = getLocationData(location);
-       populateLocationData(location, openStreetLocationResponse);
+
+    /**
+     * Retrieves geographic information and populates
+     * the supplied Location object.
+     */
+    public Location populateLocationData(Location location)
+            throws IOException {
+
+        Objects.requireNonNull(location, "Location is required");
+
+        OpenStreetLocationResponse response =
+                getLocationData(location);
+
+        if (response == null || response.getAddress() == null) {
+            throw new IOException(
+                    "OpenStreetMap returned no address information"
+            );
+        }
+
+        populateLocationData(location, response);
+
         return location;
     }
+
     /**
-     * calls the open-meteo service to get the data for  each of specified location(s)
-     * in the weather request one open-meteo request is required per location
-     * @return
-     * @throws IOException
+     * Reverse-geocodes a location using its coordinates.
      */
-    public OpenStreetLocationResponse getLocationData(Location location) throws IOException {
-        OpenStreetLocationResponse openStreetLocationResponse = new OpenStreetLocationResponse();
-            try {
-                openStreetLocationResponse = openStreetLocationHTTPRequest.makeOpenStreetLocationRequest(location);
-            } catch (RestClientException e) {
-                throw new IOException(e);
-            }
-            return openStreetLocationResponse;
+    public OpenStreetLocationResponse getLocationData(
+            Location location) throws IOException {
+
+        return executeRequest(
+                () -> httpRequest.makeOpenStreetLocationRequest(location)
+        );
     }
+
     /**
-     * returns a OpenStreetLocationResponse object for a location object wih a given county and state
-     * @param location the location object
-     * @return OpenStreetLocationResponse object
-     * @throws IOException
+     * Looks up a location by county and state.
      */
-    public OpenStreetLocationResponse getLocationDataByCountyAndState(Location location) throws IOException {
-        OpenStreetLocationResponse openStreetLocationResponse = new OpenStreetLocationResponse();
+    public OpenStreetLocationResponse getLocationDataByCountyAndState(
+            Location location) throws IOException {
+
+        return executeRequest(
+                () -> httpRequest
+                        .makeOpenStreetLocationRequestByCountyAndState(location)
+        );
+    }
+
+    /**
+     * Forward-geocodes a street address or place name.
+     */
+    public OpenStreetLocationResponse forwardGeocodeAddress(
+            String address) throws IOException {
+
+        return executeRequest(
+                () -> httpRequest.forwardGeocodeAddress(address)
+        );
+    }
+
+    /**
+     * Executes an HTTP request and preserves the response
+     * details when the remote service rejects it.
+     */
+    private OpenStreetLocationResponse executeRequest(
+            LocationRequest operation) throws IOException {
+
         try {
-            openStreetLocationResponse = openStreetLocationHTTPRequest.makeOpenStreetLocationRequestByCountyAndState(location);
+            return operation.execute();
+
+        } catch (HttpStatusCodeException e) {
+
+            log.error(
+                    "OpenStreetMap request failed. HTTP {}. Response: {}",
+                    e.getStatusCode(),
+                    e.getResponseBodyAsString()
+            );
+
+            throw new IOException(
+                    "OpenStreetMap returned HTTP "
+                            + e.getStatusCode(),
+                    e
+            );
+
         } catch (RestClientException e) {
-            throw new IOException(e);
+
+            log.error("OpenStreetMap request failed", e);
+
+            throw new IOException(
+                    "Unable to retrieve OpenStreetMap location data",
+                    e
+            );
         }
-        return openStreetLocationResponse;
     }
-    /**
-     * returns a OpenStreetLocationResponse object for a location object wih a given county and state
-     * @return OpenStreetLocationResponse object
-     * @throws IOException
-     */
-    public OpenStreetLocationResponse forwardGeocodeAddress(String address) throws IOException {
-        OpenStreetLocationResponse openStreetLocationResponse = new OpenStreetLocationResponse();
-        try {
-           openStreetLocationResponse= openStreetLocationHTTPRequest.forwardGeocodeAddress(address);
-        } catch (RestClientException e) {
-            throw new IOException(e);
-        }
-        return openStreetLocationResponse;
+
+    @FunctionalInterface
+    private interface LocationRequest {
+        OpenStreetLocationResponse execute();
     }
+
     /**
-     * populates data for  location  object for a location object wih a given latitude and longitude
-     * if location does not have a name gives it one based on the state and county or city
-     * @param location the location object
+     * Copies address information into the Location object.
+     * Preserves an existing location name.
      */
-    private void populateLocationData(Location location, OpenStreetLocationResponse openStreetLocationResponse){
-            location.setCounty(openStreetLocationResponse.getAddress().getCounty());
-             location.setState(openStreetLocationResponse.getAddress().getState());
-            location.setCity(openStreetLocationResponse.getAddress().getCity());
-          location.setZipCode(openStreetLocationResponse.getAddress().getPostcode());
-          if(location.getState()!=null) {
-              location.setStateFips(LocationUtilities.getStateFipsCode(location.getState()));
-          }
-        if(location.getCounty()!=null) {
-            location.setCountyFips(LocationUtilities.getStateFipsCode(location.getState()));
+    private void populateLocationData(
+            Location location,
+            OpenStreetLocationResponse response) {
+
+        var address = response.getAddress();
+
+        location.setCounty(address.getCounty());
+        location.setState(address.getState());
+        location.setCity(address.getCity());
+        location.setZipCode(address.getPostcode());
+
+        if (location.getState() != null) {
+            location.setStateFips(
+                    LocationUtilities.getStateFipsCode(
+                            location.getState()
+                    )
+            );
         }
-        if(location.getName()==null){
-            String text="";
-            if(location.getCity()!=null && !location.getCity().isEmpty()) {
-                text= location.getCity()+", "+ location.getState();
+
+        // County FIPS must be calculated separately.
+        // Do not assign the state FIPS as the county FIPS.
+
+        if (location.getName() == null
+                || location.getName().isBlank()) {
+
+            String place = location.getCity();
+
+            if (place == null || place.isBlank()) {
+                place = location.getCounty();
             }
-            else {
-                text = location.getCounty() + ", " + location.getState();
+
+            if (place != null && !place.isBlank()) {
+                String state = location.getState();
+
+                location.setName(
+                        state == null || state.isBlank()
+                                ? place
+                                : place + ", " + state
+                );
             }
-            location.setName(text);
         }
     }
 }

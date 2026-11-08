@@ -1,5 +1,4 @@
 package com.example.FruitTrees.OpenStreetMap;
-
 import com.example.FruitTrees.Location.Location;
 import com.example.FruitTrees.OpenStreetMap.Model.OpenStreetLocationResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +12,6 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
-
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -21,23 +19,34 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.logging.Logger;
-
 /**
  * service class for making Open-Meteo requests
  */
 @Service
 public class OpenStreetLocationHTTPRequest {
     @Value("${open-street-location-url}")
-   private  String openStreetUrl;
-    @Value("${app-name}")
-    private String appName;
-   private final  RestTemplate restTemplate = new RestTemplate();
-    private final  CacheManager cacheManager;
-    @Autowired
-    public OpenStreetLocationHTTPRequest(CacheManager cacheManager) {
+    private String openStreetUrl;
+    private final RestTemplate restTemplate;
+    private final CacheManager cacheManager;
+    public OpenStreetLocationHTTPRequest(
+            CacheManager cacheManager,
+            @Value("${app-name}") String appName) {
         this.cacheManager = cacheManager;
+        this.restTemplate = new RestTemplate();
+        this.restTemplate.getInterceptors().add(
+                (request, body, execution) -> {
+                    request.getHeaders().set(
+                            HttpHeaders.USER_AGENT,
+                            appName
+                    );
+                    request.getHeaders().set(
+                            HttpHeaders.ACCEPT,
+                            "application/json"
+                    );
+                    return execution.execute(request, body);
+                }
+        );
     }
-    
     /**
         calls the open street map service to get the data for  a specified location
      *  with given latitude and longitude
@@ -50,7 +59,6 @@ public class OpenStreetLocationHTTPRequest {
         String fullUrl = String.format(openStreetUrl +"reverse?format=json&lat=%s&lon=%s", location.getLatitude(), location.getLongitude());
         Logger.getLogger("").info("open street url " + fullUrl);
         ResponseEntity<OpenStreetLocationResponse> response = restTemplate.getForEntity(fullUrl, OpenStreetLocationResponse.class);
-
             return response.getBody();
     }
     /**
@@ -62,7 +70,6 @@ public class OpenStreetLocationHTTPRequest {
     @Cacheable(value = "locationCache",
             key = "#location.getCounty()")
     public OpenStreetLocationResponse makeOpenStreetLocationRequestByCountyAndState(Location location){
-
         String fullUrl =openStreetUrl +"search?format=json&q="+formatCounty(location.getCounty())+",+"+ location.getState();
         Logger.getLogger("").info("open street url " + fullUrl);
         ResponseEntity<List<OpenStreetLocationResponse>> response = restTemplate.exchange(
@@ -97,41 +104,32 @@ public class OpenStreetLocationHTTPRequest {
             location.setLatitude(res.getLat());
             location.setLongitude(res.getLon());
         }
-
         return location;
     }
-
     /**
      calls the open street map service to get the data for  a specified laddress
      *  with given latitude and longitude
      * @return The LocationResponse containing the  OpenMeteoResponse and the Location Object
      * @throws IOException
      */
-    @Cacheable(value = "locationCache",
-            key = "#address")
-    public OpenStreetLocationResponse forwardGeocodeAddress(String address){
-
-        String fullUrl = "https://nominatim.openstreetmap.org/search"
-                + "?q=" + address.replace(" ", "+")
+    @Cacheable(value = "locationCache", key = "#address")
+    public OpenStreetLocationResponse forwardGeocodeAddress(
+            String address) {
+        String fullUrl = openStreetUrl
+                + "search?q="
+                + URLEncoder.encode(address, StandardCharsets.UTF_8)
                 + "&format=json&addressdetails=1";
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("User-Agent", appName); // REQUIRED by Nominatim
-        HttpEntity<String> entity = new HttpEntity<>(headers);
-        Logger.getLogger("").info("app name " + appName);
-
-        Logger.getLogger("").info("open street url " + fullUrl);
-        ResponseEntity< OpenStreetLocationResponse []> response = restTemplate.exchange(fullUrl, HttpMethod.GET,entity, OpenStreetLocationResponse[].class);
-        System.out.println("HTTP Status Code: " + response.getStatusCode());
-        System.out.println("Response Headers: " + response.getHeaders());
-        System.out.println("Response Body: " + Arrays.toString(response.getBody()));
-
-        if(Objects.requireNonNull(response.getBody()).length>0) {
-            return Objects.requireNonNull(response.getBody())[0];
+        ResponseEntity<OpenStreetLocationResponse[]> response =
+                restTemplate.getForEntity(
+                        fullUrl,
+                        OpenStreetLocationResponse[].class
+                );
+        OpenStreetLocationResponse[] results = response.getBody();
+        if (results == null || results.length == 0) {
+            return null;
         }
-        return null;
+        return results[0];
     }
-
-
     /**
      * builds a open street map geocode url based off of an address location object
      * @param location the location object
@@ -139,7 +137,6 @@ public class OpenStreetLocationHTTPRequest {
      */
     public String buildGeocodeUrl(Location location) {
         String openStreetUrl = "https://nominatim.openstreetmap.org/";
-
         String fullAddress = String.format("%s %s, %s, %s %s",
                 location.getStreetNumber(),
                 location.getStreetName(),
@@ -149,6 +146,4 @@ public class OpenStreetLocationHTTPRequest {
         String encodedAddress = URLEncoder.encode(fullAddress, StandardCharsets.UTF_8);
         return String.format("%ssearch?q=%s&format=json", openStreetUrl, encodedAddress);
     }
-
-
 }

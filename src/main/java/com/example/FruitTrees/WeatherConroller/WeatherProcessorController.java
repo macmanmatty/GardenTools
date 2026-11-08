@@ -1,13 +1,12 @@
+
 package com.example.FruitTrees.WeatherConroller;
 
-import com.example.FruitTrees.File.FileSaver;
-import com.example.FruitTrees.NOAA.NOAAService;
 import com.example.FruitTrees.OpenMeteo.LocationResponses;
-import com.example.FruitTrees.OpenMeteo.OpenMeteoService;
 import com.example.FruitTrees.WeatherConroller.WeatherResponse.WeatherResponse;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.BeanCreationException;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,40 +15,83 @@ import java.io.IOException;
 
 @RestController
 public class WeatherProcessorController {
-    OpenMeteoService openMeteoService;
-    @Autowired
-    NOAAService noaaService;
-    @Autowired
-    public WeatherProcessorController(OpenMeteoService openMeteoService) {
-        this.openMeteoService = openMeteoService;
+
+    private static final Logger log =
+            LoggerFactory.getLogger(WeatherProcessorController.class);
+
+    private final WeatherProviderService weatherProviderService;
+
+    public WeatherProcessorController(
+            WeatherProviderService weatherProviderService) {
+
+        this.weatherProviderService = weatherProviderService;
     }
 
-    @PostMapping(value = "/weatherInfo", consumes = {"application/json"})
-    public ResponseEntity<Object> getWeather( @RequestBody  WeatherRequest weatherRequest) {
+    /**
+     * Retrieves weather data using the appropriate provider.
+     * NOAA is preferred when configured and suitable;
+     * otherwise Open-Meteo is used.
+     */
+    @PostMapping(
+            value = "/weatherInfo",
+            consumes = "application/json"
+    )
+    public ResponseEntity<?> getWeather(
+            @RequestBody WeatherRequest weatherRequest) {
+
         try {
-            LocationResponses locationResponses= new LocationResponses();
-            WeatherResponse weatherResponse = new WeatherResponse();
-            if(weatherRequest.isUseNOAA()) {
-               weatherResponse = noaaService.getData(locationResponses, weatherRequest);
-            }
-            else{
-                weatherResponse = openMeteoService.getData(locationResponses, weatherRequest);
-            }
+            LocationResponses locationResponses =
+                    new LocationResponses();
 
-         if(weatherRequest.isSaveToFile()){
-             FileSaver.saveFile(weatherRequest.getFilePath(), weatherRequest.getOutputFileType(), weatherResponse);
-         }
-            return  new ResponseEntity<>(weatherResponse, HttpStatus.OK);
+            WeatherResponse weatherResponse =
+                    weatherProviderService.getWeather(
+                            locationResponses,
+                            weatherRequest
+                    );
 
-     }
-      catch (IOException | InterruptedException e) {
-      return  new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
-       }
-        catch(BeanCreationException e){
-            return  new ResponseEntity<>("Invalid Weather Processor Supplied", HttpStatus.BAD_REQUEST);
+            return ResponseEntity.ok(weatherResponse);
+
         }
+        catch (BeanCreationException e) {
+            log.error("Failed to create weather processor", e);
 
+            return ResponseEntity
+                    .badRequest()
+                    .body("Invalid Weather Processor Supplied");
+        }
+        catch (InterruptedException e) {
+
+            Thread.currentThread().interrupt();
+
+            log.error("Weather request interrupted", e);
+
+            return ResponseEntity
+                    .status(HttpStatus.SERVICE_UNAVAILABLE)
+                    .body("Weather request interrupted");
+
+        } catch (IllegalArgumentException e) {
+
+            log.warn("Invalid weather request: {}", e.getMessage());
+
+            return ResponseEntity
+                    .badRequest()
+                    .body(e.getMessage());
+
+        } catch (IOException e) {
+
+            log.error("Weather provider request failed", e);
+
+            return ResponseEntity
+                    .status(HttpStatus.BAD_GATEWAY)
+                    .body("Unable to retrieve weather data");
+
+        } catch (Exception e) {
+
+            log.error("Unexpected weather processing error", e);
+
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Internal weather processing error");
+        }
     }
-
-
 }

@@ -1,38 +1,48 @@
 package com.example.FruitTrees.WeatherProcessor.WeatherProcessors.MonthlyAndDaily;
-
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-
 import java.time.LocalDateTime;
-
 @Component("AverageMonthly")
 @Scope("prototype")
-
-public class MonthlyAverageCalculator extends DailyAndMonthlyWeatherProcessor {
-    private double finalValue =0;
-    private int hours;
+public class MonthlyAverageCalculator
+        extends DailyAndMonthlyWeatherProcessor {
+    private double finalValue = 0;
+    private int hours = 0;
     public MonthlyAverageCalculator() {
         super("Monthly Average");
     }
     @Override
     public void before() {
         super.before();
-        processorName = "Monthly Average For "+dataType;
-
-    }
-   
-    @Override
-    protected void onMonthEnd(double value, LocalDateTime localDateTime) {
-        monthlyValuesResponse.getValues().put(processorName +" For "+dataType, String.valueOf(finalValue));
-        finalValue=(finalValue/hours);
-        addProcessedTextValue(finalValue, localDateTime.getYear(), localDateTime.getMonth().name());
-        monthlyValues.get(currentMonthName).add(finalValue);
-        finalValue =0;
-        hours=0;
+        processorName = "Monthly Average For " + dataType;
+        finalValue = 0;
+        hours = 0;
     }
     @Override
-    protected void processWeatherBetween(double value, LocalDateTime date) {
-            finalValue =finalValue+ value;
+    protected void onMonthEnd(double value, LocalDateTime date) {
+        if (hours > 0) {
+            double average = finalValue / hours;
+            monthlyValuesResponse.getValues().put(
+                    processorName,
+                    String.valueOf(average)
+            );
+            addProcessedTextValue(
+                    average,
+                    currentYear,
+                    currentMonthName
+            );
+            monthlyValues.get(currentMonthName).add(average);
+        }
+        finalValue = 0;
+        hours = 0;
+    }
+    @Override
+    protected void processWeatherBetween(
+            double value,
+            LocalDateTime date) {
+        if (Double.isFinite(value)) {
+            finalValue += value;
             hours++;
+        }
     }
 }
