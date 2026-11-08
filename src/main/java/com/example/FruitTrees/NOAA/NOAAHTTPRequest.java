@@ -1,315 +1,378 @@
+
 package com.example.FruitTrees.NOAA;
+
 import com.example.FruitTrees.Location.Location;
 import com.example.FruitTrees.Utilities.DataUtilities;
 import com.example.FruitTrees.WeatherConroller.WeatherRequest;
 import com.google.common.util.concurrent.RateLimiter;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
+
 import java.net.URI;
 import java.time.LocalDate;
 import java.util.*;
 import java.util.logging.Logger;
-/**
- * Service responsible for retrieving hourly weather observations
- * from NOAA/NCEI.
- *
- * This service:
- *
- * 1. Determines the NOAA station to use for the requested location.
- * 2. Builds the NOAA data request.
- * 3. Handles NOAA pagination.
- * 4. Applies rate limiting between NOAA API requests.
- * 5. Converts the returned observations into NOAAHourlyDataMap.
- */
+
 @Service
 public class NOAAHTTPRequest {
+
     private static final Logger LOGGER =
             Logger.getLogger(NOAAHTTPRequest.class.getName());
-    private static final int PAGE_SIZE = 1000;
-    @Value("${noaa.url}")
-    private String noaaUrl;
+
     private final RestTemplate restTemplate = new RestTemplate();
-    private final CacheManager cacheManager;
-    private final NoaaStationFinder noaaStationFinder;
-    private NOAAHourlyNormalizer noaaHourlyNormalizer;
-    /*
-     * NOAA currently permits more than two requests per second,
-     * but keeping this below NOAA's maximum provides some margin.
-     */
+    private final NOAAHourlyNormalizer normalizer;
     private final RateLimiter limiter;
+    private final String noaaUrl;
+
     public NOAAHTTPRequest(
-            CacheManager cacheManager,
-            NoaaStationFinder noaaStationFinder, NOAAHourlyNormalizer noaaHourlyNormalizer,
-            @Value("${noaa.api.rate-limit}") double rateLimit) {
-        this.cacheManager = cacheManager;
-        this.noaaStationFinder = noaaStationFinder;
+            NOAAHourlyNormalizer normalizer,
+            @Value("${noaa.api.rate-limit}") double rateLimit,
+            @Value("${noaa.url}") String noaaUrl) {
+
+        this.normalizer = normalizer;
         this.limiter = RateLimiter.create(rateLimit);
-        this.noaaHourlyNormalizer = noaaHourlyNormalizer;
+        this.noaaUrl = noaaUrl;
     }
+
     /**
-     * Retrieves NOAA hourly weather observations for a location.
-     *
-     * If the Location already contains a NOAA station ID, that station
-     * is used. Otherwise the nearest appropriate station is located.
-     *
-     * NOAA limits the number of observations returned in a single
-     * response, so requests are paginated until all observations have
-     * been retrieved.
-     *
-     * @param location location for which weather data is requested
-     * @param weatherRequest request containing date range, search radius,
-     *                       and requested hourly data types
-     *
-     * @return NOAA hourly observations organized in a NOAAHourlyDataMap
-     *
+     * Retrieves NOAA hourly observations using the stations
+     * already selected for each requested data type.
      */
     @Cacheable(
             value = "noaaDataCache",
             key = "#location.getLatitude() + ':'"
                     + " + #location.getLongitude() + ':'"
-                    + " + #weatherRequest.getHourlyDataTypes().hashCode() + ':'"
+                    + " + #location.getNoaaStations().toString() + ':'"
+                    + " + #weatherRequest.getHourlyDataTypes().toString() + ':'"
                     + " + #weatherRequest.getStartDate() + ':'"
-                    + " + #weatherRequest.getEndDate()"
+                    + " + #weatherRequest.getEndDate() + ':'"
+                    + " + #weatherRequest.getTemperatureUnit()"
     )
     public NOAAHourlyDataMap makeLocationRequest(
             Location location,
-            WeatherRequest weatherRequest)
-       {
+            WeatherRequest weatherRequest) {
+
+        Objects.requireNonNull(location, "Location is required");
+        Objects.requireNonNull(weatherRequest, "WeatherRequest is required");
+
         LocalDate startDate = LocalDate.parse(
                 weatherRequest.getStartDate().toString()
         );
+
         LocalDate endDate = LocalDate.parse(
                 weatherRequest.getEndDate().toString()
         );
+
         if (startDate.isAfter(endDate)) {
             throw new IllegalArgumentException(
                     "NOAA start date must not be after end date"
             );
         }
-        NOAAStation station = location.getNoaaStation();
 
+        Map<String, NOAAStation> stations =
+                location.getNoaaStations();
 
-        String stationId=station.getStationId();
-        if (stationId == null || stationId.isBlank()) {
-            return null;
+        if (stations == null || stations.isEmpty()) {
+            throw new IllegalArgumentException(
+                    "No NOAA stations selected"
+            );
         }
-           System.err.println(">>> STATION FINDER RETURNED: " + stationId);
+
+        // Group measurements by station ID to avoid
+        // requesting the same station multiple times.
+        Map<String, Set<String>> stationDataTypes =
+                groupStations(stations, weatherRequest);
+
         List<NOAAWeatherRecord> allData = new ArrayList<>();
-        LocalDate chunkStart = startDate;
-        while (!chunkStart.isAfter(endDate)) {
-            LocalDate chunkEnd = chunkStart
-                    .withDayOfYear(1)
-                    .plusYears(1)
-                    .minusDays(1);
-            if (chunkEnd.isAfter(endDate)) {
-                chunkEnd = endDate;
+
+        boolean useFahrenheit =
+                !isCelsius(weatherRequest.temperatureUnit);
+
+        for (Map.Entry<String, Set<String>> entry
+                : stationDataTypes.entrySet()) {
+
+            String stationId = entry.getKey();
+            Set<String> dataTypes = entry.getValue();
+
+            LocalDate chunkStart = startDate;
+
+            while (!chunkStart.isAfter(endDate)) {
+
+                LocalDate chunkEnd = chunkStart
+                        .withDayOfYear(1)
+                        .plusYears(1)
+                        .minusDays(1);
+
+                if (chunkEnd.isAfter(endDate)) {
+                    chunkEnd = endDate;
+                }
+
+                fetchDateRange(
+                        stationId,
+                        dataTypes,
+                        chunkStart,
+                        chunkEnd,
+                        useFahrenheit,
+                        allData
+                );
+
+                chunkStart = chunkEnd.plusDays(1);
             }
-            location.setNoaaStation(station);
-            LOGGER.info(
-                    "Fetching NOAA data for station " + stationId
-                            + " from " + chunkStart
-                            + " through " + chunkEnd
-            );
-            fetchDateRange(
-                    stationId,
-                    weatherRequest,
-                    chunkStart,
-                    chunkEnd,
-                    allData
-            );
-            chunkStart = chunkEnd.plusDays(1);
         }
+
         NOAAHourlyDataMap result = new NOAAHourlyDataMap();
         result.addRecords(allData);
-           noaaHourlyNormalizer.normalize(
-                   result,
-                   startDate,
-                   endDate
-           );
-           return result;
+
+        normalizer.normalize(result, startDate, endDate);
+
+        return result;
     }
+
     /**
-     * Fetches NOAA Global Hourly observations for a date range.
+     * Groups requested data types by their selected station.
      *
-     * Converts the returned raw NOAA records into individual weather
-     * measurements and appends them to the supplied collection.
+     * Example:
+     * TMP -> Station A
+     * DEW -> Station A
+     * WND -> Station B
      *
-     * @param stationId NOAA station identifier
-     * @param weatherRequest request containing data types and units
-     * @param startDate beginning of the date range
-     * @param endDate end of the date range
-     * @param allData destination collection for converted observations
+     * Produces:
+     * Station A -> [TMP, DEW]
+     * Station B -> [WND]
+     */
+    private Map<String, Set<String>> groupStations(
+            Map<String, NOAAStation> stations,
+            WeatherRequest request) {
+
+        Map<String, Set<String>> grouped =
+                new LinkedHashMap<>();
+
+        Set<String> requestedTypes = new LinkedHashSet<>();
+
+        if (request.getHourlyDataTypes() != null) {
+            for (String type : request.getHourlyDataTypes()) {
+
+                if (type == null || type.isBlank()) {
+                    continue;
+                }
+
+                String noaaType =
+                        DataUtilities.toNOAADatatype(type);
+
+                if (noaaType != null && !noaaType.isBlank()) {
+                    requestedTypes.add(
+                            noaaType.trim().toUpperCase(Locale.ROOT)
+                    );
+                }
+            }
+        }
+
+        if (requestedTypes.isEmpty()) {
+            throw new IllegalArgumentException(
+                    "At least one NOAA data type is required"
+            );
+        }
+
+        Map<String, NOAAStation> normalizedStations =
+                new HashMap<>();
+
+        stations.forEach((type, station) -> {
+            if (type != null) {
+                normalizedStations.put(
+                        type.trim().toUpperCase(Locale.ROOT),
+                        station
+                );
+            }
+        });
+
+        for (String type : requestedTypes) {
+
+            NOAAStation station = normalizedStations.get(type);
+
+            if (station == null
+                    || station.getStationId() == null
+                    || station.getStationId().isBlank()) {
+
+                LOGGER.warning(
+                        "No NOAA station selected for " + type
+                );
+
+                continue;
+            }
+
+            String stationId = station.getStationId().trim();
+
+            grouped.computeIfAbsent(
+                    stationId,
+                    key -> new LinkedHashSet<>()
+            ).add(type);
+        }
+
+        return grouped;
+    }
+
+    /**
+     * Fetches the assigned data types from one station
+     * for a single calendar-year chunk.
      */
     private void fetchDateRange(
             String stationId,
-            WeatherRequest weatherRequest,
+            Set<String> dataTypes,
             LocalDate startDate,
             LocalDate endDate,
+            boolean useFahrenheit,
             List<NOAAWeatherRecord> allData) {
-        String url = buildNoaaUrl(
+
+        URI uri = buildNoaaUrl(
                 stationId,
-                weatherRequest,
+                dataTypes,
                 startDate,
                 endDate
         );
-        boolean useFahrenheit = true;
-        if (weatherRequest.temperatureUnit.equalsIgnoreCase("celsius") || weatherRequest.temperatureUnit.equalsIgnoreCase("c")) {
-        useFahrenheit = false;
-        }
+
         limiter.acquire();
-        URI uri = URI.create(url);
-        LOGGER.info("NOAA REQUEST: " + uri);
-        HttpHeaders headers = new HttpHeaders();
-        HttpEntity<Void> entity = new HttpEntity<>(headers);
+
+        LOGGER.info(
+                "NOAA request: station=" + stationId
+                        + ", types=" + dataTypes
+                        + ", start=" + startDate
+                        + ", end=" + endDate
+        );
+
         ResponseEntity<NOAAGlobalHourlyRecord[]> response =
                 restTemplate.exchange(
                         uri,
                         HttpMethod.GET,
-                        entity,
+                        null,
                         NOAAGlobalHourlyRecord[].class
                 );
-        NOAAGlobalHourlyRecord[] results = Objects.requireNonNull(
-                response.getBody(),
-                "NOAA returned an empty response body"
-        );
-        for (NOAAGlobalHourlyRecord record : results) {
-            allData.addAll(convertRecord(record, useFahrenheit));
+
+        NOAAGlobalHourlyRecord[] results = response.getBody();
+
+        if (results == null) {
+            throw new IllegalStateException(
+                    "NOAA returned an empty response body"
+            );
         }
-        LOGGER.info("Retrieved " + results.length
-                + " NOAA observations for " + startDate
-                + " through " + endDate);
+
+        for (NOAAGlobalHourlyRecord record : results) {
+            allData.addAll(
+                    convertRecord(record, dataTypes, useFahrenheit)
+            );
+        }
+
+        LOGGER.info(
+                "Retrieved " + results.length
+                        + " observations from " + stationId
+        );
     }
+
     /**
-     * Extracts supported measurements from a raw NOAA observation.
-     *
-     * Each raw observation may contain multiple meteorological fields.
-     * Currently converts temperature (TMP) and dew point (DEW).
-     *
-     * @param raw raw NOAA Global Hourly observation
-     * @param useFahrenheit whether to convert temperatures to Fahrenheit
-     * @return converted measurements from the raw observation
+     * Converts only the data types assigned to this station.
      */
     private List<NOAAWeatherRecord> convertRecord(
-            NOAAGlobalHourlyRecord raw, boolean useFahrenheit) {
+            NOAAGlobalHourlyRecord raw,
+            Set<String> dataTypes,
+            boolean useFahrenheit) {
+
         List<NOAAWeatherRecord> records = new ArrayList<>();
-        addMeasurement(
-                records,
-                raw,
-                "TMP",
-                raw.getTemperature(),
-                10.0,
-                9999, useFahrenheit
-        );
-        addMeasurement(
-                records,
-                raw,
-                "DEW",
-                raw.getDewPoint(),
-                10.0,
-                9999, useFahrenheit
-        );
+
+        if (dataTypes.contains("TMP")) {
+            addMeasurement(
+                    records,
+                    raw,
+                    "TMP",
+                    raw.getTemperature(),
+                    useFahrenheit
+            );
+        }
+
+        if (dataTypes.contains("DEW")) {
+            addMeasurement(
+                    records,
+                    raw,
+                    "DEW",
+                    raw.getDewPoint(),
+                    useFahrenheit
+            );
+        }
+
         return records;
     }
+
     /**
-     * Decodes and validates a NOAA temperature measurement.
-     *
-     * NOAA encodes temperature and dew point as comma-separated values,
-     * with the numeric measurement stored in tenths of a degree Celsius.
-     *
-     * Measurements with missing values or disallowed quality flags
-     * are discarded.
-     *
-     * @param records destination list for valid measurements
-     * @param raw original NOAA observation
-     * @param datatype NOAA data type identifier
-     * @param encodedValue raw encoded measurement
-     * @param divisor scaling divisor applied to the encoded value
-     * @param missingValue NOAA missing-value sentinel
-     * @param useFahrenheit whether to convert Celsius to Fahrenheit
+     * Decodes a NOAA temperature or dew point observation.
      */
     private void addMeasurement(
             List<NOAAWeatherRecord> records,
             NOAAGlobalHourlyRecord raw,
-            String datatype,
+            String dataType,
             String encodedValue,
-            double divisor,
-            int missingValue,  boolean useFahrenheit) {
+            boolean useFahrenheit) {
+
         if (encodedValue == null || encodedValue.isBlank()) {
             return;
         }
+
         String[] parts = encodedValue.split(",");
+
         if (parts.length < 2) {
             return;
         }
+
         try {
-            int encoded = Integer.parseInt(parts[0]);
-            if (Math.abs(encoded) == missingValue) {
+            int encoded = Integer.parseInt(parts[0].trim());
+
+            if (Math.abs(encoded) == 9999) {
                 return;
             }
-            String qualityFlag = parts[1];
+
+            String qualityFlag = parts[1].trim();
+
             if (!qualityFlag.equals("1")
                     && !qualityFlag.equals("5")) {
                 return;
             }
+
+            double value = encoded / 10.0;
+
+            if (useFahrenheit) {
+                value = value * 9.0 / 5.0 + 32.0;
+            }
+
             NOAAWeatherRecord record = new NOAAWeatherRecord();
+
             record.setDate(raw.getDate());
             record.setStation(raw.getStation());
-            record.setDatatype(datatype);
-            record.setValue(encoded / divisor);
+            record.setDatatype(dataType);
+            record.setValue(value);
             record.setAttributes(qualityFlag);
-            if(useFahrenheit) {
-                double fahrenheit = (encoded / 10.0) * 9.0 / 5.0 + 32.0;
-                record.setValue(fahrenheit);
-            }
+
             records.add(record);
+
         } catch (NumberFormatException e) {
             LOGGER.warning(
-                    "Invalid NOAA " + datatype + " value: " + encodedValue
+                    "Invalid NOAA " + dataType
+                            + " value: " + encodedValue
             );
         }
     }
+
     /**
-     * Builds the NOAA Global Hourly API URL.
-     *
-     * Converts requested application data types into NOAA identifiers,
-     * removes duplicates, and includes the station and date range.
-     *
-     * @param stationId NOAA station identifier
-     * @param weatherRequest weather request containing data types
-     * @param startDate beginning of the requested date chunk
-     * @param endDate end of the requested date chunk
-     * @return NOAA API request URL
+     * Builds the NOAA request for one station and its
+     * assigned data types.
      */
-    private String buildNoaaUrl(
+    private URI buildNoaaUrl(
             String stationId,
-            WeatherRequest weatherRequest,
+            Set<String> dataTypes,
             LocalDate startDate,
             LocalDate endDate) {
-        Set<String> requestedTypes =
-                weatherRequest.getHourlyDataTypes();
-        HashSet<String> dataTypes =  new LinkedHashSet<String>();
-        if (requestedTypes != null) {
-            for (String datatype : requestedTypes) {
-                String noaaDatatype =
-                        DataUtilities.toNOAADatatype(datatype);
-                if (noaaDatatype != null && !noaaDatatype.isBlank()) {
-                    dataTypes.add(noaaDatatype);
-                }
-            }
-        }
-        if (dataTypes.isEmpty()) {
-            throw new IllegalArgumentException(
-                    "At least one NOAA hourly data type is required"
-            );
-        }
+
         return UriComponentsBuilder
                 .fromUriString(noaaUrl)
                 .queryParam("dataset", "global-hourly")
@@ -319,6 +382,13 @@ public class NOAAHTTPRequest {
                 .queryParam("dataTypes", String.join(",", dataTypes))
                 .queryParam("format", "json")
                 .build()
-                .toUriString();
+                .encode()
+                .toUri();
+    }
+
+    private boolean isCelsius(String unit) {
+        return unit != null
+                && (unit.equalsIgnoreCase("celsius")
+                || unit.equalsIgnoreCase("c"));
     }
 }

@@ -2,6 +2,9 @@ package com.example.FruitTrees.Location;
 
 import com.example.FruitTrees.NOAA.NOAAStation;
 
+import java.util.LinkedHashMap;
+import java.util.Map;
+
 /**
  * class the represents a location
  */
@@ -21,7 +24,7 @@ public class Location {
    private  double longitude;
    private  String latitudeAndLongitude;
 
-   private NOAAStation noaaStation = null;
+   private Map<String, NOAAStation> noaaStations = new LinkedHashMap<>();
 
    private String streetName;
 
@@ -34,6 +37,7 @@ public class Location {
    private String state;
     public String suburb;
     public String borough;
+    public String noaaStationId;
     /**
      * the US FIPS Code For the state
      */
@@ -213,12 +217,19 @@ public class Location {
     }
 
 
-
-    public NOAAStation getNoaaStation() {
-        return noaaStation;
+    public Map<String, NOAAStation> getNoaaStations() {
+        return noaaStations;
     }
 
-    public void setNoaaStation(NOAAStation noaaStation) {
-        this.noaaStation = noaaStation;
+    public void setNoaaStations(Map<String, NOAAStation> noaaStations) {
+        this.noaaStations = noaaStations;
+    }
+
+    public String getNoaaStationId() {
+        return noaaStationId;
+    }
+
+    public void setNoaaStationId(String noaaStationId) {
+        this.noaaStationId = noaaStationId;
     }
 }

@@ -13,7 +13,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.time.LocalDate;
-import java.util.Objects;
+import java.util.*;
 
 @Service
 public class WeatherProviderService {
@@ -32,18 +32,28 @@ public class WeatherProviderService {
         this.stationFinder = stationFinder;
     }
 
+    /**
+     * Selects the weather provider and retrieves weather data.
+     *
+     * NOAA stations are selected independently for each
+     * requested data type.
+     *
+     * User-selected stations bypass automatic suitability checks.
+     */
     public WeatherResponse getWeather(
             LocationResponses responses,
             WeatherRequest request)
             throws IOException, InterruptedException {
 
-        Objects.requireNonNull(request, "WeatherRequest is required");
+        Objects.requireNonNull(
+                request,
+                "WeatherRequest is required"
+        );
+
         Objects.requireNonNull(
                 request.getLocation(),
                 "Weather location is required"
         );
-
-
 
         ProviderMode provider = determineProvider(request);
 
@@ -51,31 +61,74 @@ public class WeatherProviderService {
             return getOpenMeteo(responses, request);
         }
 
-        NOAAStation station = request.getLocation().getNoaaStation();
+        // Preserve stations explicitly supplied by the user.
+        Map<String, NOAAStation> suppliedStations =
+                request.getLocation().getNoaaStations();
 
-        boolean userSelectedStation =
-                station != null
-                        && station.getStationId() != null
-                        && !station.getStationId().isBlank();
+        // The finder handles:
+        // 1. Global NOAA station ID override.
+        // 2. User-selected stations per data type.
+        // 3. Automatic discovery for remaining types.
+        Map<String, NOAAStation> stations =
+                stationFinder.findBestStation(request);
 
-        if (!userSelectedStation) {
-            station = stationFinder.findBestStation(request);
+        if (stations == null || stations.isEmpty()) {
+            return fallback(
+                    request,
+                    "No suitable NOAA stations found"
+            );
+        }
 
-            if (station == null) {
-                return fallback(request, "No suitable NOAA station found");
+        Map<String, NOAAStation> suitableStations =
+                new LinkedHashMap<>();
+
+        String globalStationId = request.getLocation().getNoaaStationId();
+
+        boolean globalOverride =
+                globalStationId != null
+                        && !globalStationId.isBlank();
+
+        for (Map.Entry<String, NOAAStation> entry
+                : stations.entrySet()) {
+
+            String dataType = entry.getKey();
+            NOAAStation station = entry.getValue();
+
+            if (station == null
+                    || station.getStationId() == null
+                    || station.getStationId().isBlank()) {
+                continue;
+            }
+
+            // A global station ID overrides all automatic selection.
+            if (globalOverride) {
+                suitableStations.put(dataType, station);
+                continue;
+            }
+
+            // Explicitly supplied per-type stations bypass
+            // distance and elevation restrictions.
+            boolean userSelected = isUserSelected(
+                    dataType,
+                    station,
+                    suppliedStations
+            );
+
+            if (userSelected
+                    || isSuitableStation(station, request)) {
+
+                suitableStations.put(dataType, station);
             }
         }
 
-        if (provider == ProviderMode.AUTO
-                && !userSelectedStation
-                && !isSuitableStation(station, request)) {
-
+        if (suitableStations.isEmpty()) {
             return fallback(
                     request,
-                    "NOAA station exceeds distance or elevation limits"
+                    "No NOAA stations meet the selection criteria"
             );
         }
-        request.getLocation().setNoaaStation(station);
+
+        request.getLocation().setNoaaStations(suitableStations);
 
         WeatherResponse result =
                 noaaService.getData(responses, request);
@@ -90,6 +143,43 @@ public class WeatherProviderService {
         return result;
     }
 
+    /**
+     * Determines whether a station was explicitly
+     * selected for a particular data type.
+     */
+    private boolean isUserSelected(
+            String dataType,
+            NOAAStation station,
+            Map<String, NOAAStation> suppliedStations) {
+
+        if (suppliedStations == null
+                || suppliedStations.isEmpty()) {
+            return false;
+        }
+
+        for (Map.Entry<String, NOAAStation> entry
+                : suppliedStations.entrySet()) {
+
+            if (entry.getKey() == null
+                    || !entry.getKey().equalsIgnoreCase(dataType)) {
+                continue;
+            }
+
+            NOAAStation supplied = entry.getValue();
+
+            return supplied != null
+                    && supplied.getStationId() != null
+                    && supplied.getStationId().equals(
+                    station.getStationId()
+            );
+        }
+
+        return false;
+    }
+
+    /**
+     * Preserves the existing provider-selection behavior.
+     */
     private ProviderMode determineProvider(
             WeatherRequest request) {
 
@@ -107,6 +197,10 @@ public class WeatherProviderService {
         return ProviderMode.AUTO;
     }
 
+    /**
+     * Checks whether an automatically discovered
+     * station satisfies distance and elevation limits.
+     */
     private boolean isSuitableStation(
             NOAAStation station,
             WeatherRequest request) {
@@ -119,8 +213,6 @@ public class WeatherProviderService {
         double locationElevation =
                 request.getLocation().getElevation();
 
-        // Retain your existing sentinel convention.
-        // Prefer NaN or nullable Double in the future.
         if (locationElevation == Double.MIN_VALUE
                 || !Double.isFinite(locationElevation)) {
             return true;
@@ -132,9 +224,6 @@ public class WeatherProviderService {
                 );
 
         if (difference == null) {
-            // No station elevation available.
-            // Allow NOAA, but elevation suitability
-            // cannot be verified.
             return true;
         }
 
@@ -142,16 +231,16 @@ public class WeatherProviderService {
                 request.getMaxNoaaStationElevationDifference();
     }
 
+    /**
+     * Falls back to Open-Meteo without retaining
+     * rejected NOAA station selections.
+     */
     private WeatherResponse fallback(
             WeatherRequest request,
             String reason) throws IOException {
 
-        // Avoid exposing a rejected NOAA station
-        // as the station used for the final result.
-        request.getLocation().setNoaaStation(null);
+        request.getLocation().setNoaaStations(null);
 
-        // Fresh accumulator prevents partial NOAA
-        // output from contaminating Open-Meteo.
         WeatherResponse result = getOpenMeteo(
                 new LocationResponses(),
                 request
