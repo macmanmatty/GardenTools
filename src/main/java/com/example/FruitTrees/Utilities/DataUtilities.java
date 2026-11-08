@@ -175,7 +175,7 @@ public class DataUtilities {
 
             // Unknown or unsupported datatype
             default:
-                return null;
+                throw new UnsupportedDataType("Invalid field name for NOAA: " + field);
         }
     }
     /**
@@ -337,7 +337,7 @@ public class DataUtilities {
             case "humidity_2m":
                 return "relative_humidity_2m";
             default:
-                throw new IllegalArgumentException("Invalid field name: " + field);
+                throw new UnsupportedDataType("Invalid field name for Open-Meteo: " + field);
         }
     }
 public static String extractValuesForSoil(String fieldName) {
