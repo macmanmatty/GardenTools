@@ -29,6 +29,7 @@ public abstract  class ProcessWeatherBetweenDates  extends WeatherProcessor {
     private YearMonth warningMonth;
     private  LocalDateTime currentDate;
     private boolean onEndDateCalled;
+    private boolean firstObservation;
 
     public ProcessWeatherBetweenDates(String name) {
         super(name);
@@ -46,6 +47,7 @@ public abstract  class ProcessWeatherBetweenDates  extends WeatherProcessor {
         currentDate = null;
         onEndDateCalled = false;
         missedHours = 0;
+        firstObservation=true;
     }
     /**
      * the overridden process data method that  processes 
@@ -56,22 +58,37 @@ public abstract  class ProcessWeatherBetweenDates  extends WeatherProcessor {
 
     @Override
     public final void processWeather(double value, LocalDateTime date) {
-        YearMonth observationMonth = YearMonth.from(date);
-        this.currentDate = date;
 
-        if (warningMonth != null && !warningMonth.equals(observationMonth)) {
+        YearMonth observationMonth = YearMonth.from(date);
+        currentDate = date;
+
+        if (warningMonth != null
+                && !warningMonth.equals(observationMonth)) {
             flushMissingHours();
         }
 
         warningMonth = observationMonth;
+
         DateType dateType = DateUtilities.checkDate(
                 date, startDay, startMonth, endDay, endMonth
         );
 
+        // Start a new season at its normal boundary.
         if (dateType == DateType.START_PROCESSING) {
             processing = true;
             onStartDateLoop(date);
         }
+
+        // If the dataset begins in the middle of a season,
+        // initialize a partial season at the first observation.
+        else if (firstObservation
+                && isInsideProcessingWindow(date)) {
+
+            processing = true;
+            onStartDateLoop(date);
+        }
+
+        firstObservation = false;
 
         if (processing) {
             if (Double.isFinite(value)) {
@@ -81,10 +98,28 @@ public abstract  class ProcessWeatherBetweenDates  extends WeatherProcessor {
             }
         }
 
+        // Include the final observation before closing the season.
         if (dateType == DateType.END_PROCESSING && processing) {
             onEndDateLoop(date);
             processing = false;
         }
+    }
+
+    private boolean isInsideProcessingWindow(LocalDateTime date) {
+
+        int month = date.getMonthValue();
+        int day = date.getDayOfMonth();
+
+        int current = month * 100 + day;
+        int start = startMonth * 100 + startDay;
+        int end = endMonth * 100 + endDay;
+
+        if (start <= end) {
+            return current >= start && current <= end;
+        }
+
+        // A season that crosses December 31.
+        return current >= start || current <= end;
     }
 
     /**

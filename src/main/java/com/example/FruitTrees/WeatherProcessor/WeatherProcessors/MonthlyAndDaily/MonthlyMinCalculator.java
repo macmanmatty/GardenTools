@@ -16,6 +16,7 @@ public class MonthlyMinCalculator extends DailyAndMonthlyWeatherProcessor {
     public void before() {
         super.before();
         processorName = "Monthly Min  For "+dataType;
+        finalValue = Double.MAX_VALUE;
 
     }
 

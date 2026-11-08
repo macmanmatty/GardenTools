@@ -6,7 +6,7 @@ import java.time.LocalDateTime;
 @Scope("prototype")
 
 public class MonthlyMaxCalculator extends DailyAndMonthlyWeatherProcessor {
-    private double finalValue =Double.MIN_VALUE;
+    private double finalValue =Double.NEGATIVE_INFINITY;
     public MonthlyMaxCalculator() {
         super("Monthly Max");
 
@@ -16,6 +16,8 @@ public class MonthlyMaxCalculator extends DailyAndMonthlyWeatherProcessor {
     public void before() {
         super.before();
         processorName = "Monthly Max For "+dataType;
+        finalValue = Double.NEGATIVE_INFINITY;
+
 
     }
 
@@ -25,7 +27,7 @@ public class MonthlyMaxCalculator extends DailyAndMonthlyWeatherProcessor {
 
             addProcessedTextValue(finalValue, localDateTime.getYear(), localDateTime.getMonth().name());
         monthlyValues.get(currentMonthName).add(finalValue);
-        finalValue =Double.MIN_VALUE;
+        finalValue =Double.NEGATIVE_INFINITY;
     }
     @Override
     protected void processWeatherBetween(double value, LocalDateTime date) {
